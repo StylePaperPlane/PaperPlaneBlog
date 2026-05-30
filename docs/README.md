@@ -4,6 +4,11 @@ PaperPlane Blog is a full-stack personal blog starter built with React, Vite, Sp
 
 ## Preview
 
+Examples that have been deployed: 
+http://blog.paperplane.codes/
+
+
+
 ![PaperPlane Blog preview 1](./1.png)
 
 ![PaperPlane Blog preview 2](./2.png)
