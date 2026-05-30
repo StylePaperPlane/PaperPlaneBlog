@@ -1,6 +1,6 @@
 # PaperPlane Blog
 
-PaperPlane Blog is a full-stack personal blog starter built with React, Vite, Spring Boot, MyBatis, and PostgreSQL.
+PaperPlane Blog is a full-stack personal blog starter built with React, Vite, Spring Boot, MyBatis, and PostgreSQL.Secondary development based on Memory, https://github.com/LinMoQC/Memory-Blog
 
 ## Preview
 
