@@ -1,0 +1,533 @@
+html
+  scroll-behavior: smooth
+
+.readContainer
+  min-height: 100vh
+  width: 100%
+  background: var(--front-body-color)
+  padding-top: 118px
+  padding-bottom: 58px
+  font-size: 1rem
+  color: var(--font-title-color)
+
+  .readLayout
+    width: min(1264px, calc(100% - 448px))
+    margin-left: max(44px, calc((100% - 1620px) / 2))
+    margin-right: auto
+    display: block
+    @media only screen and (max-width: 1280px)
+      width: min(960px, calc(100% - 36px))
+      margin: 0 auto
+    @media only screen and (max-width: 720px)
+      width: calc(100% - 24px)
+
+  .readMain,
+  .readSideCard
+    background: transparent
+    border: 0
+    border-radius: 0
+    box-shadow: none
+
+  .readMain
+    min-width: 0
+    min-height: 784px
+    padding: 36px 34px 86px
+    overflow: hidden
+    @media only screen and (max-width: 720px)
+      min-height: 0
+      padding: 20px 18px 54px
+
+  .readCover
+    position: relative
+    width: 100%
+    height: 362px
+    overflow: hidden
+    border-radius: 14px
+    background: rgba(128, 191, 212, 0.18)
+    img
+      width: 100%
+      height: 100%
+      object-fit: cover
+      object-position: center
+      display: block
+      position: relative
+      background: rgba(128, 191, 212, 0.18)
+    @media only screen and (max-width: 720px)
+      height: clamp(190px, 58vw, 300px)
+      border-radius: 12px
+
+  .readInfo
+    position: relative
+    color: var(--font-title-color)
+    display: flex
+    flex-direction: column
+    align-items: flex-start
+    gap: 8px
+    padding: 42px 18px 0
+    @media only screen and (max-width: 720px)
+      padding: 78px 0 0
+
+    .readMeta
+      display: flex
+      align-items: center
+      flex-wrap: wrap
+      gap: 16px
+      min-height: 42px
+      margin-left: 218px
+      color: var(--font-p-color)
+      font-size: 1.36rem
+      font-weight: 500
+      letter-spacing: 0
+      time
+        color: var(--font-p-color)
+      @media only screen and (max-width: 720px)
+        margin-left: 0
+        font-size: 1rem
+        gap: 10px
+
+    .readAuthor
+      display: inline-flex
+      align-items: center
+      gap: 20px
+      color: #27a6cc
+      font-weight: 850
+      .frontAvatar
+        position: absolute
+        left: 52px
+        top: -84px
+        width: 184px !important
+        height: 184px !important
+        border: 10px solid var(--pic-background-cover)
+        background: #80bfd4
+        box-shadow: 0 12px 26px rgba(39, 166, 204, 0.16)
+        @media only screen and (max-width: 720px)
+          left: 0
+          top: -72px
+          width: 124px !important
+          height: 124px !important
+          border-width: 7px
+
+    .readMetaDot
+      width: 4px
+      height: 4px
+      border-radius: 50%
+      background: #80bfd4
+
+    h1
+      margin: 24px 0 0
+      max-width: 20ch
+      color: var(--font-title-color)
+      font-size: clamp(3.2rem, 4.45vw, 4.7rem)
+      font-weight: 900
+      line-height: 1
+      letter-spacing: 0
+      @media only screen and (max-width: 720px)
+        margin-top: 18px
+        font-size: clamp(2.45rem, 13vw, 3.35rem)
+
+    .readDivider
+      width: 100%
+      height: 1px
+      background: rgba(128, 191, 212, 0.28)
+      margin-top: 14px
+      transform-origin: left
+
+  .readContent
+    background: var(--pic-background-cover)
+    max-width: none
+    width: 100%
+    height: auto
+    padding: 22px 18px 0
+    margin: 0
+    word-wrap: break-word
+    position: relative
+    @media only screen and (max-width: 720px)
+      padding: 20px 0 0
+
+    .markdown-body
+      width: 100%
+      background: var(--pic-background-cover)
+      color: var(--font-title-color)
+      font-size: 1.04rem
+      line-height: 1.86
+      pre
+        background-color: transparent
+      img
+        display: block
+        max-width: 100%
+        height: auto
+        border-radius: 8px
+        margin: 28px auto
+
+    article
+      max-width: 880px
+
+    pre
+      padding: 10px
+      border-radius: 10px
+
+    ul
+      list-style: disc
+      padding-left: 1.5rem
+    ol
+      list-style: decimal
+      padding-left: 1.5rem
+
+    h1
+      font-size: 2.5rem
+      font-weight: 850
+      line-height: 1.18
+      margin: 42px 0 18px
+    h2
+      font-size: 1.9rem
+      margin: 2.6rem 0 1.1rem
+
+    h3
+      font-size: 1.45rem
+      margin: 2.2rem 0 1rem
+
+    h4
+      margin: 1.8rem 0 0.8rem
+
+    p
+      font-size: 1rem
+      max-width: 90rem
+      color: var(--font-p-color)
+      line-height: 1.86
+      margin: 1.1rem 0
+
+    a
+      color: #27a6cc
+      text-decoration: none
+
+    a:hover
+      text-decoration: underline
+
+    ul, ol
+      margin-bottom: 15px
+
+  .readAside
+    position: fixed
+    top: 118px
+    right: max(44px, calc((100vw - 1620px) / 2))
+    z-index: 40
+    width: 340px
+    display: flex
+    flex-direction: column
+    gap: 26px
+    min-width: 0
+    @media only screen and (max-width: 1280px)
+      display: none
+
+  .readSideCard
+    width: 100%
+    color: var(--font-title-color)
+
+  .readTocCard
+    min-height: 226px
+    padding: 38px 36px 30px
+
+    .readTocTitle
+      position: relative
+      margin-bottom: 42px
+      color: var(--font-title-color)
+      font-size: 1.62rem
+      font-weight: 900
+      line-height: 1
+      &:after
+        content: ''
+        position: absolute
+        left: 0
+        bottom: -22px
+        width: 60px
+        height: 3px
+        border-radius: 999px
+        background: #27a6cc
+
+    .navigation
+      width: 100%
+
+    .markdown-navigation
+      width: 100%
+      max-height: 210px
+      overflow-y: auto
+      transition: all .8s
+
+    .markdown-navigation .title-anchor
+      position: relative
+      display: block
+      padding: 8px 0 8px 32px
+      border-left: 0
+      color: var(--font-title-color)
+      font-size: 1.06rem
+      font-weight: 500
+      line-height: 1.5
+      white-space: normal
+      transition: color 0.2s ease, transform 0.2s ease
+      &:before
+        content: ''
+        position: absolute
+        left: 3px
+        top: 50%
+        width: 10px
+        height: 10px
+        border-radius: 50%
+        background: #27a6cc
+        transform: translateY(-50%)
+      &:hover
+        color: #27a6cc
+        background-color: transparent
+        transform: translateX(3px)
+
+    .markdown-navigation .title-anchor.active
+      background-color: transparent
+      color: #27a6cc
+      font-weight: 800
+      &:hover
+        transform: translateX(3px)
+
+  .readCollection
+    min-height: auto
+    padding: 36px 28px 30px
+
+    .collectionHead
+      display: flex
+      align-items: center
+      gap: 14px
+      color: var(--font-title-color)
+      font-size: 1.32rem
+      font-weight: 900
+      line-height: 1
+      .collectionIcon
+        color: #27a6cc
+        font-size: 1.36rem
+
+    .collectionCategory
+      margin-top: 25px
+      color: var(--font-p-color)
+      font-size: 1.14rem
+      font-weight: 850
+      line-height: 1
+      span
+        margin-left: 17px
+
+    .collectionDivider
+      width: 100%
+      height: 1px
+      margin: 29px 0 17px
+      background: rgba(128, 191, 212, 0.28)
+
+    .collectionList
+      display: flex
+      flex-direction: column
+      gap: 2px
+      width: 100%
+      max-height: 172px
+      overflow-y: auto
+      scrollbar-width: thin
+
+    .collectionItem
+      width: 100%
+      height: 56px
+      display: flex
+      align-items: center
+      justify-content: space-between
+      gap: 16px
+      border: 0
+      background: transparent
+      color: var(--font-title-color)
+      padding: 0 18px 0 12px
+      font: inherit
+      font-size: 1.02rem
+      font-weight: 700
+      text-align: left
+      cursor: pointer
+      transition: background-color 0.18s ease, color 0.18s ease
+      .collectionName
+        display: flex
+        align-items: center
+        gap: 20px
+        min-width: 0
+      .collectionIndex
+        flex: 0 0 auto
+      .collectionTitle
+        overflow: hidden
+        text-overflow: ellipsis
+        white-space: nowrap
+      time
+        flex: 0 0 auto
+        color: var(--font-p-color)
+        font-weight: 500
+      &:hover,
+      &.active
+        background: rgba(128, 191, 212, 0.18)
+        color: #27a6cc
+        time
+          color: var(--font-p-color)
+
+.readAside
+  position: fixed
+  top: 118px
+  right: max(44px, calc((100vw - 1620px) / 2))
+  z-index: 40
+  width: 340px
+  display: flex
+  flex-direction: column
+  gap: 26px
+  min-width: 0
+  pointer-events: auto
+  backface-visibility: hidden
+  transform: translateZ(0)
+  @media only screen and (max-width: 1280px)
+    display: none
+
+.readSideCard
+  width: 100%
+  color: var(--font-title-color)
+  background: transparent
+  border: 0
+  border-radius: 0
+  box-shadow: none
+
+.readTocCard
+  padding: 38px 36px 30px
+
+  .readTocTitle
+    position: relative
+    margin-bottom: 42px
+    color: var(--font-title-color)
+    font-size: 1.62rem
+    font-weight: 900
+    line-height: 1
+    &:after
+      content: ''
+      position: absolute
+      left: 0
+      bottom: -22px
+      width: 60px
+      height: 3px
+      border-radius: 999px
+      background: #27a6cc
+
+  .navigation
+    width: 100%
+
+  .markdown-navigation
+    width: 100%
+    max-height: 210px
+    overflow-y: auto
+    overscroll-behavior: contain
+    transition: all .8s
+
+  .markdown-navigation .title-anchor
+    position: relative
+    display: block
+    min-height: 42px
+    padding: 8px 0 8px 32px
+    border-left: 0
+    color: var(--font-title-color)
+    font-size: 1.06rem
+    font-weight: 500
+    line-height: 1.5
+    white-space: normal
+    transition: color 0.2s ease, transform 0.2s ease
+    &:before
+      content: ''
+      position: absolute
+      left: 3px
+      top: 50%
+      width: 10px
+      height: 10px
+      border-radius: 50%
+      background: #27a6cc
+      transform: translateY(-50%)
+    &:hover
+      color: #27a6cc
+      background-color: transparent
+      transform: translateX(3px)
+
+  .markdown-navigation .title-anchor.active
+    background-color: transparent
+    color: #27a6cc
+    font-weight: 800
+    &:hover
+      transform: translateX(3px)
+
+.readCollection
+  padding: 36px 28px 30px
+
+  .collectionHead
+    display: flex
+    align-items: center
+    gap: 14px
+    color: var(--font-title-color)
+    font-size: 1.32rem
+    font-weight: 900
+    line-height: 1
+    .collectionIcon
+      color: #27a6cc
+      font-size: 1.36rem
+
+  .collectionCategory
+    margin-top: 25px
+    color: var(--font-p-color)
+    font-size: 1.14rem
+    font-weight: 850
+    line-height: 1
+    span
+      margin-left: 17px
+
+  .collectionDivider
+    width: 100%
+    height: 1px
+    margin: 29px 0 17px
+    background: rgba(128, 191, 212, 0.28)
+
+  .collectionList
+    display: flex
+    flex-direction: column
+    gap: 2px
+    width: 100%
+    max-height: 172px
+    overflow-y: auto
+    overscroll-behavior: contain
+    scrollbar-width: thin
+
+  .collectionItem
+    width: 100%
+    height: 56px
+    display: flex
+    align-items: center
+    justify-content: space-between
+    gap: 16px
+    border: 0
+    background: transparent
+    color: var(--font-title-color)
+    padding: 0 18px 0 12px
+    font: inherit
+    font-size: 1.02rem
+    font-weight: 700
+    text-align: left
+    cursor: pointer
+    transition: background-color 0.18s ease, color 0.18s ease
+    .collectionName
+      display: flex
+      align-items: center
+      gap: 20px
+      min-width: 0
+    .collectionIndex
+      flex: 0 0 auto
+    .collectionTitle
+      overflow: hidden
+      text-overflow: ellipsis
+      white-space: nowrap
+    time
+      flex: 0 0 auto
+      color: var(--font-p-color)
+      font-weight: 500
+    &:hover,
+    &.active
+      background: rgba(128, 191, 212, 0.18)
+      color: #27a6cc
+      time
+        color: var(--font-p-color)

@@ -1,0 +1,57 @@
+.topMao
+  position: absolute
+  width: 100px
+  height: 900px
+  background: #80bfd4
+
+.frontRoot
+  position: relative
+  min-height: 100vh
+  background: var(--front-body-color)
+
+.frontScrollSurface
+  position: relative
+  z-index: 2
+  min-height: 100vh
+  background: var(--front-surface-color)
+
+.frontFriendSurface
+  position: relative
+  z-index: 2
+  min-height: 100vh
+  background: var(--front-body-color)
+
+.frontScrollSurfaceReleasing
+  transition: transform 0.52s cubic-bezier(.18, 1.08, .24, 1)
+
+.frontFriendSurfaceReleasing
+  transition: transform 0.52s cubic-bezier(.18, 1.08, .24, 1)
+
+.frontElasticUnderlay
+  position: fixed
+  left: 0
+  right: 0
+  bottom: 18px
+  z-index: 1
+  display: flex
+  flex-direction: column
+  align-items: center
+  gap: 4px
+  padding: 0 20px
+  color: var(--font-p-color)
+  font-size: 0.92rem
+  font-weight: 750
+  line-height: 1.45
+  text-align: center
+  pointer-events: none
+
+@media only screen and (max-width: 640px)
+  .frontElasticUnderlay
+    font-size: 0.78rem
+
+@media (prefers-reduced-motion: reduce)
+  .frontScrollSurfaceReleasing
+    transition: none
+
+  .frontFriendSurfaceReleasing
+    transition: none

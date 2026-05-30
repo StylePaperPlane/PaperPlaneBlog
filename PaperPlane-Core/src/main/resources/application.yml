@@ -1,0 +1,49 @@
+spring:
+  profiles:
+    active: prod
+  banner:
+    charset: UTF-8
+    location: banner.text
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 100MB
+  datasource:
+    driver-class-name: ${postgres.driver-class-name:org.postgresql.Driver}
+    url: jdbc:postgresql://${postgres.host:localhost}:${postgres.port:5432}/${postgres.database:paperplane}
+    username: ${postgres.username:paperplane}
+    password: ${POSTGRES_PASSWORD:}
+    hikari:
+      max-lifetime: 120000
+logging:
+  config: classpath:logback-blog.xml
+
+mybatis:
+  configuration:
+    map-underscore-to-camel-case: true
+
+
+# springdoc-openapi项目配置
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+    tags-sorter: alpha
+    operations-sorter: alpha
+  api-docs:
+    path: /v3/api-docs
+  group-configs:
+    - group: 'PaperPlane Blog接口文档'
+      paths-to-match: '/**'
+      packages-to-scan: com.paperplane.blog.Controller
+# knife4j的增强配置，不需要增强可以不配
+knife4j:
+  enable: true
+  setting:
+    language: zh_cn
+
+blog:
+  minio:
+    endpoint: http://127.0.0.1:9000 # Minio服务所在地址
+    bucketName: paperplane # 存储桶名称
+    accessKey: paperplane # 访问的key
+    secretKey: paperplane # 访问的秘钥

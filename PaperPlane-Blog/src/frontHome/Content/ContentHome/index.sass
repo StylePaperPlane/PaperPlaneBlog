@@ -1,0 +1,562 @@
+//全局变量
+$darkMode: true
+// light
+$pic-cover-color: linear-gradient(90deg,rgba(255,250,251,0) 0,rgba(255,250,251,.013) 8.1%,rgba(255,250,251,.049) 15.5%,rgba(255,250,251,.104) 22.5%,rgba(255,250,251,.175) 29%,rgba(255,250,251,.259) 35.3%,rgba(255,250,251,.352) 41.2%,rgba(255,250,251,.45) 47.1%,rgba(255,250,251,.55) 52.9%,rgba(255,250,251,.648) 58.8%,rgba(255,250,251,.741) 64.7%,rgba(255,250,251,.825) 71%,rgba(255,250,251,.896) 77.5%,rgba(255,250,251,.951) 84.5%,rgba(255,250,251,.987) 91.9%,#fffafb)
+$pic-background-cover: #fffafb
+$pic-cover-color-m: linear-gradient(180deg, rgba(255, 250, 251, 0) 0, rgba(255, 250, 251, .013) 8.1%, rgba(255, 250, 251, .049) 15.5%, rgba(255, 250, 251, .104) 22.5%, rgba(255, 250, 251, .175) 29%, rgba(255, 250, 251, .259) 35.3%, rgba(255, 250, 251, .352) 41.2%, rgba(255, 250, 251, .45) 47.1%, rgba(255, 250, 251, .55) 52.9%, rgba(255, 250, 251, .648) 58.8%, rgba(255, 250, 251, .741) 64.7%, rgba(255, 250, 251, .825) 71%, rgba(255, 250, 251, .896) 77.5%, rgba(255, 250, 251, .951) 84.5%, rgba(255, 250, 251, .987) 91.9%, #fffafb)
+$font-title-color: #173447
+$font-p-color: #617989
+$box-shadow-color: 0 1px 35px -8px rgba(39, 166, 204, 0.28)
+$container-background-color: linear-gradient(to left, rgba(252, 197, 197,0.34), rgba(128, 191, 212,0.2))
+// dark
+$pic-cover-color-dark: linear-gradient(90deg, rgba(48, 61, 103, 0) 0, rgba(48, 61, 103, .013) 8.1%, rgba(48, 61, 103, .049) 15.5%, rgba(48, 61, 103, .104) 22.5%, rgba(48, 61, 103, .175) 29%, rgba(48, 61, 103, .259) 35.3%, rgba(48, 61, 103, .352) 41.2%, rgba(48, 61, 103, .45) 47.1%, rgba(48, 61, 103, .55) 52.9%, rgba(48, 61, 103, .648) 58.8%, rgba(48, 61, 103, .741) 64.7%, rgba(48, 61, 103, .825) 71%, rgba(48, 61, 103, .896) 77.5%, rgba(48, 61, 103, .951) 84.5%, rgba(48, 61, 103, .987) 91.9%, #303d67)
+$pic-background-cover-dark: #303d67
+$font-title-color-dark: #fddfdc
+$font-p-color-dark: #d8d5e3
+$pic-cover-color-dark-m: linear-gradient(180deg, rgba(48, 61, 103, 0) 0, rgba(48, 61, 103, .013) 8.1%, rgba(48, 61, 103, .049) 15.5%, rgba(48, 61, 103, .104) 22.5%, rgba(48, 61, 103, .175) 29%, rgba(48, 61, 103, .259) 35.3%, rgba(48, 61, 103, .352) 41.2%, rgba(48, 61, 103, .45) 47.1%, rgba(48, 61, 103, .55) 52.9%, rgba(48, 61, 103, .648) 58.8%, rgba(48, 61, 103, .741) 64.7%, rgba(48, 61, 103, .825) 71%, rgba(48, 61, 103, .896) 77.5%, rgba(48, 61, 103, .951) 84.5%, rgba(48, 61, 103, .987) 91.9%, #303d67)
+$box-shadow-color-dark: 0 1px 35px -8px rgba(253, 223, 220, 0.24)
+$container-background-color-dark: linear-gradient(to left, rgba(48, 61, 103,0.96), rgba(121, 121, 154,0.72))
+
+// 动画
+.fade-in-out
+  opacity: 0
+  transition: opacity 0.5s ease-in-out
+.show
+  opacity: 1
+@keyframes up-down
+  0%
+    transform: translateY(0px)
+  50%
+    transform: translateY(-10px)
+  100%
+    transform: translateY(0px)
+
+@keyframes left-in
+  0%
+    transform: translateX(-50%)
+    opacity: 0
+  100%
+    transform: translateX(0)
+    opacity: 1
+
+@keyframes right-in
+  0%
+    transform: translateX(50%)
+    opacity: 0
+  100%
+    transform: translateX(0)
+    opacity: 1
+
+
+.HomeRevealShell
+  position: relative
+  min-height: 100vh
+  background: var(--front-body-color)
+
+.SelfDescription
+  position: absolute
+  inset: 0
+  z-index: 20
+  width: 100%
+  height: 100vh
+  min-height: 100svh
+  overflow: hidden
+  display: flex
+  justify-content: space-evenly
+  align-items: center
+  gap: clamp(32px, 7vw, 120px)
+  padding: clamp(32px, 6vw, 84px)
+  background-color: var(--front-body-color)
+  background-image: var(--self-description-image)
+  background-position: center
+  background-size: cover
+  background-repeat: no-repeat
+  box-shadow: 0 24px 70px rgba(39, 166, 204, 0.16)
+  transform-origin: top center
+  will-change: transform, opacity
+  @media only screen and (max-width: 1200px)
+    justify-content: center
+    text-align: center
+  @media only screen and (max-width: 700px)
+    padding: 28px 22px
+  .homeTyped
+    position: absolute
+    bottom: 100px
+    font-weight: 700
+
+  .SayWords
+    animation: left-in 1s forwards
+    @media only screen and (max-width: 1200px)
+      display: flex
+      flex-direction: column
+      align-items: center
+    h2
+      font-size: clamp(2.7rem, 6vw, 4.8rem)
+      font-weight: 900
+      line-height: 1.08
+    h3
+      font-size: clamp(1.5rem, 3vw, 2.6rem)
+      margin-top: 12px
+    .Social
+      width: min(300px, 100%)
+      display: flex
+      flex-direction: row
+      justify-content: space-between
+      margin-top: 20px
+  .frontAvatar
+    border: 5px solid var(--pic-background-cover)
+    transition: transform 0.3s ease
+    &:hover
+      transform: rotate(45deg)
+    @media only screen and (max-width: 1200px)
+      display: none
+
+.HomeContentLayer
+  position: sticky
+  top: 0
+  z-index: 1
+  transform-origin: top center
+  will-change: transform
+
+.HomeRevealScrollSpace
+  height: 100vh
+  pointer-events: none
+
+.upAndDown
+  animation-name: up-down
+  animation-duration: 5s
+  animation-iteration-count: infinite
+  cursor: pointer
+
+.ContentContainer
+  overflow-x: hidden
+  position: relative
+  display: flex
+  flex-direction: column
+  align-items: center
+  padding: 72px 0 80px 0
+  background: var(--front-body-color)
+  .TopArticle
+    position: relative
+    cursor: pointer
+    width: 80%
+    height: 600px
+    //background: #212121
+    //background: $pic-background-cover
+    background: var(--pic-background-cover)
+    --tw-shadow: 0 10px 15px -3px rgba(0, 0, 0, .1), 0 4px 6px -2px rgba(0, 0, 0, .05)
+    border-radius: 15px
+    box-shadow: var(--box-shadow-color)
+    grid-template-columns: repeat(2, minmax(0, 1fr))
+    grid-template-rows: none
+    display: grid
+    @media only screen and (max-width: 1200px)
+      display: grid
+      grid-template-rows: repeat(3, minmax(0, 1fr))
+      grid-template-columns: repeat(1, minmax(0, 1fr))
+    @media only screen and (max-width: 800px)
+      width: 90%
+
+    .TopCover
+      width: 100%
+      border-radius: 15px 0 0 15px
+      position: relative
+      height: 100%
+      .topDots
+        position: absolute
+        bottom: 20px
+        left: 50%
+        display: flex
+        transform: translate(-50%,-50%)
+        @media only screen and (max-width: 1200px)
+          display: none
+        .topDot
+          cursor: pointer
+          width: 10px
+          height: 10px
+          background: var(--font-title-color)
+          border-radius: 50%
+          margin-left: 10px
+        .dotCurrent
+          background: #27a6cc
+      img
+        border-radius: 15px 0 0 15px
+        background-repeat: no-repeat
+        background-size: cover
+        display: block
+        object-fit: cover
+        position: absolute
+        max-width: 120%
+        height: 100%
+        width: 120%
+        transition: opacity 0.5s ease-in-out
+        @media only screen and (max-width: 1200px)
+          height: 120%
+          width: 100%
+          border-radius: 15px 15px 0 0
+      span
+        border-radius: 15px 0 0 15px
+        position: absolute
+        max-width: 120%
+        width: 120%
+        height: 100%
+        mix-blend-mode: screen
+      &:after
+        pointer-events: none
+        content: ''
+        background: var(--pic-cover-color)
+        position: absolute
+        z-index: 35
+        left: 71%
+        top: 0
+        height: 100%
+        width: 50%
+        @media only screen and (max-width: 1200px)
+          left: 0
+          top: 13%
+          height: 120%
+          width: 100%
+          background: var(--pic-cover-color-m)
+    .topContent
+      display: flex
+      flex-direction: column
+      justify-content: center
+      padding: 3rem
+      align-items: center
+      position: relative
+      border: none
+      z-index: 99
+      border-radius: 0 15px 15px 0
+      height: 100%
+      width: 100%
+      transition: 0.6s
+      @media only screen and (max-width: 1200px)
+        justify-content: normal
+        height: max-content
+        padding: 2rem
+      h4
+        width: 100%
+        font-size: 20px
+        color: #27a6cc
+      p
+        display: -webkit-box
+        -webkit-line-clamp: 4
+        -webkit-box-orient: vertical
+        overflow: hidden
+      .contentTitle
+        width: 100%
+        font-weight: 900
+        //color: white
+        color: var(--font-title-color)
+        font-size: 40px
+        margin-bottom: 60px
+        @media only screen and (max-width: 1200px)
+          font-size: 35px
+          margin-bottom: 40px
+      p
+        //color: #cccccc
+        color: var(--font-p-color)
+        text-indent: 1em
+      .topFooter
+        //color: #cccccc
+        color: var(--font-title-color)
+        width: 100%
+        margin-top: 60px
+        @media only screen and (max-width: 1200px)
+          margin-top: 40px
+        .post-date
+          background-color: rgba(39, 166, 204, 0.15)
+          font-size: 12px
+          width: max-content
+          padding: 4px 10px 4px 10px
+          border-radius: 6px
+          color: #617989
+          white-space: nowrap
+          transition: all 0.8s ease!important
+          line-height: 20px
+  .allContent
+    background: var(--article-pill-bg)
+    border-radius: 10px
+    width: max-content
+    height: max-content
+    width: 80px
+    height: 30px
+    display: flex
+    justify-content: center
+    align-items: center
+    color: var(--article-pill-color)
+    font-weight: 700
+    margin-top: 20px
+    margin-bottom: 20px
+
+  .allArticles
+    width: 88%
+    max-width: 1320px
+    display: flex
+    flex-direction: column
+    gap: 34px
+    position: relative
+    padding: 14px 0 10px 34px
+    background-image: radial-gradient(circle at 1px 1px, rgba(128, 191, 212, 0.22) 1px, transparent 0)
+    background-size: 22px 22px
+    &:before
+      content: ''
+      position: absolute
+      top: 0
+      bottom: 0
+      left: 8px
+      width: 2px
+      background: linear-gradient(180deg, rgba(128, 191, 212, 0), rgba(39, 166, 204, 0.55), rgba(128, 191, 212, 0))
+    @media only screen and (max-width: 500px)
+      padding-left: 42px
+    @media only screen and (max-width: 800px)
+      width: 90%
+      max-width: none
+    .ArticleMonthGroup
+      position: relative
+      width: 100%
+    .ArticleMonthLabel
+      position: relative
+      width: max-content
+      margin-bottom: 16px
+      padding: 6px 14px
+      border: 1px solid rgba(128, 191, 212, 0.35)
+      border-radius: 999px
+      background: var(--pic-background-cover)
+      color: var(--font-title-color)
+      font-size: 15px
+      font-weight: 800
+      box-shadow: 0 10px 22px rgba(39, 166, 204, 0.12)
+      &:before
+        content: ''
+        position: absolute
+        top: 50%
+        left: -33px
+        width: 11px
+        height: 11px
+        border: 3px solid var(--pic-background-cover)
+        border-radius: 50%
+        background: #27a6cc
+        box-shadow: 0 0 0 3px rgba(128, 191, 212, 0.28)
+        transform: translateY(-50%)
+    .ArticleMonthItems
+      display: flex
+      flex-wrap: wrap
+      gap: 24px
+      align-items: stretch
+    .article
+      position: relative
+      flex: 1 1 calc((100% - 48px) / 3)
+      max-width: none
+      min-width: 0
+      @media only screen and (max-width: 1100px)
+        flex-basis: calc((100% - 24px) / 2)
+      @media only screen and (max-width: 760px)
+        flex-basis: 100%
+      &:before
+        content: ''
+        position: absolute
+        top: 35px
+        left: -26px
+        width: 26px
+        height: 1px
+        background: rgba(39, 166, 204, 0.38)
+    .ArticleCard
+      width: 100%
+      min-height: 0
+      background: var(--pic-background-cover)
+      border: 1px solid rgba(128, 191, 212, 0.22)
+      border-radius: 14px
+      box-shadow: 0 16px 34px rgba(39, 166, 204, 0.12)
+      overflow: hidden
+      position: relative
+      transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease
+      display: flex
+      flex-direction: column
+      cursor: pointer
+      &:hover
+        transform: translateY(-4px)
+        border-color: rgba(39, 166, 204, 0.35)
+        box-shadow: 0 22px 44px rgba(39, 166, 204, 0.18)
+
+      .ArticleMeta
+        display: flex
+        align-items: center
+        justify-content: space-between
+        gap: 16px
+        padding: 16px 22px 12px
+        color: var(--font-title-color)
+        border-bottom: 1px solid rgba(128, 191, 212, 0.2)
+        strong
+          display: block
+          margin-bottom: 3px
+          font-size: 15px
+          font-weight: 800
+        span
+          color: var(--font-p-color)
+          font-size: 13px
+        time
+          flex: 0 0 auto
+          color: var(--font-p-color)
+          font-size: 13px
+
+      .ArticleCover
+        position: relative
+        flex: 0 0 260px
+        min-height: 210px
+        overflow: hidden
+        border-radius: 10px
+        img
+          display: block
+          height: 100%
+          object-fit: cover
+          width: 100%
+      .ArticleContent
+        display: grid
+        grid-template-columns: minmax(220px, 32%) 1fr
+        gap: 20px
+        padding: 20px 22px
+        width: 100%
+        @media only screen and (max-width: 720px)
+          grid-template-columns: 1fr
+        @media only screen and (max-width: 500px)
+          padding: 16px
+        .ArticleBody
+          min-width: 0
+        .ArticleCategory
+          width: 100%
+          margin-bottom: 8px
+          font-size: 14px
+          font-weight: 800
+        p
+          display: -webkit-box
+          -webkit-line-clamp: 3
+          -webkit-box-orient: vertical
+          overflow: hidden
+          margin: 0
+          color: var(--font-p-color)
+          line-height: 1.8
+        .ArticleTitle
+          width: 100%
+          font-weight: 900
+          color: var(--font-title-color)
+          font-size: 24px
+          margin: 0 0 12px
+        .tags
+          width: 100%
+          margin-top: 12px
+      .ArticleFooter
+        display: flex
+        justify-content: space-between
+        align-items: center
+        padding: 12px 22px 16px
+        color: var(--font-p-color)
+        border-top: 1px solid rgba(128, 191, 212, 0.18)
+        span
+          display: flex
+          align-items: center
+          gap: 6px
+          font-size: 13px
+          .icon
+            font-size: 18px
+
+  .more
+    transition: 0.3s
+    cursor: pointer
+    &:hover
+      transform: scale(1.2)
+
+
+// 加载动画
+.loadingio-spinner-spinner-69tfms83mg9
+  width: 200px
+  height: 200px
+  display: inline-block
+  overflow: hidden
+  background: transparent
+
+  .ldio-se504dvlmh
+    width: 100%
+    height: 100%
+    position: relative
+    transform: translateZ(0) scale(1)
+    backface-visibility: hidden
+    transform-origin: 0 0
+
+    div
+      box-sizing: content-box
+      left: 94px
+      top: 48px
+      position: absolute
+      animation: ldio-se504dvlmh linear 1s infinite
+      background: #27a6cc
+      width: 12px
+      height: 24px
+      border-radius: 6px / 12px
+      transform-origin: 6px 52px
+
+      &:nth-child(1)
+        transform: rotate(0deg)
+        animation-delay: -0.9166666666666666s
+        background: #27a6cc
+
+      &:nth-child(2)
+        transform: rotate(30deg)
+        animation-delay: -0.8333333333333334s
+        background: #27a6cc
+
+      &:nth-child(3)
+        transform: rotate(60deg)
+        animation-delay: -0.75s
+        background: #27a6cc
+
+      &:nth-child(4)
+        transform: rotate(90deg)
+        animation-delay: -0.6666666666666666s
+        background: #27a6cc
+
+      &:nth-child(5)
+        transform: rotate(120deg)
+        animation-delay: -0.5833333333333334s
+        background: #27a6cc
+
+      &:nth-child(6)
+        transform: rotate(150deg)
+        animation-delay: -0.5s
+        background: #27a6cc
+
+      &:nth-child(7)
+        transform: rotate(180deg)
+        animation-delay: -0.4166666666666667s
+        background: #27a6cc
+
+      &:nth-child(8)
+        transform: rotate(210deg)
+        animation-delay: -0.3333333333333333s
+        background: #27a6cc
+
+      &:nth-child(9)
+        transform: rotate(240deg)
+        animation-delay: -0.25s
+        background: #27a6cc
+
+      &:nth-child(10)
+        transform: rotate(270deg)
+        animation-delay: -0.16666666666666666s
+        background: #27a6cc
+
+      &:nth-child(11)
+        transform: rotate(300deg)
+        animation-delay: -0.08333333333333333s
+        background: #27a6cc
+
+      &:nth-child(12)
+        transform: rotate(330deg)
+        animation-delay: 0s
+        background: #27a6cc
+
+@keyframes ldio-se504dvlmh
+  0%
+    opacity: 1
+  100%
+    opacity: 0

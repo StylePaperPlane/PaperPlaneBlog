@@ -1,0 +1,158 @@
+.musicPlayer
+  position: fixed
+  left: 20px
+  bottom: 22px
+  z-index: 1200
+  display: flex
+  align-items: flex-end
+  gap: 10px
+  color: var(--font-title-color)
+  @media only screen and (max-width: 680px)
+    left: 12px
+    right: 12px
+    bottom: 14px
+
+.musicCollapse
+  width: 58px
+  height: 58px
+  padding: 0
+  border: 1px solid var(--nav-glass-border)
+  border-radius: 50%
+  background: var(--music-player-collapse-bg)
+  box-shadow: var(--nav-glass-shadow)
+  backdrop-filter: blur(16px) saturate(140%)
+  cursor: pointer
+  overflow: hidden
+  flex: 0 0 auto
+  position: relative
+  img
+    width: 100%
+    height: 100%
+    object-fit: cover
+
+.musicCollapseIcon
+  position: absolute
+  right: 4px
+  bottom: 4px
+  width: 22px
+  height: 22px
+  display: inline-flex
+  align-items: center
+  justify-content: center
+  border: 1px solid var(--music-player-cover-border)
+  border-radius: 50%
+  background: var(--music-player-accent)
+  color: var(--music-player-accent-contrast)
+  font-size: 12px
+  box-shadow: 0 4px 12px rgba(23, 52, 71, 0.18)
+  pointer-events: none
+
+.musicPanel
+  width: 348px
+  padding: 14px
+  border: 1px solid var(--nav-glass-border)
+  border-radius: 12px
+  background: var(--music-player-bg)
+  box-shadow: var(--nav-glass-shadow)
+  backdrop-filter: blur(18px) saturate(142%)
+  @media only screen and (max-width: 680px)
+    width: calc(100vw - 92px)
+
+.musicHeader
+  display: flex
+  align-items: center
+  gap: 12px
+
+.musicCover
+  width: 64px
+  height: 64px
+  border-radius: 50%
+  object-fit: cover
+  border: 3px solid var(--music-player-cover-border)
+  &.spinning
+    animation: musicSpin 16s linear infinite
+
+.musicMeta
+  min-width: 0
+  display: flex
+  flex-direction: column
+  gap: 3px
+  strong
+    overflow: hidden
+    text-overflow: ellipsis
+    white-space: nowrap
+    font-size: 17px
+    font-weight: 900
+  span
+    color: var(--font-p-color)
+    font-size: 13px
+  em
+    color: var(--music-player-accent)
+    font-size: 12px
+    font-style: normal
+
+.musicProgress
+  display: grid
+  grid-template-columns: 42px 1fr 42px
+  align-items: center
+  gap: 8px
+  margin-top: 12px
+  font-size: 12px
+  color: var(--font-p-color)
+
+.musicControls
+  display: flex
+  align-items: center
+  gap: 9px
+  margin-top: 12px
+  button
+    width: 32px
+    height: 32px
+    border: 0
+    border-radius: 50%
+    background: var(--music-player-control-bg)
+    color: var(--font-title-color)
+    cursor: pointer
+    transition: background 0.18s ease, color 0.18s ease, transform 0.18s ease
+    &:hover
+      background: var(--music-player-control-hover)
+    &.active
+      background: var(--music-player-accent)
+      color: var(--music-player-accent-contrast)
+  .playButton
+    width: 40px
+    height: 40px
+    background: var(--music-player-accent)
+    color: var(--music-player-accent-contrast)
+  .volume
+    flex: 1
+    min-width: 44px
+
+.musicLyrics
+  max-height: 138px
+  overflow-y: auto
+  margin-top: 12px
+  padding: 10px
+  border-radius: 10px
+  background: var(--music-player-lyrics-bg)
+  p
+    margin: 0 0 8px
+    color: var(--font-p-color)
+    font-size: 13px
+    line-height: 1.55
+    transition: color 0.18s ease, transform 0.18s ease
+    &.active
+      color: var(--music-player-accent)
+      font-weight: 900
+      transform: translateX(4px)
+  .empty
+    text-align: center
+
+.musicPlayer input[type='range']
+  accent-color: var(--music-player-accent)
+
+@keyframes musicSpin
+  from
+    transform: rotate(0)
+  to
+    transform: rotate(360deg)

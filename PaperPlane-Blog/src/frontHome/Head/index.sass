@@ -1,0 +1,340 @@
+$animation-duration: 0.6s
+$body-color: linear-gradient(to left, rgba(252, 197, 197, 0.33), rgba(128, 191, 212, 0.33))
+$darkMode-mode-color: linear-gradient(to left, rgba(48, 61, 103, 0.33), rgba(121, 121, 154, 0.33))
+
+@keyframes cardIn
+  0%
+    opacity: 0
+  100%
+    opacity: 1
+
+.NoTop
+  margin: 0
+
+.frontHeader
+  position: fixed
+  top: 0
+  left: 0
+  right: 0
+  z-index: 999
+  width: 100%
+  height: 0
+  min-height: 0
+  display: flex
+  justify-content: center
+  pointer-events: none
+  background: transparent
+  overflow: visible
+  color: var(--font-title-color)
+  &.frontDark
+    color: var(--font-title-color)
+
+.phoneScrim
+  pointer-events: auto
+  position: fixed
+  inset: 0
+  z-index: 1001
+  border: 0
+  background: rgba(48, 61, 103, 0.26)
+  backdrop-filter: blur(6px)
+  cursor: pointer
+
+.phoneSide
+  pointer-events: auto
+  display: none
+  @media only screen and (max-width: 1200px)
+    position: fixed
+    inset: 0 auto 0 0
+    width: min(82vw, 320px)
+    height: 100%
+    display: flex
+    align-items: flex-start
+    transform: translateX(-100%)
+    transition: transform 0.28s ease
+    z-index: 1002
+
+    .phoneBarContainer
+      width: 100%
+      height: 100vh
+      background: var(--nav-glass-bg)
+      position: absolute
+      transition: transform 0.28s ease
+      display: flex
+      flex-direction: column
+      align-items: center
+      overflow-y: scroll
+      border-right: 0
+      box-shadow: var(--nav-glass-shadow)
+      backdrop-filter: blur(22px) saturate(142%)
+      -webkit-backdrop-filter: blur(22px) saturate(142%)
+      &::-webkit-scrollbar
+        width: 0
+
+
+      .barLogo
+        margin-top: 38px
+        margin-bottom: 34px
+
+      .barContent
+        width: 100%
+        height: 100%
+        .oneBar
+          width: 100%
+          height: auto
+          display: flex
+          flex-direction: column
+          gap: 6px
+          list-style: none
+          padding: 0 22px
+          li
+            &:hover
+              background: var(--nav-glass-hover)
+          .twoBar
+            gap: 5px
+            display: flex
+            flex-direction: column
+            list-style: none
+            li
+              margin-left: 10px
+        li
+          position: relative
+          font-size: 20px
+          color: var(--phoneBar-font-color)
+          cursor: pointer
+          display: flex
+          justify-content: flex-start
+          align-items: center
+          height: 48px
+          border-radius: 0
+          padding: 0 14px
+          transition: background-color 0.18s ease, color 0.18s ease
+          &.active
+            background: var(--nav-glass-hover)
+            color: #27a6cc
+            font-weight: 900
+          &:hover
+            background: var(--nav-glass-hover)
+        i
+          margin-right: 10px
+
+
+.openBar
+  transform: translateX(0)
+
+.headContainer
+  pointer-events: auto
+  position: relative
+  width: 100%
+  min-height: 78px
+  display: flex
+  flex-direction: row
+  justify-content: space-between
+  align-items: center
+  border-radius: 0
+  margin-top: 0
+  padding: 0 clamp(18px, 8vw, 156px)
+  font-size: 18px
+  font-weight: 650
+  letter-spacing: 0
+  background: var(--nav-glass-bg)
+  border: 0
+  border-bottom: 1px solid var(--nav-glass-border)
+  box-shadow: var(--nav-glass-shadow)
+  backdrop-filter: blur(18px) saturate(150%)
+  -webkit-backdrop-filter: blur(18px) saturate(150%)
+  transform: translateY(0)
+  opacity: 1
+  transition: width 0.25s ease, min-height 0.25s ease, margin 0.25s ease, border-radius 0.25s ease, background-color 0.25s ease, box-shadow 0.25s ease, transform 0.28s ease, opacity 0.2s ease
+  &.isScrolled
+    width: 100%
+    min-height: 68px
+    margin-top: 0
+    background: var(--nav-glass-bg-scrolled)
+    box-shadow: var(--nav-glass-shadow)
+  &.isHidden
+    transform: translateY(calc(-100% - 18px))
+    opacity: 0
+    pointer-events: none
+  &:hover
+    border-color: var(--nav-glass-border)
+    box-shadow: var(--nav-glass-shadow)
+  @media only screen and (max-width: 1200px)
+    width: 100%
+    min-height: 56px
+    margin-top: 0
+    border-radius: 0
+    padding: 0 10px
+    display: grid
+    grid-template-columns: 44px minmax(0, 1fr) auto
+    justify-content: initial
+    column-gap: 8px
+  .phoneBar
+    color: currentColor
+    display: none
+    @media only screen and (max-width: 1200px)
+      height: 44px
+      display: flex
+      justify-content: center
+      align-items: center
+      position: relative
+  .phoneMenuButton
+    width: 42px
+    height: 42px
+    display: inline-flex
+    align-items: center
+    justify-content: center
+    border: 0
+    border-radius: 0
+    background: var(--nav-glass-hover)
+    color: currentColor
+    font-size: 20px
+    cursor: pointer
+    transition: background-color 0.18s ease, color 0.18s ease
+    &:hover
+      background: var(--nav-glass-hover)
+      color: #27a6cc
+  .webTitle
+    cursor: pointer
+    color: currentColor
+    min-width: max-content
+    h2
+      display: flex
+      align-items: baseline
+      gap: 9px
+      margin: 0
+      font-size: 34px
+      font-weight: 850
+      letter-spacing: 0
+    @media only screen and (max-width: 1200px)
+      height: 100%
+      display: flex
+      align-items: center
+      justify-content: center
+      min-width: 0
+      h2
+        max-width: 100%
+        gap: 5px
+        font-size: 21px
+        overflow: hidden
+      .firstTitle
+        min-width: 0
+        overflow: hidden
+        text-overflow: ellipsis
+        white-space: nowrap
+      .secondTitle
+        flex: 0 0 auto
+        font-size: 16px
+
+    .firstTitle
+      color: #27a6cc
+      background: transparent
+      padding: 0
+      border-radius: 0
+    .secondTitle
+      color: color-mix(in srgb, currentColor 72%, transparent)
+      font-size: 25px
+      font-weight: 700
+
+  .headBar
+    width: max-content
+    height: 100%
+    @media only screen and (max-width: 1200px)
+      display: none
+    .Category
+      &:hover
+        .CategoryList
+          display: flex
+    .CategoryList
+      width: 100%
+      top: 50px
+      background: var(--nav-glass-bg-scrolled)
+      border: 1px solid var(--nav-glass-border)
+      box-shadow: var(--nav-glass-shadow)
+      backdrop-filter: blur(18px) saturate(140%)
+      -webkit-backdrop-filter: blur(18px) saturate(140%)
+      border-radius: 5px
+      position: absolute
+      display: flex
+      z-index: 999
+      display: none
+      animation: cardIn 0.5s forwards
+      ul
+        display: flex
+        flex-direction: column
+        height: auto
+        gap: 10px
+        padding: 5px 0 5px 5px
+      li
+        text-align: center
+        font-size: 15px
+    ul
+      width: max-content
+      height: 100%
+      list-style: none
+      display: flex
+      flex-direction: row
+      justify-content: space-evenly
+      align-items: center
+      gap: 30px
+      padding: 4px
+      border-radius: 0
+      background: transparent
+
+    li
+      color: var(--font-title-color)
+      display: flex
+      justify-content: center
+      align-items: center
+      height: 42px
+      width: max-content
+      padding: 0 10px
+      border-radius: 0
+      cursor: pointer
+      position: relative
+      transition: color 0.2s ease
+
+      i
+        margin-right: 5px
+
+      &:hover
+        color: currentColor
+      &.active
+        color: currentColor
+        &:after
+          content: ''
+          position: absolute
+          left: 14px
+          right: 14px
+          bottom: 5px
+          height: 2px
+          border-radius: 99px
+          background: #27a6cc
+
+  .homeRight
+    display: flex
+    justify-content: center
+    align-items: center
+    gap: 13px
+    @media only screen and (max-width: 1200px)
+      display: flex
+      gap: 8px
+      justify-content: flex-end
+      min-width: 48px
+      .homeLogo
+        display: none
+    .homeLogo
+      margin: 0
+      border: 0
+      border-radius: 50%
+      cursor: pointer
+      position: relative
+      transition: transform 0.2s ease, box-shadow 0.2s ease
+      box-shadow: 0 6px 16px rgba(39, 166, 204, 0.12)
+      .ant-avatar
+        width: 45px !important
+        height: 45px !important
+      &:hover
+        transform: translateY(-1px)
+        box-shadow: 0 10px 22px rgba(39, 166, 204, 0.18)
+      @media only screen and (max-width: 1200px)
+        display: none

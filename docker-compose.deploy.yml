@@ -1,0 +1,56 @@
+networks:
+  paperplane_network:
+
+services:
+  paperplane_db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: paperplane
+      POSTGRES_USER: paperplane
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in a private .env file}
+    networks:
+      - paperplane_network
+    volumes:
+      - ./PaperPlane-Core/pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U paperplane -d paperplane"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    restart: always
+
+  paperplane_backend:
+    build:
+      context: ./PaperPlane-Core
+      dockerfile: Dockerfile
+    image: paperplane_core:postgres
+    environment:
+      SPRING_DATASOURCE_DRIVER_CLASS_NAME: org.postgresql.Driver
+      SPRING_DATASOURCE_URL: jdbc:postgresql://paperplane_db:5432/paperplane
+      SPRING_DATASOURCE_USERNAME: paperplane
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in a private .env file}
+    networks:
+      - paperplane_network
+    depends_on:
+      paperplane_db:
+        condition: service_healthy
+    volumes:
+      - ./PaperPlane-Core/upload-dir:/paperplane/upload-dir
+    restart: always
+
+  paperplane_frontend:
+    build:
+      context: ./PaperPlane-Blog
+      dockerfile: Dockerfile
+      args:
+        VITE_HTTP_BASEURL: ""
+    image: paperplane_blog:latest
+    environment:
+      BACK_API: http://paperplane_backend:8080
+    ports:
+      - "80:80"
+    networks:
+      - paperplane_network
+    depends_on:
+      - paperplane_backend
+    restart: always

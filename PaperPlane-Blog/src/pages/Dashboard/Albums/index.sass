@@ -1,0 +1,60 @@
+.album-item
+  position: relative
+  display: inline-flex
+  width: 340px
+  flex-direction: column
+  align-items: center
+  vertical-align: top
+
+.album-url
+  width: 250px
+  margin: -24px 0 24px
+  padding: 7px 10px
+  border: 1px solid rgba(22, 104, 220, 0.2)
+  border-radius: 6px
+  background: rgba(255, 255, 255, 0.78)
+  color: #1668dc
+  cursor: pointer
+  font-size: 12px
+  line-height: 1.4
+  overflow: hidden
+  text-align: left
+  text-overflow: ellipsis
+  white-space: nowrap
+
+  &:hover
+    background: #eef5ff
+
+.imgShade
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2)
+  transition: 0.3s
+  &:hover
+    transform: scale(1.2)
+
+
+.allin
+  opacity: 0
+  transform: translateY(-25px)
+  animation: fadeallin 0.6s forwards
+
+
+@keyframes fadeallin
+  from
+    opacity: 0
+    transform: translateX(-25px)
+  to
+    opacity: 1
+    transform: translateX(0)
+
+.action_img
+  &::before
+    content: ''
+    position: absolute
+    width: 98%
+    height: 3px
+    background-color: #3a3a48
+    top: 90px
+    z-index: 3
+    border-radius: 5px
+    left: 50%
+    transform: translateX(-50%)

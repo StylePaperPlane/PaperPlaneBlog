@@ -1,0 +1,110 @@
+.AboutContainer
+  min-height: 100vh
+  width: 100%
+  background: radial-gradient(circle at 52% 12%, color-mix(in srgb, var(--pic-background-cover) 62%, transparent), transparent 28%), linear-gradient(135deg, var(--front-body-color) 0%, var(--pic-background-cover) 64%, var(--front-body-color) 100%)
+  color: var(--font-title-color)
+  padding: 96px 50px 64px
+  display: flex
+  justify-content: center
+  align-items: center
+  @media only screen and (max-width: 760px)
+    padding: 86px 22px 48px
+    align-items: flex-start
+
+.aboutProfile
+  width: min(900px, 100%)
+  display: grid
+  grid-template-columns: 210px minmax(0, 1fr)
+  gap: 62px
+  align-items: center
+  @media only screen and (max-width: 760px)
+    grid-template-columns: 1fr
+    gap: 32px
+
+.aboutSidebar
+  display: flex
+  flex-direction: column
+  align-items: flex-start
+  gap: 24px
+  @media only screen and (max-width: 760px)
+    align-items: center
+
+.aboutAvatar
+  width: 158px
+  height: 158px
+  border-radius: 50%
+  object-fit: cover
+  background: #80bfd4
+  box-shadow: 0 0 0 1px rgba(39, 166, 204, 0.16)
+
+.aboutLocation
+  display: inline-flex
+  align-items: center
+  gap: 10px
+  color: var(--font-title-color)
+  font-size: 1rem
+  font-weight: 650
+  .anticon
+    color: #27a6cc
+    font-size: 1.25rem
+
+.aboutMain
+  min-width: 0
+  padding-top: 2px
+  display: flex
+  flex-direction: column
+  align-items: flex-start
+  @media only screen and (max-width: 760px)
+    align-items: center
+    text-align: center
+
+.aboutMain h1
+  margin: 0
+  color: var(--font-title-color)
+  font-size: clamp(4rem, 8vw, 5.6rem)
+  line-height: 0.92
+  font-weight: 950
+  letter-spacing: 0
+
+.aboutMain h2
+  margin: 7px 0 22px
+  color: rgba(23, 52, 71, 0.58)
+  font-size: clamp(1.85rem, 3.5vw, 2.15rem)
+  line-height: 1.12
+  font-weight: 500
+  letter-spacing: 0
+
+.aboutLinks
+  display: flex
+  align-items: center
+  flex-wrap: wrap
+  gap: 8px
+  a
+    height: 33px
+    display: inline-flex
+    align-items: center
+    gap: 7px
+    padding: 0 13px
+    border: 1px solid rgba(39, 166, 204, 0.16)
+    border-radius: 999px
+    background: color-mix(in srgb, var(--pic-background-cover) 32%, transparent)
+    color: var(--font-title-color)
+    font-size: 0.9rem
+    font-weight: 700
+    text-decoration: none
+    transition: background-color 0.18s ease, color 0.18s ease
+    &:hover
+      background: color-mix(in srgb, var(--pic-background-cover) 68%, transparent)
+      color: #27a6cc
+    &.isDisabled
+      opacity: 0.58
+      pointer-events: none
+
+.aboutIntro
+  width: min(640px, 100%)
+  margin: 38px 0 0
+  color: var(--font-title-color)
+  font-size: clamp(1.1rem, 2vw, 1.28rem)
+  line-height: 1.35
+  font-weight: 520
+  letter-spacing: 0

@@ -1,0 +1,43 @@
+networks:
+  my_network:
+
+services:
+  paperplane_db:
+    image: postgres:16-alpine
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_DB: paperplane
+      POSTGRES_USER: paperplane
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in a private .env file}
+    networks:
+      - my_network
+    volumes:
+      - ./db_init:/docker-entrypoint-initdb.d
+      - ./pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U paperplane -d paperplane"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  paperplane_backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: paperplane_core:postgres
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_DRIVER_CLASS_NAME: org.postgresql.Driver
+      SPRING_DATASOURCE_URL: jdbc:postgresql://paperplane_db:5432/paperplane
+      SPRING_DATASOURCE_USERNAME: paperplane
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in a private .env file}
+    networks:
+      - my_network
+    depends_on:
+      paperplane_db:
+        condition: service_healthy
+    volumes:
+      - ./upload-dir:/paperplane/upload-dir
+    restart: always
