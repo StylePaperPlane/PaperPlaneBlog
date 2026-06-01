@@ -191,35 +191,3 @@ values ('admin', null, 'PaperPlane', 'PaperPlane', '127.0.0.1', '粤ICP备XXXXXX
 insert into app_user (username, password)
 values ('8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918',
         '$2a$12$yDsd3FUbvR82Kkej6E9YVO16Nb6VwOtnhguLV4d5NhUalMM2CZwhi');
-
-insert into notes (note_title, note_content, description, cover, note_category, note_tags, status, create_time, publish_time, update_time, is_top)
-values ('Hi! PaperPlane',
-        '## PaperPlane
-
-欢迎使用 **PaperPlane** 个人主题博客。本项目采用 **React + SpringBoot** 前后端分离，以优美的动画和可爱的画风为主题，由作者**林陌青川**维护。目前已支持使用 Docker 上线。
-
-## 创作初心
-
-作为我的处女作品，我对 **PaperPlane** 投入了许多时间。从 23 年年底开始一直到 24 年的清明节才算是正式完工。也许 **PaperPlane** 并不完美，但也是我的呕心沥血之作。想起创作期间无数个凌晨，碰到 bug 一写就是一晚上。现在回头望去，留给我的已经是珍贵的回忆。
-
-## 为什么起名 PaperPlane?
-
-关于 **PaperPlane** 的背后其实有一段悲伤的故事。24 年年初因为一些琐事，我没能回去贵州，而我的外祖母在今年的 3 月初不幸意外离世，而我却没有见到她最后一面……
-
-## 作者寄语
-
-如果你觉得 **PaperPlane** 并不完美，那么就去构建一个属于你自己的 **"PaperPlane"** 吧。本项目将在 **V2** 版本重构采用 **NextJS**，作者再次承诺后续所有版本皆是开源。
-
-## Star History
-
-![star](https://api.star-history.com/svg?repos=LinMoQC/PaperPlane-Blog&type=Date&theme=dark)
-',
-        '给所有用户的一封信',
-        'https://img.picgo.net/2024/05/04/avatar144c348b2adf3b5c.jpeg',
-        1,
-        '1',
-        'public',
-        '2024-04-10 05:31:00',
-        '2024-04-10 05:31:00',
-        '2024-04-10 05:48:59',
-        0);
