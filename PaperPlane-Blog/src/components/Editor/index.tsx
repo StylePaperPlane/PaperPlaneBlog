@@ -4,6 +4,7 @@ import frontmatter from "@bytemd/plugin-frontmatter";
 import gemoji from "@bytemd/plugin-gemoji";
 import highlight from "@bytemd/plugin-highlight";
 import { Editor} from '@bytemd/react'
+import type {EditorProps} from '@bytemd/react'
 import mediumZoom from '@bytemd/plugin-medium-zoom'
 import 'bytemd/dist/index.css'
 import zhCN from 'bytemd/locales/zh_Hans.json'
@@ -29,8 +30,7 @@ interface Editor_Props {
 
 const Editor_ = ({ setNoteContent, noteContent }: Editor_Props) => {
 
-    // @ts-ignore
-    const handleImageUpload = async (files: File[]): Promise<Pick<Image, "alt" | "url" | "title">[]> => {
+    const handleImageUpload: NonNullable<EditorProps['uploadImages']> = async (files) => {
         try {
             const formData = new FormData();
             formData.append('file', files[0]);
@@ -43,8 +43,7 @@ const Editor_ = ({ setNoteContent, noteContent }: Editor_Props) => {
             if (response.status === 200) {
                 message.success("添加成功");
                 const imageURL = response.data.data;
-                // @ts-ignore
-                const img: Pick<Image, "alt" | "url" | "title"> = {
+                const img = {
                     alt: '',
                     url: imageURL,
                     title: ''

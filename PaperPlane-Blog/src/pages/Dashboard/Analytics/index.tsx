@@ -1,5 +1,5 @@
 import { Pie } from '@ant-design/charts';
-import {useEffect, useState} from "react";
+import {useState} from "react";
 import { Line } from '@ant-design/plots';
 import './index.sass'
 
@@ -93,11 +93,7 @@ const notes = [
 
 
 const Analytice = () => {
-    const [data, setData] = useState(notes);
-
-    useEffect(() => {
-        setData(notes)
-    })
+    const [data] = useState(notes);
 
     const config2 = {
         data,

@@ -6,6 +6,12 @@ import UserData from "../../interface/UserData";
 import deleteToken from "../../apis/deleteToken.tsx";
 import {SocialType} from "../../interface/SocialType";
 
+const normalizeBrandName = (value?: string) => {
+    if (!value) return '';
+
+    return value.replace(/LinMo/gi, 'PaperPlane');
+};
+
 const initialState: UserState = {
     token: localStorage.getItem('tokenKey') || null,
     avatar: '',
@@ -27,9 +33,9 @@ const userSlice = createSlice({
         setUserInfo: (state: UserState,action: PayloadAction<{avatar:string,talk:string,name:string,blogTitle: string,blogIcp: string}>) => {
             state.avatar = action.payload.avatar;
             state.talk = action.payload.talk;
-            state.name = action.payload.name || 'PaperPlane';
+            state.name = normalizeBrandName(action.payload.name) || 'PaperPlane';
             state.blogIcp = action.payload.blogIcp;
-            state.blogTitle = action.payload.blogTitle || 'PaperPlane'
+            state.blogTitle = normalizeBrandName(action.payload.blogTitle) || 'PaperPlane'
         },
         setSocial: (state: UserState,action: PayloadAction<SocialType>) => {
             state.social = action.payload
@@ -42,19 +48,14 @@ const userReducer = userSlice.reducer;
 
 const fetchToken = (data: UserData) => {
     return async (dispatch: Dispatch<PayloadAction<{ token: string }>>) => {
-        try {
-            const res = await http({
-                url: '/api/login',
-                method: 'POST',
-                data: data
-            });
-                const token = res.data.data;
-                console.log(token)
-                dispatch(setToken({ token: token}));
-            return res.status;
-        } catch (error) {
-            throw error;
-        }
+        const res = await http({
+            url: '/api/login',
+            method: 'POST',
+            data: data
+        });
+        const token = res.data.data;
+        dispatch(setToken({ token: token}));
+        return res.status;
     };
 };
 

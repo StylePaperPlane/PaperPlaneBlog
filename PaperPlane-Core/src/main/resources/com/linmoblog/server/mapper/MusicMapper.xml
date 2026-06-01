@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.linmoblog.server.mapper.MusicMapper">
+    <update id="updateTrack">
+        update music_tracks
+        <set>
+            <if test="track.title != null and track.title != ''">
+                title = #{track.title},
+            </if>
+            <if test="track.artist != null">
+                artist = #{track.artist},
+            </if>
+            <if test="track.audioUrl != null and track.audioUrl != ''">
+                audio_url = #{track.audioUrl},
+            </if>
+            <if test="track.coverUrl != null and track.coverUrl != ''">
+                cover_url = #{track.coverUrl},
+            </if>
+            <if test="track.lyricUrl != null and track.lyricUrl != ''">
+                lyric_url = #{track.lyricUrl},
+            </if>
+            <if test="track.sortOrder != null">
+                sort_order = #{track.sortOrder},
+            </if>
+            <if test="track.enabled != null">
+                enabled = #{track.enabled},
+            </if>
+            update_time = #{track.updateTime}
+        </set>
+        where music_key = #{id}
+    </update>
+
+    <delete id="deleteTracks">
+        delete from music_tracks where music_key in
+        <foreach collection="musicKeyList" item="key" open="(" separator="," close=")">
+            #{key}
+        </foreach>
+    </delete>
+</mapper>

@@ -2,6 +2,12 @@ import http from "./axios.tsx";
 import {TagLevelOne, TagLevelTwo} from "../interface/TagType";
 import React from "react";
 import {Tag} from "antd";
+
+type RenderTagNode = (TagLevelOne | TagLevelTwo) & {
+    tagKey?: number;
+    children?: RenderTagNode[];
+};
+
 interface addNewTagOne{
     title: string,
     color: string,
@@ -88,11 +94,11 @@ function delTag(selectedKeys: React.Key[]) {
     })
 }
 
-function renderNoteTags(noteTags: number[] = [],tagList: any = []){
+function renderNoteTags(noteTags: number[] = [], tagList: RenderTagNode[] = []){
     return noteTags.map(noteTag => {
         let color: string | undefined;
         let name: string | undefined;
-        tagList.forEach((tag: { key?: number; tagKey?: number; color: string; title: string; children: any[]; }) => {
+        tagList.forEach((tag) => {
             const tagKey = tag.tagKey ?? tag.key;
             if (tagKey === noteTag) {
                 color = tag.color;

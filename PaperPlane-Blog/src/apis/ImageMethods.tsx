@@ -1,9 +1,10 @@
 import http from "./axios.tsx";
 
-function getImageList(){
+function getImageList(folderName?: string){
     return http({
         url: '/api/protect/images',
-        method: 'GET'
+        method: 'GET',
+        params: { folderName }
     })
 }
 
@@ -23,4 +24,30 @@ function uploadImages(formData: FormData){
     })
 }
 
-export {getImageList,delImages,uploadImages}
+function getImageFolders(){
+    return http({
+        url: '/api/protect/imageFolders',
+        method: 'GET'
+    })
+}
+
+function createImageFolder(folderName: string){
+    return http({
+        url: '/api/protect/imageFolders',
+        method: 'POST',
+        params: { folderName }
+    })
+}
+
+function moveImagesToFolder(imageUrls: string[], folderName: string){
+    return http({
+        url: '/api/protect/images/folder',
+        method: 'PUT',
+        data: {
+            imageUrls,
+            folderName
+        }
+    })
+}
+
+export {getImageList,delImages,uploadImages,getImageFolders,createImageFolder,moveImagesToFolder}

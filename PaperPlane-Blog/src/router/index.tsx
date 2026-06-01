@@ -1,65 +1,74 @@
+/* eslint-disable react-refresh/only-export-components */
+import { lazy, Suspense } from "react";
 import { createBrowserRouter } from "react-router-dom";
 import { Navigate } from "react-router-dom";
-import Login from "../pages/Login";
-import Dashboard from "../pages/Dashboard";
 import { AuthRouter } from "../components/AuthRouter.tsx";
-import Notes from "../pages/Dashboard/Notes";
-import Comments from "../pages/Dashboard/Talks";
-import Albums from "../pages/Dashboard/Albums";
-import Friends from "../pages/Dashboard/Friends";
-import Music from "../pages/Dashboard/Music";
-import UserControl from "../pages/Dashboard/UserControl";
-import AllNotes from "../pages/Dashboard/Notes/AllNotes";
-import NewNotes from "../pages/Dashboard/Notes/NewNotes";
-import AllCategorize from "../pages/Dashboard/Notes/AllCategorize";
-import AllTag from "../pages/Dashboard/Notes/AllTag";
-import ContentHome from "../frontHome/Content/ContentHome";
-import App from "../App.tsx";
-import AboutMe from "../frontHome/Content/AboutMe";
-import FriendList from "../frontHome/Content/FriendList";
-import Talk from "../frontHome/Content/Talk";
-import Times from "../frontHome/Content/Times";
-import NotFound from "../components/NotFound";
-import ReadArticle from "../frontHome/Content/ReadArticle";
+
+const App = lazy(() => import("../App.tsx"));
+const Login = lazy(() => import("../pages/Login"));
+const Dashboard = lazy(() => import("../pages/Dashboard"));
+const Notes = lazy(() => import("../pages/Dashboard/Notes"));
+const Comments = lazy(() => import("../pages/Dashboard/Talks"));
+const Albums = lazy(() => import("../pages/Dashboard/Albums"));
+const Friends = lazy(() => import("../pages/Dashboard/Friends"));
+const Music = lazy(() => import("../pages/Dashboard/Music"));
+const UserControl = lazy(() => import("../pages/Dashboard/UserControl"));
+const AllNotes = lazy(() => import("../pages/Dashboard/Notes/AllNotes"));
+const NewNotes = lazy(() => import("../pages/Dashboard/Notes/NewNotes"));
+const AllCategorize = lazy(() => import("../pages/Dashboard/Notes/AllCategorize"));
+const AllTag = lazy(() => import("../pages/Dashboard/Notes/AllTag"));
+const ContentHome = lazy(() => import("../frontHome/Content/ContentHome"));
+const AboutMe = lazy(() => import("../frontHome/Content/AboutMe"));
+const FriendList = lazy(() => import("../frontHome/Content/FriendList"));
+const Talk = lazy(() => import("../frontHome/Content/Talk"));
+const Times = lazy(() => import("../frontHome/Content/Times"));
+const NotFound = lazy(() => import("../components/NotFound"));
+const ReadArticle = lazy(() => import("../frontHome/Content/ReadArticle"));
+
+const withSuspense = (element: JSX.Element) => (
+    <Suspense fallback={null}>
+        {element}
+    </Suspense>
+);
 
 const router = createBrowserRouter([
     {
         path: '/',
-        element: <App />,
+        element: withSuspense(<App />),
         children: [
             {
                 index: true,
-                element: <ContentHome />
+                element: withSuspense(<ContentHome />)
             },
             {
                 path: 'about',
-                element: <AboutMe />
+                element: withSuspense(<AboutMe />)
             },
             {
                 path: 'friends',
-                element: <FriendList />
+                element: withSuspense(<FriendList />)
             },
             {
                 path: "talk",
-                element: <Talk />
+                element: withSuspense(<Talk />)
             },
             {
                 path: 'times',
-                element: <Times />
+                element: withSuspense(<Times />)
             },
             {
                 path: 'article/:id',
-                element: <ReadArticle />
+                element: withSuspense(<ReadArticle />)
             }
         ]
     },
     {
         path: 'login',
-        element: <Login />
+        element: withSuspense(<Login />)
     },
     {
         path: '/dashboard',
-        element: <AuthRouter> <Dashboard /> </AuthRouter>,
+        element: <AuthRouter>{withSuspense(<Dashboard />)}</AuthRouter>,
         children: [
             {
                 index: true,
@@ -67,51 +76,51 @@ const router = createBrowserRouter([
             },
             {
                 path: 'notes',
-                element: <Notes />,
+                element: withSuspense(<Notes />),
                 children: [
                     {
                         index: true,
-                        element: <AllNotes />
+                        element: withSuspense(<AllNotes />)
                     },
                     {
                         path: 'newnote/:id?', // 在:id后面加上问号?表示id参数可选
-                        element: <NewNotes />,
+                        element: withSuspense(<NewNotes />),
                     },
                     {
                         path: 'allcategorize',
-                        element: <AllCategorize />
+                        element: withSuspense(<AllCategorize />)
                     },
                     {
                         path: 'alltags',
-                        element: <AllTag />
+                        element: withSuspense(<AllTag />)
                     }
                 ]
             },
             {
                 path: 'comments',
-                element: <Comments />
+                element: withSuspense(<Comments />)
             },
             {
                 path: 'albums',
-                element: <Albums />
+                element: withSuspense(<Albums />)
             },
             {
                 path: 'friends',
-                element: <Friends />
+                element: withSuspense(<Friends />)
             },
             {
                 path: 'music',
-                element: <Music />
+                element: withSuspense(<Music />)
             },
             {
                 path: 'usercontrol',
-                element: <UserControl />
+                element: withSuspense(<UserControl />)
             }
         ]
     },
     {
         path: '*',
-        element: <NotFound />
+        element: withSuspense(<NotFound />)
     }
 ])
 

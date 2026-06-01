@@ -33,7 +33,7 @@ const fetchCategories = () => {
             dispatch(setCategories(res.data.data))
             dispatch(setCategoryCount(res.data.data.length))
         }catch (error) {
-            console.log(error)
+            console.error('Failed to fetch categories:', error);
         }
     }
 }

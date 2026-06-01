@@ -5,22 +5,16 @@ import {useNavigate} from "react-router-dom";
 import React, {useEffect, useRef, useState} from "react";
 import {NoteType} from "../../../interface/NoteType";
 import {CategoriesType} from "../../../interface/CategoriesType";
+import {TagLevelOne} from "../../../interface/TagType";
 import {renderNoteTags} from "../../../apis/TagMethods.tsx";
 import dayjs from "dayjs";
 
-interface tag
-{
-    tagKey: number;
-    color: string;
-    title: string;
-    children: any[]
-}
 interface ArticleOption {
     item: NoteType
     index: number
     Categories: CategoriesType[]
     name: string
-    tagList: tag[]
+    tagList: TagLevelOne[]
 }
 
 const Article:React.FC<ArticleOption> = ({ item, index, Categories, name, tagList }) => {

@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace = "com.linmoblog.server.mapper.NoteMapper">
+    <update id="updateNote">
+        update notes
+        <set>
+            <if test="note.noteTitle != null and note.noteTitle != ''">
+                note_title = #{note.noteTitle},
+            </if>
+            <if test="note.noteContent != null and note.noteContent != ''">
+                note_content = #{note.noteContent},
+            </if>
+            <if test="note.description != null">
+                description = #{note.description},
+            </if>
+            <if test="note.cover != null and note.cover != ''">
+                cover = #{note.cover},
+            </if>
+            <if test="note.noteCategory != null">
+                note_category = #{note.noteCategory},
+            </if>
+            <if test="note.noteTags != null">
+                note_tags = #{note.noteTags},
+            </if>
+            <if test="note.isTop != null">
+                is_top = #{note.isTop},
+            </if>
+            <if test="note.status != null">
+                status = #{note.status},
+            </if>
+            <if test="note.publishTime != null">
+                publish_time = #{note.publishTime},
+            </if>
+            <if test="note.updateTime != null">
+                update_time = #{note.updateTime},
+            </if>
+        </set>
+        where note_key = #{id}
+    </update>
+    <delete id="deleteNote">
+        delete from notes where notes.note_key in
+        <foreach collection="notesList" item="key" open="(" separator="," close=")">
+            #{key}
+        </foreach>
+    </delete>
+    <select id="searchNote" resultType="com.linmoblog.server.entity.vo.NoteVO">
+        SELECT
+        n.note_key,
+        n.note_title,
+        n.note_content,
+        n.description,
+        n.cover,
+        n.note_category,
+        n.note_tags,
+        n.status,
+        n.create_time,
+        n.publish_time,
+        n.update_time,
+        n.is_top,
+        c.category_title as noteCategoryName
+        FROM notes n
+        INNER JOIN categories c ON n.note_category = c.category_key
+        WHERE 1=1
+        <if test="bo.title != null and bo.title != ''">
+            AND n.note_title LIKE CONCAT('%', #{bo.title}, '%')
+        </if>
+        <if test="bo.categories != null">
+            AND c.category_title = #{bo.categories}
+        </if>
+
+        <if test="bo.top != null and bo.top != -1">
+            AND n.is_top = #{bo.top}
+        </if>
+
+        <if test="bo.startTime != null">
+            AND n.publish_time &gt;= #{bo.startTime}
+        </if>
+        <if test="bo.endTime != null">
+            AND n.publish_time &lt;= #{bo.endTime}
+        </if>
+
+        <if test="bo.status != null ">
+            AND n.status = #{bo.status}
+        </if>
+        ORDER BY publish_time DESC
+    </select>
+    <select id="getNoteCountByCategoryKey" resultType="com.linmoblog.server.entity.vo.Pair">
+        SELECT note_category AS pairKey, COUNT(*) AS pairValue
+        FROM notes
+        WHERE note_category IN <foreach collection="categoryKeyList" item="key" open="(" separator="," close=")">
+            #{key}
+        </foreach>
+        GROUP BY note_category
+    </select>
+</mapper>

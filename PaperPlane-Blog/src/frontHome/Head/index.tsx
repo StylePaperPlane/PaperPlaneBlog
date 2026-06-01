@@ -11,6 +11,7 @@ import {fetchSocial, fetchUserInfo} from "../../store/components/user.tsx";
 import {fetchNoteList} from "../../store/components/note.tsx";
 import UserState from "../../interface/UserState";
 import '../main.css'
+import {AppDispatch} from "../../store";
 interface HeadProps {
     setDark: (value: (((prevState: boolean) => boolean) | boolean)) => void,
     isDark: boolean,
@@ -22,18 +23,18 @@ const Head = ({ setDark, isDark, scrollHeight }: HeadProps) => {
     const [navHidden, setNavHidden] = useState(false);
     const previousScrollRef = useRef(0);
     const touchYRef = useRef<number | null>(null);
-    const dispatch = useDispatch()
+    const dispatch = useDispatch<AppDispatch>()
     const navigate = useNavigate();
     const location = useLocation();
     const avatar = useSelector((state:{user:UserState}) => state.user.avatar)
     const blogTitle = useSelector((state:{user:{blogTitle: string}}) => state.user.blogTitle)
 
     useEffect(() => {
-        dispatch<any>(fetchTags())
-        dispatch<any>(fetchUserInfo())
-        dispatch<any>(fetchNoteList())
-        dispatch<any>(fetchSocial())
-    }, []);
+        dispatch(fetchTags())
+        dispatch(fetchUserInfo())
+        dispatch(fetchNoteList())
+        dispatch(fetchSocial())
+    }, [dispatch]);
 
     useEffect(() => {
         const previousScroll = previousScrollRef.current;

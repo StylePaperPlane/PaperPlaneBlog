@@ -41,6 +41,7 @@ logs/
 !PaperPlane-Core/db_init/*.sql
 !PaperPlane-Core/src/main/resources/db_init/*.sql
 server-backups/
+blog-backups/
 deploy-runtime/
 deploy-update-latest/
 merge-work/

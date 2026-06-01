@@ -23,7 +23,7 @@ const TocComponent = () => {
                 }
                 level = parseInt(openLevel);
                 if (titleText.match(/<a(.*?)<\/a>/g)) {
-                    let str1 = titleText.match(/<a(.*?)<\/a>/g)[0];
+                    const str1 = titleText.match(/<a(.*?)<\/a>/g)[0];
                     let aid = str1.match(/id="(.*?)"/g)[0];
                     aid = aid.replace('id="', '').replace('"', '');
                     titleText = titleText.replace(/<a(.*?)<\/a>/g, '');
@@ -46,8 +46,7 @@ const TocComponent = () => {
         const liArr = document.querySelectorAll('li');
         if (liArr) {
             for (let i = 0; i < liArr.length; i++) {
-                if (liArr[i].innerHTML.match('<ul>')) {
-                } else {
+                if (!liArr[i].innerHTML.match('<ul>')) {
                     liArr[i].innerHTML = liArr[i].innerHTML.replace('<i class="nb-pull-down"></i>', '').replace('font12 nowrap titleText', 'font12 nowrap titleText ml16');
                 }
             }

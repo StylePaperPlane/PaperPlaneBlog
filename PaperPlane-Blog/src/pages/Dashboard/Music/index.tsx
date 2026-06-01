@@ -2,6 +2,7 @@ import './index.sass';
 import {Button, Form, Image, Input, InputNumber, message, Modal, Space, Switch, Table, Upload} from "antd";
 import type {TableProps, UploadProps} from "antd";
 import {InboxOutlined, PlusOutlined} from "@ant-design/icons";
+import axios from "axios";
 import {useEffect, useState} from "react";
 import {MusicTrack} from "../../../interface/MusicType";
 import {deleteMusic, getMusicList, updateMusic, uploadMusic} from "../../../apis/MusicMethods";
@@ -26,7 +27,39 @@ const Music = () => {
     const initMusicList = () => {
         getMusicList().then(res => {
             setTracks(res.data.data || []);
-        }).catch(() => message.error('获取音乐列表失败'));
+        }).catch(error => {
+            if (axios.isAxiosError(error) && (error.response?.status === 401 || error.response?.status === 403)) {
+                message.error('登录已过期，请重新登录');
+                return;
+            }
+            message.error('获取音乐列表失败');
+        });
+    };
+
+    const uploadMusicRequest: UploadProps['customRequest'] = async ({file}) => {
+        if (!(file instanceof File)) {
+            message.error('上传失败，请确认zip内包含mp3、lrc和封面');
+            return;
+        }
+
+        try {
+            setUploading(true);
+            const values = form.getFieldsValue();
+            const formData = new FormData();
+            formData.append('file', file);
+            if (values.title) formData.append('title', values.title);
+            if (values.artist) formData.append('artist', values.artist);
+            if (values.sortOrder !== undefined && values.sortOrder !== null) formData.append('sortOrder', String(values.sortOrder));
+            await uploadMusic(formData);
+            message.success('上传成功');
+            form.resetFields();
+            setUploadOpen(false);
+            initMusicList();
+        } catch (error) {
+            message.error('上传失败，请确认zip内包含mp3、lrc和封面');
+        } finally {
+            setUploading(false);
+        }
     };
 
     const uploadProps: UploadProps = {
@@ -34,26 +67,7 @@ const Music = () => {
         accept: '.zip',
         multiple: false,
         showUploadList: false,
-        customRequest: async req => {
-            try {
-                setUploading(true);
-                const values = form.getFieldsValue();
-                const formData = new FormData();
-                formData.append('file', req.file as File);
-                if (values.title) formData.append('title', values.title);
-                if (values.artist) formData.append('artist', values.artist);
-                if (values.sortOrder !== undefined && values.sortOrder !== null) formData.append('sortOrder', String(values.sortOrder));
-                await uploadMusic(formData);
-                message.success('上传成功');
-                form.resetFields();
-                setUploadOpen(false);
-                initMusicList();
-            } catch (error) {
-                message.error('上传失败，请确认zip内包含mp3、lrc和封面');
-            } finally {
-                setUploading(false);
-            }
-        }
+        customRequest: uploadMusicRequest
     };
 
     const openEdit = (track: MusicTrack) => {

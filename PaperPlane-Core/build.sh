@@ -1,6 +1,4 @@
 #!/bin/bash
-
-
 # 构建 Spring Boot 项目并生成 JAR 文件
 echo "Building Spring Boot project..."
 ./mvnw clean package -DskipTests

@@ -1,10 +1,11 @@
 import { useSelector } from "react-redux";
+import type {NoteType} from "../interface/NoteType";
+import type {RootState} from "../store";
 
 // 自定义 hook
 const useCountNote = (categoryTitle: string) => {
-    const noteList = useSelector((state: { note: { Notes: any } }) => state.note.Notes)
-    const matchedNote = noteList.find((item: { noteCategory: string }) => item.noteCategory === categoryTitle);
-    return matchedNote ? matchedNote.length : 0;
+    const noteList = useSelector((state: RootState) => state.notes.Notes)
+    return noteList.filter((item: NoteType) => item.noteCategory === categoryTitle).length;
 }
 
 export default useCountNote;

@@ -22,8 +22,7 @@ const fetchTalks = () => {
     return async (dispatch:Dispatch<PayloadAction<Talk>>) => {
         getTalkList().then((res) => {
             dispatch(res.data.data)
-        }).catch((err)=>{
-            console.log(err)
+        }).catch(()=>{
         })
     }
 }

@@ -9,20 +9,20 @@ import {
     Tree,
     Alert, message,
 } from "antd";
-import React, {useEffect, useRef, useState} from "react";
+import React, {useEffect, useState} from "react";
 import {TagsOutlined} from '@ant-design/icons'
 import {TagLevelOne,newTag} from "../../../../interface/TagType";
 import {fetchTags} from "../../../../store/components/tags.tsx";
 import {useDispatch} from "react-redux";
 import {addTagOne, addTagTwo, delTag, initTree} from "../../../../apis/TagMethods.tsx";
+import {AppDispatch} from "../../../../store";
 
 const AllTag = () => {
     // hooks区域
-    const tree = useRef(null)
     const [selectedKeys, setSelectedKeys] = useState<React.Key[]>([]);
     const [level,setLevel] = useState('level_1')
     const [staticDate,setStaticDate] = useState<TagLevelOne[]>([])
-    const dispatch = useDispatch()
+    const dispatch = useDispatch<AppDispatch>()
     useEffect(() => {
         initTree().then((res) => {
             setStaticDate(res)
@@ -31,12 +31,10 @@ const AllTag = () => {
 
     //回调函数
     const onSelect = (selectedKeysValue: React.Key[]) => {
-        console.log(selectedKeysValue)
         setSelectedKeys(selectedKeysValue);
     };
 
     const handleTagTypeChange = (value:string) => {
-        console.log(value)
         setLevel(value);
     };
 
@@ -51,11 +49,7 @@ const AllTag = () => {
             const Tree = await initTree()
             setStaticDate(Tree)
             setSelectedKeys([])
-            if(tree.current)
-            { // @ts-ignore
-                tree.current.state.selectedKeys = []
-            }
-            dispatch<any>(fetchTags())
+            dispatch(fetchTags())
             message.success("删除成功")
         }
     };
@@ -78,7 +72,7 @@ const AllTag = () => {
                 if(res.status === 200){
                     const Tree = await initTree()
                     setStaticDate(Tree)
-                    dispatch<any>(fetchTags())
+                    dispatch(fetchTags())
                     message.success('添加成功');
                 }
             } catch (error) {
@@ -100,7 +94,7 @@ const AllTag = () => {
                     if(res.status === 200){
                         const Tree = await initTree()
                         setStaticDate(Tree)
-                        dispatch<any>(fetchTags())
+                        dispatch(fetchTags())
                         message.success('添加成功');
                     }
                 } catch (error) {
@@ -144,7 +138,7 @@ const AllTag = () => {
                         label="父标签"
                         shouldUpdate
                     >
-                        <Select options={staticDate.map(({ children, ...rest }) => ({ ...rest })).map(tag => ({
+                        <Select options={staticDate.map(tag => ({
                             value: tag.key,
                             label: tag.title
                         }))} />
@@ -175,11 +169,11 @@ const AllTag = () => {
                     multiple
                     defaultExpandAll
                     onSelect={onSelect}
+                    selectedKeys={selectedKeys}
                     treeData={staticDate}
                     titleRender={(node) => (
                         <Tag color={node.color}>{node.title}</Tag>
                     )}
-                    ref={tree}
                     virtual={true}
                     height={500}
                 />

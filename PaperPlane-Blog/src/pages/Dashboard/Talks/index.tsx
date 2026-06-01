@@ -104,8 +104,7 @@ const Comments = () => {
             } else {
                 await message.error("删除失败");
             }
-        } catch (err) {
-            console.log(err);
+        } catch {
             await message.error("删除失败");
         }
     }

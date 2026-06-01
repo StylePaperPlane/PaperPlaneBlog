@@ -1,7 +1,7 @@
 import Head from  './frontHome/Head';
 import { Outlet, useLocation } from "react-router-dom";
 import './frontHome/main.css';
-import { useEffect, useRef, useState } from "react";
+import { CSSProperties, useEffect, useRef, useState } from "react";
 import './App.sass';
 import BottomMenu from "./components/BottomMenu";
 import ElasticUnderlay from "./components/ElasticUnderlay";
@@ -136,7 +136,10 @@ function App() {
     }, []);
 
     return (
-        <div className={isDark ? 'frontDark frontRoot' : 'frontRoot'}>
+        <div
+            className={isDark ? 'frontDark frontRoot' : 'frontRoot'}
+            style={{'--bottom-overscroll': `${bottomOverscroll}px`} as CSSProperties}
+        >
             <Head setDark={setDark} isDark={isDark} scrollHeight={scrollHeight}/>
             <ElasticUnderlay />
             <div

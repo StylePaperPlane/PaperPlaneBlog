@@ -7,6 +7,7 @@ import UserState from "../../../interface/UserState";
 import {motion, useScroll, useTransform} from 'framer-motion';
 import {formatNote, NoteType} from "../../../interface/NoteType";
 import {categoryList} from "../../../store/components/categories.tsx";
+import type {RootState} from "../../../store";
 import Article from "./Article.tsx";
 import {useNavigate} from "react-router-dom";
 import {SocialType} from "../../../interface/SocialType";
@@ -35,7 +36,7 @@ const ContentHome = () => {
     const [otherArticles,setOtherArticles] = useState<NoteType[]>([])
     const [topArticles,setTopArticles] = useState<NoteType[]>([])
     const Categories = useSelector((state: { categories: categoryList }) => state.categories.categories);
-    const tagList = useSelector((state: {tags: any}) => state.tags.tag)
+    const tagList = useSelector((state: RootState) => state.tags.tag)
     const social = useSelector((state:{user:{social: SocialType}}) => state.user.social)
     const author =  useSelector((state: { user: UserState }) => state.user.name);
     const {scrollY} = useScroll();
@@ -54,13 +55,13 @@ const ContentHome = () => {
     }, []);
 
     useEffect(() => {
+        if(topArticles.length === 0)
+            return;
         const timer = setInterval(() => {
             setCurrentTop(prevTop => (prevTop + 1) % topArticles.length);
         }, 3000);
-        if(topArticles.length === 0)
-            clearInterval(timer)
         return () => clearInterval(timer);
-    },[currentTop])
+    },[topArticles.length])
 
     useEffect(() => {
         getNotePage({

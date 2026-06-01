@@ -25,12 +25,14 @@
 
 :root{
     --front-body-color: #fff7f8;
-    --front-surface-color: #fcc5c5;
+    --front-surface-color: rgba(252, 197, 197, 0.2);
     --self-description-image: url('/day-mirror.png');
-    --pic-background-cover: #fffafb;
-    --pic-cover-color: linear-gradient(90deg,rgba(255,250,251,0) 0,rgba(255,250,251,.013) 8.1%,rgba(255,250,251,.049) 15.5%,rgba(255,250,251,.104) 22.5%,rgba(255,250,251,.175) 29%,rgba(255,250,251,.259) 35.3%,rgba(255,250,251,.352) 41.2%,rgba(255,250,251,.45) 47.1%,rgba(255,250,251,.55) 52.9%,rgba(255,250,251,.648) 58.8%,rgba(255,250,251,.741) 64.7%,rgba(255,250,251,.825) 71%,rgba(255,250,251,.896) 77.5%,rgba(255,250,251,.951) 84.5%,rgba(255,250,251,.987) 91.9%,#fffafb);
-    --pic-background-cover: #fffafb;
-    --pic-cover-color-m: linear-gradient(180deg, rgba(255, 250, 251, 0) 0, rgba(255, 250, 251, .013) 8.1%, rgba(255, 250, 251, .049) 15.5%, rgba(255, 250, 251, .104) 22.5%, rgba(255, 250, 251, .175) 29%, rgba(255, 250, 251, .259) 35.3%, rgba(255, 250, 251, .352) 41.2%, rgba(255, 250, 251, .45) 47.1%, rgba(255, 250, 251, .55) 52.9%, rgba(255, 250, 251, .648) 58.8%, rgba(255, 250, 251, .741) 64.7%, rgba(255, 250, 251, .825) 71%, rgba(255, 250, 251, .896) 77.5%, rgba(255, 250, 251, .951) 84.5%, rgba(255, 250, 251, .987) 91.9%, #fffafb);
+    --pic-background-cover: rgba(252, 197, 197, 0.3);
+    --pic-cover-color: linear-gradient(90deg, rgba(252, 197, 197, 0) 0, rgba(252, 197, 197, .004) 8.1%, rgba(252, 197, 197, .015) 15.5%, rgba(252, 197, 197, .031) 22.5%, rgba(252, 197, 197, .053) 29%, rgba(252, 197, 197, .078) 35.3%, rgba(252, 197, 197, .106) 41.2%, rgba(252, 197, 197, .135) 47.1%, rgba(252, 197, 197, .165) 52.9%, rgba(252, 197, 197, .194) 58.8%, rgba(252, 197, 197, .222) 64.7%, rgba(252, 197, 197, .248) 71%, rgba(252, 197, 197, .269) 77.5%, rgba(252, 197, 197, .285) 84.5%, rgba(252, 197, 197, .296) 91.9%, rgba(252, 197, 197, .3));
+    --pic-image-mask: linear-gradient(90deg, #000 0, #000 62%, rgba(0, 0, 0, .92) 70%, rgba(0, 0, 0, .62) 80%, rgba(0, 0, 0, .24) 91%, transparent 100%);
+    --pic-background-cover: rgba(252, 197, 197, 0.3);
+    --pic-cover-color-m: linear-gradient(180deg, rgba(252, 197, 197, 0) 0, rgba(252, 197, 197, .004) 8.1%, rgba(252, 197, 197, .015) 15.5%, rgba(252, 197, 197, .031) 22.5%, rgba(252, 197, 197, .053) 29%, rgba(252, 197, 197, .078) 35.3%, rgba(252, 197, 197, .106) 41.2%, rgba(252, 197, 197, .135) 47.1%, rgba(252, 197, 197, .165) 52.9%, rgba(252, 197, 197, .194) 58.8%, rgba(252, 197, 197, .222) 64.7%, rgba(252, 197, 197, .248) 71%, rgba(252, 197, 197, .269) 77.5%, rgba(252, 197, 197, .285) 84.5%, rgba(252, 197, 197, .296) 91.9%, rgba(252, 197, 197, .3));
+    --pic-image-mask-m: linear-gradient(180deg, #000 0, #000 48%, rgba(0, 0, 0, .9) 60%, rgba(0, 0, 0, .58) 74%, rgba(0, 0, 0, .22) 88%, transparent 100%);
     --font-title-color: #173447;
     --font-p-color: #617989;
     --box-shadow-color: 0 1px 35px -8px rgba(39, 166, 204, 0.28);
@@ -66,10 +68,12 @@
     --front-surface-color: linear-gradient(135deg, rgba(48, 61, 103, 0.96) 0%, rgba(121, 121, 154, 0.72) 58%, rgba(253, 223, 220, 0.2) 100%);
     --self-description-image: url('/night-mirror.png');
     --pic-cover-color: linear-gradient(90deg,rgba(48,61,103,0) 0,rgba(48,61,103,.013) 8.1%,rgba(48,61,103,.049) 15.5%,rgba(48,61,103,.104) 22.5%,rgba(48,61,103,.175) 29%,rgba(48,61,103,.259) 35.3%,rgba(48,61,103,.352) 41.2%,rgba(48,61,103,.45) 47.1%,rgba(48,61,103,.55) 52.9%,rgba(48,61,103,.648) 58.8%,rgba(48,61,103,.741) 64.7%,rgba(48,61,103,.825) 71%,rgba(48,61,103,.896) 77.5%,rgba(48,61,103,.951) 84.5%,rgba(48,61,103,.987) 91.9%,#303d67);
+    --pic-image-mask: linear-gradient(90deg, #000 0, #000 62%, rgba(0, 0, 0, .92) 70%, rgba(0, 0, 0, .62) 80%, rgba(0, 0, 0, .24) 91%, transparent 100%);
     --pic-background-cover: #3b4770;
     --font-title-color: #fddfdc;
     --font-p-color: #d8d5e3;
     --pic-cover-color-m: linear-gradient(180deg, rgba(48, 61, 103, 0) 0, rgba(48, 61, 103, .013) 8.1%, rgba(48, 61, 103, .049) 15.5%, rgba(48, 61, 103, .104) 22.5%, rgba(48, 61, 103, .175) 29%, rgba(48, 61, 103, .259) 35.3%, rgba(48, 61, 103, .352) 41.2%, rgba(48, 61, 103, .45) 47.1%, rgba(48, 61, 103, .55) 52.9%, rgba(48, 61, 103, .648) 58.8%, rgba(48, 61, 103, .741) 64.7%, rgba(48, 61, 103, .825) 71%, rgba(48, 61, 103, .896) 77.5%, rgba(48, 61, 103, .951) 84.5%, rgba(48, 61, 103, .987) 91.9%, #303d67);
+    --pic-image-mask-m: linear-gradient(180deg, #000 0, #000 48%, rgba(0, 0, 0, .9) 60%, rgba(0, 0, 0, .58) 74%, rgba(0, 0, 0, .22) 88%, transparent 100%);
     --box-shadow-color: 0 1px 35px -8px rgba(253, 223, 220, 0.24);
     --container-background-color: linear-gradient(to left, rgba(48, 61, 103, 0.96), rgba(121, 121, 154, 0.72));
     --category-hover-color: rgba(253, 223, 220, 0.16);

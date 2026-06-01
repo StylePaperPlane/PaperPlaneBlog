@@ -10,7 +10,7 @@ import {
 } from "antd";
 import { DatePicker} from 'antd';
 import {PlusOutlined} from "@ant-design/icons";
-import React, {useEffect,  useState} from "react";
+import React, {useCallback, useEffect,  useState} from "react";
 import dayjs from "dayjs";
 import {useDispatch, useSelector} from "react-redux";
 import {useNavigate, useParams} from "react-router-dom";
@@ -20,8 +20,16 @@ import {createNote, getNoteById, updateNote} from "../../../../apis/NoteMethods.
 import ImageCompression from "../../../../apis/ImageCompression.tsx";
 import {uploadImages} from "../../../../apis/ImageMethods.tsx";
 import {resolveImageUrl} from "../../../../utils/imageUrl.ts";
+import type {AppDispatch, RootState} from "../../../../store";
+import type {CategoriesType} from "../../../../interface/CategoriesType";
+import type {TagLevelOne, TagLevelTwo} from "../../../../interface/TagType";
 
 type FileType = Parameters<GetProp<UploadProps, 'beforeUpload'>>[0];
+type CategoryOption = CategoriesType & {categoryKey: number};
+type TagOption = (TagLevelOne | TagLevelTwo) & {
+    tagKey?: number;
+    children?: TagOption[];
+};
 
 
 const NewNotes = () => {
@@ -35,12 +43,12 @@ const NewNotes = () => {
     const [noteTag, setNoteTag] = useState<number[]>();
     const [confirmLoading, setConfirmLoading] = useState(false);
     const [fileList, setFileList] = useState<UploadFile[]>([])
-    const dispatch = useDispatch()
+    const dispatch = useDispatch<AppDispatch>()
     const navigate = useNavigate()
     const { id } = useParams();
     const [form] = Form.useForm();
-    const tagList = useSelector((state: {tags: any}) => state.tags.tag)
-    const categories = useSelector((state: {categories: any}) => state.categories.categories);
+    const tagList = useSelector((state: RootState) => state.tags.tag) as TagOption[]
+    const categories = useSelector((state: RootState) => state.categories.categories) as CategoryOption[];
 
     const normalizeTags = (tags?: number[]) => (tags || []).filter(tag => Number.isFinite(tag)).join(',');
 
@@ -67,11 +75,7 @@ const NewNotes = () => {
         },
     };
 
-    useEffect(() => {
-        initNote()
-    },[id])
-
-    async function initNote(){
+    const initNote = useCallback(async () => {
         if(id){
             try {
                 const res = await getNoteById(id)
@@ -94,7 +98,11 @@ const NewNotes = () => {
                 message.error("获取出错")
             }
         }
-    }
+    }, [form, id])
+
+    useEffect(() => {
+        initNote()
+    },[initNote])
 
 
     //回调函数区域
@@ -193,7 +201,7 @@ const NewNotes = () => {
             try {
                 const res = await updateNote(id, data)
                 if(res.status === 200){
-                    dispatch<any>(fetchNoteList())
+                    dispatch(fetchNoteList())
                     message.success("文章更新成功")
                     navigate('/dashboard/notes')
                     return true
@@ -219,7 +227,7 @@ const NewNotes = () => {
             try {
                 const res = await createNote(data)
                 if (res.status === 200) {
-                    dispatch<any>(fetchNoteList())
+                    dispatch(fetchNoteList())
                     message.success("文章创建成功")
                     navigate('/dashboard/notes')
                     return true
@@ -288,7 +296,7 @@ const NewNotes = () => {
 
                     <Form.Item label="文章分类" name="noteCategory" rules={[{ required: true, message: 'Please input!'}]}>
                         <Select>
-                            {categories.map((item: { categoryTitle: string | number | boolean; categoryKey: number }) => (
+                            {categories.map((item) => (
                                 <Select.Option value={item.categoryKey}>{item.categoryTitle}</Select.Option>
                             ))}
                         </Select>
@@ -319,14 +327,14 @@ const NewNotes = () => {
                                 allowClear
                                 multiple
                                 treeDefaultExpandAll
-                                treeData={tagList.map((tag: { tagKey: number; children: { tagKey: number; }[]; }) => ({
+                                treeData={tagList.map((tag) => ({
                                     ...tag,
-                                    value: tag.tagKey,
-                                    key: tag.tagKey,
-                                    children: tag.children ? tag.children.map((child: { tagKey: number; }) => ({
+                                    value: tag.tagKey ?? tag.key,
+                                    key: tag.tagKey ?? tag.key,
+                                    children: tag.children ? tag.children.map((child) => ({
                                         ...child,
-                                        value: child.tagKey,
-                                        key: child.tagKey
+                                        value: child.tagKey ?? child.key,
+                                        key: child.tagKey ?? child.key
                                     })) : [] // 确保即使没有子节点也保留空数组
                                 }))}
                                 onChange={onChange}
@@ -341,7 +349,6 @@ const NewNotes = () => {
                         }
                         return e && e.fileList.slice(-1);
                     }} rules={[{ required: true, message: 'Please input!' }]}>
-                        {/*@ts-ignore*/}
                         <Upload customRequest={upload} listType="picture-card" fileList={fileList}
                                 onPreview={handlePreview}
                                 onChange={handleChange}>

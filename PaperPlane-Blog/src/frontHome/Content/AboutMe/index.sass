@@ -1,7 +1,7 @@
 .AboutContainer
   min-height: 100vh
   width: 100%
-  background: radial-gradient(circle at 52% 12%, color-mix(in srgb, var(--pic-background-cover) 62%, transparent), transparent 28%), linear-gradient(135deg, var(--front-body-color) 0%, var(--pic-background-cover) 64%, var(--front-body-color) 100%)
+  background: transparent
   color: var(--font-title-color)
   padding: 96px 50px 64px
   display: flex
@@ -87,14 +87,14 @@
     padding: 0 13px
     border: 1px solid rgba(39, 166, 204, 0.16)
     border-radius: 999px
-    background: color-mix(in srgb, var(--pic-background-cover) 32%, transparent)
+    background: var(--pic-background-cover)
     color: var(--font-title-color)
     font-size: 0.9rem
     font-weight: 700
     text-decoration: none
     transition: background-color 0.18s ease, color 0.18s ease
     &:hover
-      background: color-mix(in srgb, var(--pic-background-cover) 68%, transparent)
+      background: var(--pic-background-cover)
       color: #27a6cc
     &.isDisabled
       opacity: 0.58

@@ -7,7 +7,7 @@ function LoadingCat() {
         const s = (selector: string) => `#${ID} ${selector}`;
         const notes = document.querySelectorAll(".note");
 
-        for (let note of notes) {
+        for (const note of notes) {
             note?.parentElement?.appendChild(note.cloneNode(true));
             note?.parentElement?.appendChild(note.cloneNode(true));
         }
@@ -64,12 +64,12 @@ function LoadingCat() {
             repeat: -1,
         });
 
-        const noteElFn = gsap.utils.pipe(gsap.utils.toArray, gsap.utils.shuffle);
+        const noteElFn = gsap.utils.pipe(gsap.utils.toArray<HTMLElement>, gsap.utils.shuffle<HTMLElement>);
         const noteEls = noteElFn(music.note);
 
         const numNotes = noteEls.length / 3;
-        const notesG1: HTMLElement[] = noteEls.splice(0, numNotes) as HTMLElement[];
-        const notesG2: HTMLElement[] = noteEls.splice(0, numNotes) as HTMLElement[];
+        const notesG1 = noteEls.splice(0, numNotes);
+        const notesG2 = noteEls.splice(0, numNotes);
 
         const notesG3 = noteEls;
 
@@ -97,7 +97,6 @@ function LoadingCat() {
                     scale: 0,
                 },
                 {
-                    direction: undefined,
                     duration: 2,
                     autoAlpha: 0,
                     scale: 1,
@@ -109,16 +108,16 @@ function LoadingCat() {
                     rotation: dir(gsap.utils.random(20, 30, 1)),
                     x: dir(gsap.utils.random(40, 60, 1)),
                     y: gsap.utils.random(-200, -220, 1),
-                    // @ts-ignore
                     onComplete() {
-                        return animateNotes(els);
+                        animateNotes(els);
                     }
                 }
             )
         };
 
-        // @ts-ignore
-        tl.add(animateNotes(notesG1)).add(animateNotes(notesG2), ">0.05").add(animateNotes(notesG3), ">0.25");
+        tl.add(animateNotes(notesG1));
+        tl.add(animateNotes(notesG2), ">0.05");
+        tl.add(animateNotes(notesG3), ">0.25");
 
     }, []);
     return (

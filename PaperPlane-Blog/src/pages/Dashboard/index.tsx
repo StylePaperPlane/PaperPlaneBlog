@@ -5,8 +5,6 @@ import './index.css';
 import {Outlet, useNavigate} from "react-router-dom";
 import deleteToken from "../../apis/deleteToken.tsx";
 import {Button, Space, notification, message, Card, Spin} from "antd";
-import MainContext from "../../components/conText.tsx";
-import Switch from "../../components/Switch";
 import SettingButton from "../../components/Buttons/SettingButton";
 import {useDispatch, useSelector} from "react-redux";
 import {fetchUserInfo} from "../../store/components/user.tsx";
@@ -18,27 +16,62 @@ import '@fontsource/roboto/300.css';
 import '@fontsource/roboto/400.css';
 import '@fontsource/roboto/500.css';
 import '@fontsource/roboto/700.css';
+import {AppDispatch} from "../../store";
 
+interface FullscreenElement extends HTMLDivElement {
+    mozRequestFullScreen?: () => Promise<void> | void;
+    webkitRequestFullscreen?: () => Promise<void> | void;
+    msRequestFullscreen?: () => Promise<void> | void;
+}
+
+interface FullscreenDocument extends Document {
+    mozCancelFullScreen?: () => Promise<void> | void;
+    webkitExitFullscreen?: () => Promise<void> | void;
+    msExitFullscreen?: () => Promise<void> | void;
+}
+
+const requestFullscreen = (element: FullscreenElement | null) => {
+    if (!element) {
+        return;
+    }
+
+    const request =
+        element.requestFullscreen ||
+        element.mozRequestFullScreen ||
+        element.webkitRequestFullscreen ||
+        element.msRequestFullscreen;
+
+    request?.call(element);
+};
+
+const exitFullscreen = () => {
+    const fullscreenDocument = document as FullscreenDocument;
+    const exit =
+        fullscreenDocument.exitFullscreen ||
+        fullscreenDocument.mozCancelFullScreen ||
+        fullscreenDocument.webkitExitFullscreen ||
+        fullscreenDocument.msExitFullscreen;
+
+    exit?.call(fullscreenDocument);
+};
 
 const Dashboard = () => {
     //hooks区域
     const navigate = useNavigate();
     const [SelectCurrent,setSelectCurrent] = useState(1)
     const [isShellClosed, setShellClosed] = useState(true);
-    const [isDarkMode, setDarkMode] = useState(false);
     const [api, contextHolder] = notification.useNotification();
     const [loading, setLoading] = useState(false);
-    const dispatch = useDispatch();
+    const dispatch = useDispatch<AppDispatch>();
     const avatar = useSelector((state: { user: UserState }) => state.user.avatar);
     const name = useSelector((state: { user: UserState }) => state.user.name);
 
     //初始渲染
     useEffect(() => {
-        dispatch<any>(fetchUserInfo())
-        dispatch<any>(fetchCategories())
-        dispatch<any>(fetchTags())
-        dispatch<any>(fetchNoteList())
-        const DarkSwitch = localStorage.getItem('isDarkMode')
+        dispatch(fetchUserInfo())
+        dispatch(fetchCategories())
+        dispatch(fetchTags())
+        dispatch(fetchNoteList())
         const currentHashCode =
             location.hash === '#/dashboard/comments' ? 3 :
                 location.hash === '#/dashboard/albums' ? 4 :
@@ -47,11 +80,7 @@ const Dashboard = () => {
                             location.hash.startsWith('#/dashboard/notes') || location.hash === '#/dashboard' ? 2 : 2;
         setSelectCurrent(currentHashCode)
         setLoading(true);
-        if(DarkSwitch!==null){
-            setDarkMode(JSON.parse(DarkSwitch));
-
-        }
-    },[])
+    },[dispatch])
 
     //回调函数区域
     const openNotification = () => {
@@ -83,11 +112,6 @@ const Dashboard = () => {
 
     const handleSearchClick = () => {
         setShellClosed(false);
-    };
-
-    const handleModeSwitch = () => {
-        setDarkMode(!isDarkMode);
-        localStorage.setItem("isDarkMode", JSON.stringify(!isDarkMode));
     };
 
     // 导航栏数据
@@ -151,54 +175,21 @@ const Dashboard = () => {
 
 
     //全屏
-    const fullScreenRef = useRef<HTMLDivElement>(null);
+    const fullScreenRef = useRef<FullscreenElement>(null);
     const [isFullScreen, setIsFullScreen] = useState<boolean>(false);
 
     const toggleFullScreen = () => {
-        const elem = fullScreenRef.current;
-
         if (!isFullScreen) {
-            if (elem?.requestFullscreen) {
-                elem.requestFullscreen();
-            } else { // @ts-ignore
-                if (elem?.mozRequestFullScreen) { /* Firefox */
-                                // @ts-ignore
-                    elem.mozRequestFullScreen();
-                            } else { // @ts-ignore
-                    if (elem?.webkitRequestFullscreen) { /* Chrome, Safari & Opera */
-                                                    // @ts-ignore
-                        elem.webkitRequestFullscreen();
-                                                } else { // @ts-ignore
-                        if (elem?.msRequestFullscreen) { /* IE/Edge */
-                                                                            // @ts-ignore
-                            elem.msRequestFullscreen();
-                                                                        }
-                    }
-                }
-            }
+            requestFullscreen(fullScreenRef.current);
             setIsFullScreen(true);
         } else {
-            if (document.exitFullscreen) {
-                document.exitFullscreen();
-                // @ts-ignore
-            } else if (document.mozCancelFullScreen) { /* Firefox */
-                // @ts-ignore
-                document.mozCancelFullScreen();
-                // @ts-ignore
-            } else if (document.webkitExitFullscreen) {
-                // @ts-ignore/* Chrome, Safari & Opera */
-                document.webkitExitFullscreen();
-                // @ts-ignore
-            } else if (document.msExitFullscreen) { /* IE/Edge */
-                // @ts-ignore
-                document.msExitFullscreen();
-            }
+            exitFullscreen();
             setIsFullScreen(false);
         }
     };
 
     return (
-        <div className={`contain ${isDarkMode ? 'dark' : ''}`}>
+        <div className="contain">
             {!loading ? (
                 <div className="loading-overlay">
                     <Spin tip="Loading..." className="loading">
@@ -207,9 +198,9 @@ const Dashboard = () => {
             ) : (
                 <>
 
-                    <div className={`content ${isDarkMode ? 'contentDark' : ''}`} ref={fullScreenRef}>
-                        <div className={`shell ${isShellClosed ? 'close' : ''} ${isDarkMode ? 'dark' : ''} slider`}>
-                            <nav className={`shell ${isShellClosed ? 'close' : ''} ${isDarkMode ? 'dark' : '' }`}>
+                    <div className="content" ref={fullScreenRef}>
+                        <div className={`shell ${isShellClosed ? 'close' : ''} slider`}>
+                            <nav className={`shell ${isShellClosed ? 'close' : ''}`}>
                                 <header>
                                     <div className="image-text">
                         <span className="image">
@@ -255,26 +246,12 @@ const Dashboard = () => {
                                             <i className="iconfont icon-tuichu icon"></i>
                                             <span className="text nac-text">退出登录</span>
                                         </li>
-
-                                        <li className="mode">
-                                            <div className="sun-moon">
-                                                {isDarkMode?<i className={`iconfont icon-taiyang1 icon ${isDarkMode ? 'moon' : 'sun'}`}></i>:
-                                                    <i className={`iconfont icon-moonyueliang icon ${isDarkMode ? 'sun' : 'moon'}`}></i>}
-                                            </div>
-                                            <span className="mode-text text">{isDarkMode ? '白日模式' : '夜间模式'}</span>
-                                            <div className="toggle-switch">
-                                                <Switch handleModeSwitch={handleModeSwitch} isDarkMode={isDarkMode}/>
-                                            </div>
-
-                                        </li>
                                     </div>
                                 </div>
                             </nav>
                         </div>
-                        <Card style={{ width: "90%",height: '95%' ,marginLeft:80}} className={`Card ${isDarkMode ? 'CardDark' : ''}`}>
-                            <MainContext.Provider value={isDarkMode.toString()}>
-                                <Outlet />
-                            </MainContext.Provider>
+                        <Card style={{ width: "90%",height: '95%' ,marginLeft:80}} className="Card">
+                            <Outlet />
                         </Card>
 
                         {/*  悬浮按钮  */}

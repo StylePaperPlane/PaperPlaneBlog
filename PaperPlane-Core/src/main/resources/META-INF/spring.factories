@@ -1,1 +1,1 @@
-org.springframework.boot.env.EnvironmentPostProcessor=com.paperplane.blog.Config.CustomEnvironmentPostProcessor
+org.springframework.boot.env.EnvironmentPostProcessor=com.linmoblog.server.config.CustomEnvironmentPostProcessor

@@ -28,16 +28,17 @@ const LazyImage: React.FC<LazyImageProps> = ({ src, threshold = 0.5, className }
             }
         );
 
-        if (imgRef.current) {
-            observer.observe(imgRef.current);
+        const currentNode = imgRef.current;
+        if (currentNode) {
+            observer.observe(currentNode);
         }
 
         return () => {
-            if (imgRef.current) {
-                observer.unobserve(imgRef.current);
+            if (currentNode) {
+                observer.unobserve(currentNode);
             }
         };
-    }, [imgRef, threshold]);
+    }, [threshold]);
 
     if (!isVisible) {
         return (

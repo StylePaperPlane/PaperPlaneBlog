@@ -16,7 +16,7 @@ export function AuthRouter({children}: AuthRouterProps) {
             message.error('请先登录！');
             navigate('/');
         }
-    }, []);
+    }, [navigate]);
 
     return <>{children}</>;
 }

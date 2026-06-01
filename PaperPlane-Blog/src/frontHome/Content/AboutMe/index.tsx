@@ -23,7 +23,7 @@ const AboutMe = () => {
 
                 <main className="aboutMain">
                     <h1>PaperPlane</h1>
-                    <h2>Personal blog starter.</h2>
+                    <h2>One Ctfer of CDUT.</h2>
 
                     <div className="aboutLinks">
                         <a
@@ -39,7 +39,7 @@ const AboutMe = () => {
                     </div>
 
                     <p className="aboutIntro">
-                        {talk || 'Write a short introduction from the dashboard.'}
+                        {talk || '一个热爱软件逆向和Windows安全研究的本科生。'}
                     </p>
                 </main>
             </div>

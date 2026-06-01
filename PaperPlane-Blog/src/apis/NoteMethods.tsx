@@ -1,36 +1,48 @@
 import http from "./axios.tsx";
 import React from "react";
+
+type NoteStatus = 'public' | 'private' | 'draft' | string;
+
 interface status{
     isTop: number
-    status: string
+    status: NoteStatus
     publishTime?: string
 }
 
 interface updateNote{
-    noteTitle: any;
+    noteTitle: string;
     noteContent: string;
     cover: string;
     description: string;
-    noteCategory: any;
+    noteCategory: number | string;
     noteTags: string;
     isTop: number;
-    status: any;
+    status: NoteStatus;
     publishTime: string;
     updateTime: string;
 }
 
 interface newNote{
-    noteTitle: any;
+    noteTitle: string;
     noteContent: string;
     cover: string;
     description: string;
-    noteCategory: any;
+    noteCategory: number | string;
     noteTags: string;
     isTop: number;
-    status: any;
+    status: NoteStatus;
     createTime: string;
     publishTime: string;
     updateTime: string;
+}
+
+interface searchNote {
+    title?: string;
+    top?: number;
+    categories?: string;
+    tagsLab?: number[];
+    time?: unknown;
+    status?: NoteStatus;
 }
 
 function getNotes(){
@@ -87,7 +99,7 @@ function createNote(data: newNote){
     })
 }
 
-function searchNotes(data:any){
+function searchNotes(data: searchNote){
     return http({
         url: '/api/public/notes/search',
         method: 'POST',

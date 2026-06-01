@@ -33,8 +33,24 @@ import ChangeCircleIcon from "@mui/icons-material/ChangeCircle";
 import {renderNoteTags} from "../../../../apis/TagMethods.tsx";
 import {delAllNotes, delNote, getNotes, searchNotes, updateNoteStatus} from "../../../../apis/NoteMethods.tsx";
 import {resolveImageUrl} from "../../../../utils/imageUrl.ts";
+import type {AppDispatch, RootState} from "../../../../store";
+import type {CategoriesType} from "../../../../interface/CategoriesType";
+import type {TagLevelOne, TagLevelTwo} from "../../../../interface/TagType";
+
+type CategoryOption = CategoriesType & {categoryKey: number};
+type TagOption = (TagLevelOne | TagLevelTwo) & {
+    tagKey?: number;
+    children?: TagOption[];
+};
+interface SearchFormValues {
+    title?: string;
+    top?: number;
+    categories?: string;
+    tagsLab?: number[];
+    time?: unknown;
+}
 interface AdvancedSearchFormProps {
-    setSearchNotes: (value: (((prevState: any[]) => any[]) | any[])) => void,
+    setSearchNotes: React.Dispatch<React.SetStateAction<NoteType[]>>,
 }
 
 const AdvancedSearchForm = ({setSearchNotes}: AdvancedSearchFormProps) => {
@@ -42,11 +58,11 @@ const AdvancedSearchForm = ({setSearchNotes}: AdvancedSearchFormProps) => {
     const { RangePicker } = DatePicker;
     const { token } = theme.useToken();
     const [form] = Form.useForm();
-    const categories = useSelector((state: {categories: any}) => state.categories.categories);
-    const tagList = useSelector((state: {tags: any}) => state.tags.tag)
+    const categories = useSelector((state: RootState) => state.categories.categories) as CategoryOption[];
+    const tagList = useSelector((state: RootState) => state.tags.tag) as TagOption[];
 
     //回调函数区域
-    const onFinish = async (values: any) => {
+    const onFinish = async (values: SearchFormValues) => {
         const data = {
             ...values,
             // tagsLab: values.tagsLab.toString()
@@ -105,7 +121,7 @@ const AdvancedSearchForm = ({setSearchNotes}: AdvancedSearchFormProps) => {
                         label='文章分类'
                     >
                         <Select placeholder="请选择文章分类">
-                            {categories.map((category: { key: React.Key | null | undefined; categoryTitle: string | number | boolean | React.ReactElement<any, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal | null | undefined; }) => (
+                            {categories.map((category) => (
                                 <Select.Option key={category.key} value={category.categoryTitle}>
                                     {category.categoryTitle}
                                 </Select.Option>
@@ -135,14 +151,14 @@ const AdvancedSearchForm = ({setSearchNotes}: AdvancedSearchFormProps) => {
                             allowClear
                             multiple
                             treeDefaultExpandAll
-                            treeData={tagList.map((tag: { tagKey: number; children: { tagKey: number; }[]; }) => ({
+                            treeData={tagList.map((tag) => ({
                                 ...tag,
-                                value: tag.tagKey,
-                                key: tag.tagKey,
-                                children: tag.children ? tag.children.map((child: { tagKey: number; }) => ({
+                                value: tag.tagKey ?? tag.key,
+                                key: tag.tagKey ?? tag.key,
+                                children: tag.children ? tag.children.map((child) => ({
                                     ...child,
-                                    value: child.tagKey,
-                                    key: child.tagKey
+                                    value: child.tagKey ?? child.key,
+                                    key: child.tagKey ?? child.key
                                 })) : [] // 确保即使没有子节点也保留空数组
                             }))}
                         />
@@ -175,10 +191,10 @@ const AllNotes = () => {
     const [staticDate,setStaticDate] = useState<NoteType[]>([])
     const [open, setOpen] = useState(false);
     const [isEdit,setEdit] = useState('')
-    const dispatch = useDispatch()
+    const dispatch = useDispatch<AppDispatch>()
     const [form] = Form.useForm();
-    const tagList = useSelector((state: {tags: any}) => state.tags.tag)
-    const categories = useSelector((state: {categories: any}) => state.categories.categories);
+    const tagList = useSelector((state: RootState) => state.tags.tag) as TagOption[]
+    const categories = useSelector((state: RootState) => state.categories.categories) as CategoryOption[];
     const [isModalOpen, setIsModalOpen] = useState(false);
 
     const isImageIcon = (icon: string) => /^(uploads\/|\/uploads\/|https?:\/\/).+\.(png|jpe?g|gif|webp|svg)$/i.test(icon)
@@ -211,11 +227,11 @@ const AllNotes = () => {
             const res = await delNote(key)
             if(res.status === 200){
                 await initNotes()
-                dispatch<any>(fetchNoteList())
+                dispatch(fetchNoteList())
                 message.success('删除成功')
             }
-        }catch (error){
-            console.log(error)
+        }catch {
+            message.error('删除失败')
         }
     }
 
@@ -224,12 +240,12 @@ const AllNotes = () => {
             const res = await delAllNotes(selectedRowKeys)
             if (res.status === 200) {
                 await initNotes()
-                dispatch<any>(fetchNoteList())
+                dispatch(fetchNoteList())
                 setSelectedRowKeys([])
                 message.success('删除成功')
             }
-        } catch (error) {
-            console.log(error)
+        } catch {
+            message.error('删除失败')
         }
     }
 
@@ -254,7 +270,7 @@ const AllNotes = () => {
             const res = await updateNoteStatus(data,isEdit)
             if(res.status === 200){
                 await initNotes()
-                dispatch<any>(fetchNoteList())
+                dispatch(fetchNoteList())
                 message.success('文章信息更新成功')
             }
         }catch (error){
@@ -308,8 +324,8 @@ const AllNotes = () => {
             render: (item) => (
                 <>
                     {categories
-                        .filter((category: { categoryTitle: string;categoryKey:number }) => category.categoryKey === item)
-                        .map((category: { color: string | (string & {}) | undefined; key: React.Key | null | undefined; icon: any; categoryTitle: string | number | boolean | React.ReactElement<any, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal | null | undefined; }) => (
+                        .filter((category) => category.categoryKey === item)
+                        .map((category) => (
                             <div style={{ display: 'flex', alignItems: 'center',justifyContent:'center' }}>
                                 <Tag color={category.color} key={category.key}>
                                     <Space align={'center'} size={3}>

@@ -1,5 +1,5 @@
 import './index.sass'
-import {useEffect,useState} from "react";
+import {ReactNode, useEffect,useState} from "react";
 import {createPortal} from "react-dom";
 import {useNavigate, useParams} from "react-router-dom";
 import {NoteType} from "../../../interface/NoteType";
@@ -13,6 +13,7 @@ import dayjs from "dayjs";
 import 'github-markdown-css/github-markdown-light.css'
 import 'katex/dist/katex.min.css'
 import {Prism as SyntaxHighlighter} from 'react-syntax-highlighter'
+import type {SyntaxHighlighterProps} from 'react-syntax-highlighter'
 import {oneDark} from 'react-syntax-highlighter/dist/esm/styles/prism'
 import rehypeKatex from "rehype-katex";
 import rehypeRaw from "rehype-raw";
@@ -26,6 +27,17 @@ import scrollToTop from "../../../utils/scrollToTop.tsx";
 import {getNoteById, getNotes} from "../../../apis/NoteMethods.tsx";
 import {resolveImageUrl} from "../../../utils/imageUrl.ts";
 import {categoryList} from "../../../store/components/categories.tsx";
+
+const createCodeBlockProps = (children: ReactNode, language: string): SyntaxHighlighterProps => ({
+    PreTag: "div",
+    children: String(children).replace(/\n$/, ''),
+    language,
+    style: oneDark,
+});
+
+type ArticleNote = NoteType & {
+    noteContent?: string;
+};
 
 const ReadArticle = () => {
     const avatar = useSelector((state:{user:UserState}) => state.user.avatar)
@@ -63,15 +75,15 @@ const ReadArticle = () => {
         if (id){
             setLoading(true)
             getNoteById(id).then((res) => {
-                const note = res.data.data;
+                const note: ArticleNote = res.data.data;
                 setArticle({
                     ...note,
                     content: note.noteContent || note.content || ''
                 });
                 getNotes().then((notesRes) => {
                     const sameCategoryNotes = notesRes.data.data
-                        .filter((item: NoteType) => String(item.noteCategory) === String(note.noteCategory))
-                        .map((item: any) => ({
+                        .filter((item: ArticleNote) => String(item.noteCategory) === String(note.noteCategory))
+                        .map((item: ArticleNote) => ({
                             ...item,
                             key: item.noteKey,
                             content: item.noteContent || item.content || ''
@@ -179,16 +191,11 @@ const ReadArticle = () => {
                                     rehypePlugins={[rehypeRaw, rehypeKatex]}
                                     components={{
                                         code(props) {
-                                            const {children, className, node, ...rest} = props
+                                            const {children, className, ...rest} = props
                                             const match = /language-(\w+)/.exec(className || '')
                                             return match ? (
-                                                // @ts-ignore
                                                 <SyntaxHighlighter
-                                                    {...rest}
-                                                    PreTag="div"
-                                                    children={String(children).replace(/\n$/, '')}
-                                                    language={match[1]}
-                                                    style={oneDark}
+                                                    {...createCodeBlockProps(children, match[1])}
                                                 />
                                             ) : (
                                                 <code {...rest} className={className}>

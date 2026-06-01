@@ -1,18 +1,26 @@
 import InfiniteScroll from 'react-infinite-scroll-component';
 import './index.sass'
-import { Card, Modal, UploadFile} from "antd";
+import { Button, Card, Form, Input, Modal, Select, Space, UploadFile} from "antd";
 import DeleteButton from "../../../components/Buttons/DeleteButton";
 import UpLoadButton from "../../../components/Buttons/UpLoadButton";
 import {useCallback, useEffect, useState} from "react";
-import { InboxOutlined } from '@ant-design/icons';
+import { FolderAddOutlined, FolderOpenOutlined, InboxOutlined, SwapOutlined } from '@ant-design/icons';
 import type { UploadProps } from 'antd';
 import { message, Upload } from 'antd';
 import CheckButton from "../../../components/Buttons/CheckButton";
-import {ImgUrl} from "../../../interface/ImgTypes";
-import {delImages, getImageList, uploadImages} from "../../../apis/ImageMethods.tsx";
+import {ImageFolder, ImgUrl} from "../../../interface/ImgTypes";
+import {
+    createImageFolder,
+    delImages,
+    getImageFolders,
+    getImageList,
+    moveImagesToFolder,
+    uploadImages
+} from "../../../apis/ImageMethods.tsx";
 import ImageCompression from "../../../apis/ImageCompression.tsx";
 import {resolveImageUrl} from "../../../utils/imageUrl.ts";
 
+const DEFAULT_FOLDER = '默认文件夹';
 
 const Albums = () => {
     //状态变量区
@@ -23,21 +31,39 @@ const Albums = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isModaldelOpen, setIsDelModalOpen] = useState(false);
     const [lastUploadUrl, setLastUploadUrl] = useState('');
-
-
-    useEffect(() => {
-        initImageList()
-    },[])
+    const [folders, setFolders] = useState<ImageFolder[]>([]);
+    const [currentFolder, setCurrentFolder] = useState(DEFAULT_FOLDER);
+    const [isFolderModalOpen, setIsFolderModalOpen] = useState(false);
+    const [isMoveModalOpen, setIsMoveModalOpen] = useState(false);
+    const [moveTargetFolder, setMoveTargetFolder] = useState(DEFAULT_FOLDER);
+    const [folderForm] = Form.useForm<{ folderName: string }>();
 
 
     // 获取图片列表
-    const initImageList = () => {
-        getImageList().then((res) => {
+    const initImageList = useCallback(() => {
+        getImageList(currentFolder).then((res) => {
             setStaticDate(res.data.data)
         }).catch((error) => {
             throw error
         })
-    }
+    }, [currentFolder])
+
+    const initFolders = useCallback(() => {
+        getImageFolders().then((res) => {
+            const folderList = res.data.data as ImageFolder[];
+            setFolders(folderList);
+            if (!folderList.some(item => item.folderName === currentFolder)) {
+                setCurrentFolder(DEFAULT_FOLDER);
+            }
+        }).catch((error) => {
+            message.error('获取文件夹失败：' + error);
+        })
+    }, [currentFolder])
+
+    useEffect(() => {
+        initFolders()
+        initImageList()
+    },[initFolders, initImageList])
 
     //回调函数区域
     const fetchData = async () => {
@@ -45,13 +71,13 @@ const Albums = () => {
     };
 
     const Delete = useCallback(() => {
-        // @ts-ignore
         //拿出所有的键
         const keysToDelete = Object.keys(checkStatus).filter(key => checkStatus[key]);
 
         delImages(keysToDelete).then((res) => {
             if(res.status === 200){
                 initImageList()
+                initFolders()
                 message.success("删除成功");
                 // 删除完毕后清空 checkStatus
                 setCheckStatus({});
@@ -63,7 +89,7 @@ const Albums = () => {
             setCheckStatus({});
             setSelectDelete(0);
         })
-    }, [SelectDelete, checkStatus]);
+    }, [checkStatus, initFolders, initImageList]);
 
     // 触发选择框和图片点击
     const handleItemClick = (img: ImgUrl) => {
@@ -96,6 +122,42 @@ const Albums = () => {
         setIsModalOpen(false);
     };
 
+    const showFolderModal = () => {
+        folderForm.resetFields();
+        setIsFolderModalOpen(true);
+    };
+
+    const handleCreateFolder = async () => {
+        const values = await folderForm.validateFields();
+        const folderName = values.folderName.trim();
+        await createImageFolder(folderName);
+        message.success('文件夹创建成功');
+        setCurrentFolder(folderName);
+        setIsFolderModalOpen(false);
+        initFolders();
+    };
+
+    const showMoveModal = () => {
+        if (SelectDelete === 0) {
+            message.warning("待选中")
+            return
+        }
+
+        setMoveTargetFolder(currentFolder);
+        setIsMoveModalOpen(true);
+    };
+
+    const handleMoveImages = async () => {
+        const keysToMove = Object.keys(checkStatus).filter(key => checkStatus[key]);
+        await moveImagesToFolder(keysToMove, moveTargetFolder);
+        message.success('移动成功');
+        setCheckStatus({});
+        setSelectDelete(0);
+        setIsMoveModalOpen(false);
+        initImageList();
+        initFolders();
+    };
+
     const copyUploadUrl = async (url: string) => {
         try {
             await navigator.clipboard.writeText(url);
@@ -107,31 +169,34 @@ const Albums = () => {
 
     //推拽上传
     const { Dragger } = Upload;
+    const uploadImagesRequest: UploadProps['customRequest'] = async ({file}) => {
+        if (!(file instanceof File)) {
+            message.error('上传失败：无效文件');
+            return;
+        }
+
+        const compressedFile = await ImageCompression(file);
+        const formData = new FormData();
+        formData.append('file', compressedFile);
+        formData.append('folderName', currentFolder);
+        uploadImages(formData).then((res) => {
+            if (res.status === 200) {
+                const uploadUrl = res.data.data;
+                setLastUploadUrl(uploadUrl);
+                initImageList();
+                initFolders();
+                message.success(`${file.name} 图片上传成功：${uploadUrl}`);
+            }
+        }).catch((error) => {
+            message.error('上传失败' + error);
+        });
+    };
+
     const props: UploadProps = {
         name: 'file',
         fileList: uploadedFiles,
         multiple: true,
-        customRequest: async (req) => {
-            // @ts-ignore
-            const compressedFile = await ImageCompression(req.file);
-            const formData = new FormData();
-            formData.append('file', compressedFile);
-            uploadImages(formData).then((res) => {
-                if (res.status === 200) {
-                    const uploadUrl = res.data.data;
-                    setLastUploadUrl(uploadUrl);
-                    initImageList();
-                    // @ts-ignore
-                    message.success(`${req.file.name} 图片上传成功：${uploadUrl}`);
-                }
-            }).catch((error) => {
-                message.error('上传失败' + error);
-            });
-
-        },
-        onDrop(e) {
-            console.log('Dropped files', e.dataTransfer.files);
-        },
+        customRequest: uploadImagesRequest,
         progress: {
             strokeColor: {
                 '0%': '#108ee9',
@@ -174,7 +239,11 @@ const Albums = () => {
         }
     >
             <div style={{display: "flex",flexDirection: 'row',alignItems:'center',justifyContent: 'space-between',marginTop: 30,marginLeft: 20,marginRight: 20}} className={"action_img"}>
-                <UpLoadButton onClick={showModal} />
+                <Space>
+                    <UpLoadButton onClick={showModal} />
+                    <Button icon={<FolderAddOutlined />} onClick={showFolderModal}>新建文件夹</Button>
+                    <Button icon={<SwapOutlined />} onClick={showMoveModal}>移动到</Button>
+                </Space>
                 <div style={{ display: "flex", flexDirection: 'row', alignItems: 'center' }}>
                     <h2 style={{display: "flex", flexDirection: 'row', alignItems: 'center'}}> <i className="iconfont icon-xiangce icon" style={{ fontWeight: '80', fontSize: 50, color: '#1668dc' }} /> 图库  </h2>
                 </div>
@@ -184,6 +253,23 @@ const Albums = () => {
                         <DeleteButton />
                     </div>
                 </div>
+            </div>
+            <div className="album-folder-bar">
+                <FolderOpenOutlined />
+                <span>当前文件夹</span>
+                <Select
+                    value={currentFolder}
+                    onChange={(value) => {
+                        setCurrentFolder(value);
+                        setCheckStatus({});
+                        setSelectDelete(0);
+                    }}
+                    style={{ width: 220 }}
+                    options={folders.map(folder => ({
+                        value: folder.folderName,
+                        label: `${folder.folderName} (${folder.imageCount})`
+                    }))}
+                />
             </div>
             <Card style={{ width: '100%', height: '86vh', marginLeft: '0%', marginTop: '0%', overflowY: 'scroll', backgroundColor: 'transparent', border: "none" }}>
                 {staticDate.map(item => (
@@ -238,6 +324,31 @@ const Albums = () => {
 
         <Modal title="删除确认" open={isModaldelOpen} onOk={handledelOk} onCancel={handledelCancel}  okText="确定" cancelText="取消">
             是否删除选中所有图片?
+        </Modal>
+        <Modal title="新建文件夹" open={isFolderModalOpen} onOk={handleCreateFolder} onCancel={() => setIsFolderModalOpen(false)} okText="创建" cancelText="取消">
+            <Form form={folderForm} layout="vertical">
+                <Form.Item
+                    name="folderName"
+                    label="文件夹名称"
+                    rules={[
+                        { required: true, message: '请输入文件夹名称' },
+                        { max: 50, message: '文件夹名称不能超过50个字符' },
+                    ]}
+                >
+                    <Input placeholder="请输入文件夹名称" />
+                </Form.Item>
+            </Form>
+        </Modal>
+        <Modal title="移动图片" open={isMoveModalOpen} onOk={handleMoveImages} onCancel={() => setIsMoveModalOpen(false)} okText="移动" cancelText="取消">
+            <Select
+                value={moveTargetFolder}
+                onChange={setMoveTargetFolder}
+                style={{ width: '100%' }}
+                options={folders.map(folder => ({
+                    value: folder.folderName,
+                    label: folder.folderName
+                }))}
+            />
         </Modal>
     </div>
 }

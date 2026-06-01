@@ -9,7 +9,8 @@ import {
     TableProps,
     Tag,
 } from "antd";
-import React, {useEffect, useState} from "react";
+import type {Color} from "antd/es/color-picker";
+import React, {useCallback, useEffect, useState} from "react";
 import {FolderOpenOutlined, QuestionCircleOutlined} from '@ant-design/icons';
 import {CategoriesType} from "../../../../interface/CategoriesType";
 import {fetchCategories} from "../../../../store/components/categories.tsx";
@@ -19,6 +20,8 @@ import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
+import type {NoteType} from "../../../../interface/NoteType";
+import type {AppDispatch, RootState} from "../../../../store";
 import {
     addCategory,
     delAllCategory,
@@ -35,11 +38,11 @@ const  AllCategorize = () => {
     const [confirmLoading, setConfirmLoading] = useState(false);
     const [isEdit,setEdit] = useState(0)
     const [form] = Form.useForm();
-    const dispatch = useDispatch()
-    const noteList = useSelector((state: any) => state.notes.Notes)
+    const dispatch = useDispatch<AppDispatch>()
+    const noteList = useSelector((state: RootState) => state.notes.Notes)
     const [isModalOpen, setIsModalOpen] = useState(false);
 
-    const normalizeColor = (color: any) => {
+    const normalizeColor = (color?: string | Color) => {
         if (!color) {
             return '#000000'
         }
@@ -62,15 +65,11 @@ const  AllCategorize = () => {
         return <i className={`fa ${icon}`} aria-hidden="true"></i>
     }
 
-    useEffect(() => {
-       initCategoryList()
-    },[])
-
-    async function initCategoryList(){
+    const initCategoryList = useCallback(async () => {
         const res = await getCategories()
         if(res.status===200){
             setStaticDate(res.data.data.map((item: { categoryKey: number; categoryTitle: string; color: string; icon: string; introduce: string; noteCount: number; pathName:string}) => {
-                const matchedNotes = noteList.filter((note: { noteCategory: number; }) => Number(note.noteCategory) === item.categoryKey);
+                const matchedNotes = noteList.filter((note: NoteType) => Number(note.noteCategory) === item.categoryKey);
                 return {
                     key: item.categoryKey,
                     categoryTitle: item.categoryTitle,
@@ -82,7 +81,11 @@ const  AllCategorize = () => {
                 }
             }))
         }
-    }
+    }, [noteList]);
+
+    useEffect(() => {
+       initCategoryList()
+    },[initCategoryList])
 
     //回调函数区域
     //删除逻辑
@@ -90,7 +93,7 @@ const  AllCategorize = () => {
         const res = await delCategory(key)
         if(res.status === 200){
             await initCategoryList()
-            dispatch<any>(fetchCategories())
+            dispatch(fetchCategories())
             message.success('删除成功')
         }
     }
@@ -100,14 +103,10 @@ const  AllCategorize = () => {
             message.warning('待选中')
         } else {
             const res = await delAllCategory(selectedRowKeys)
-            try {
-                if (res.status === 200) {
-                    await initCategoryList()
-                    dispatch<any>(fetchCategories())
-                    message.success('删除成功')
-                }
-            } catch (error) {
-                console.log(error)
+            if (res.status === 200) {
+                await initCategoryList()
+                dispatch(fetchCategories())
+                message.success('删除成功')
             }
             setSelectedRowKeys([])
         }
@@ -141,11 +140,11 @@ const  AllCategorize = () => {
             const res = await addCategory(data)
             if(res.status === 200){
                 await initCategoryList()
-                dispatch<any>(fetchCategories())
+                dispatch(fetchCategories())
                 message.success('添加成功')
             }
-        }catch (error){
-            console.log(error)
+        }catch {
+            message.error('添加失败')
         }
     }
 
@@ -163,7 +162,7 @@ const  AllCategorize = () => {
                 const res = await updateCategory(update, isEdit)
                 if (res.status === 200) {
                     await initCategoryList()
-                    dispatch<any>(fetchCategories())
+                    dispatch(fetchCategories())
                     message.success('更新成功')
                 }
             } else {
@@ -174,9 +173,8 @@ const  AllCategorize = () => {
             setEdit(0);
             form.resetFields();
             setOpen(false);
-        } catch (error) {
+        } catch {
             setConfirmLoading(false);
-            console.log(error)
         }
     };
 

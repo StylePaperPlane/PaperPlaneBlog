@@ -1,9 +1,10 @@
 import './index.sass'
 import {useSelector} from "react-redux";
 import { TagCloud } from 'react-tagcloud'
+import type {RootState} from "../../store";
+
 const WordCloud = () => {
-    // @ts-ignore
-    const categoryList = useSelector((state) => state.categories.categories).map(item => {
+    const categoryList = useSelector((state: RootState) => state.categories.categories).map(item => {
         return {
             value: item.categoryTitle,
             count: item.noteCount

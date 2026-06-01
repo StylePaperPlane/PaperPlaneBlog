@@ -12,7 +12,7 @@ spring:
     driver-class-name: ${postgres.driver-class-name:org.postgresql.Driver}
     url: jdbc:postgresql://${postgres.host:localhost}:${postgres.port:5432}/${postgres.database:paperplane}
     username: ${postgres.username:paperplane}
-    password: ${POSTGRES_PASSWORD:}
+    password: ${postgres.password:}
     hikari:
       max-lifetime: 120000
 logging:
@@ -32,9 +32,9 @@ springdoc:
   api-docs:
     path: /v3/api-docs
   group-configs:
-    - group: 'PaperPlane Blog接口文档'
+    - group: 'PaperPlane接口文档'
       paths-to-match: '/**'
-      packages-to-scan: com.paperplane.blog.Controller
+      packages-to-scan: com.linmoblog.server.controller
 # knife4j的增强配置，不需要增强可以不配
 knife4j:
   enable: true
@@ -45,5 +45,5 @@ blog:
   minio:
     endpoint: http://127.0.0.1:9000 # Minio服务所在地址
     bucketName: paperplane # 存储桶名称
-    accessKey: paperplane # 访问的key
-    secretKey: paperplane # 访问的秘钥
+    accessKey: ${MINIO_ACCESS_KEY:} # 访问的key
+    secretKey: ${MINIO_SECRET_KEY:} # 访问的秘钥

@@ -1,6 +1,6 @@
 import {Calendar, Card, ConfigProvider, Progress, Space, Steps, theme} from "antd";
 import './index.sass';
-import React, {useContext, useEffect, useRef, useState} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import axios from "axios";
 import {Dayjs} from "dayjs";
 import 'dayjs/locale/zh-cn';
@@ -9,7 +9,6 @@ import ArticleRecord from "../../../components/articleRecord";
 import TheYearPass from "../../../components/theYearPass";
 import ArticleAnalytics from "../../../components/articleAnalytics";
 import Typed from 'typed.js';
-import MainContext from "../../../components/conText.tsx";
 import {useSelector} from "react-redux";
 import UserState from "../../../interface/UserState";
 import WordCloud from "../../../components/wordCloud";
@@ -60,7 +59,6 @@ const Home = () => {
         };
     }, []);
 
-    const isDark = JSON.parse(useContext(MainContext))
         return (
         <div className="home">
 
@@ -72,9 +70,9 @@ const Home = () => {
                        <div ref={typedRef} className="typed"></div>
                    </div>
                    <Space wrap style={{marginTop: 20}} className='p_hidden'>
-                       <Progress type="circle" percent={70} size={70} format={() => <span style={{color:isDark?"white":'black'}}>CPU</span>}/>
-                       <Progress type="circle" percent={50} size={70} format={() => <span style={{color:isDark?"white":'black'}}>内存</span>} />
-                       <Progress type="circle" percent={70} size={70} format={() => <span style={{color:isDark?"white":'black'}}>磁盘</span>} />
+                       <Progress type="circle" percent={70} size={70} format={() => <span style={{color: 'black'}}>CPU</span>}/>
+                       <Progress type="circle" percent={50} size={70} format={() => <span style={{color: 'black'}}>内存</span>} />
+                       <Progress type="circle" percent={70} size={70} format={() => <span style={{color: 'black'}}>磁盘</span>} />
                    </Space>
                </div>
                <ArticleAnalytics />
@@ -84,7 +82,7 @@ const Home = () => {
            </div>
 
             <div className='center' style={{height: '100%',width:'60%',paddingRight:30}}>
-                <ArticleRecord isDark={isDark}/>
+                <ArticleRecord />
             </div>
 
 

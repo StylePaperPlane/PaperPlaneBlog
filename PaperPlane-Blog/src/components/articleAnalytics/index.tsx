@@ -2,14 +2,13 @@ import {Card, Col, Row, Statistic} from "antd";
 import CountUp from "react-countup";
 import './index.sass'
 import {useSelector} from "react-redux";
-import {noteList} from "../../store/components/note.tsx";
 import React from "react";
+import type {RootState} from "../../store";
 
 const ArticleAnalytics = () => {
-    const tagCount = useSelector((state: {tags: any}) => state.tags.tagCount)
-    const noteCount = useSelector((state: { notes:noteList  }) => state.notes.noteCount);
-    // @ts-ignore
-    const categoryCount = useSelector((state) => state.categories.categoryCount)
+    const tagCount = useSelector((state: RootState) => state.tags.tagCount)
+    const noteCount = useSelector((state: RootState) => state.notes.noteCount);
+    const categoryCount = useSelector((state: RootState) => state.categories.categoryCount)
     const list = [
         {
             index: 1,

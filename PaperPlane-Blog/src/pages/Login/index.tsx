@@ -1,18 +1,20 @@
 import './index.sass';
 import { message } from 'antd';
 import { useEffect, useState } from 'react';
-import * as React from 'react';
 import { useDispatch } from 'react-redux';
-import {fetchToken} from "../../store/components/user.tsx";
+import { fetchToken } from "../../store/components/user.tsx";
 import { useNavigate } from 'react-router-dom';
 import getToken from '../../apis/getToken';
 import UserData from "../../interface/UserData";
+import {AppDispatch} from "../../store";
+
+type LoginFieldName = 'account' | 'password';
 
 const Login: React.FC = () => {
     //hooks区域
     const [account, setAccount] = useState<string>('');
     const [password, setPassword] = useState<string>('');
-    const dispatch = useDispatch();
+    const dispatch = useDispatch<AppDispatch>();
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -24,10 +26,12 @@ const Login: React.FC = () => {
 
     //回调函数区域
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { name, value } = e.target;
+        const { name, value } = e.target as HTMLInputElement & { name: LoginFieldName };
         if (name === 'account') {
             setAccount(value);
-        } else if (name === 'password') {
+            return;
+        }
+        if (name === 'password') {
             setPassword(value);
         }
     };
@@ -35,13 +39,13 @@ const Login: React.FC = () => {
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
-        const data:UserData = {
-            username:account,
+        const data: UserData = {
+            username: account,
             password,
         };
 
         try {
-            const status:number = await dispatch<any>(fetchToken(data))
+            const status: number = await dispatch(fetchToken(data));
             if (status === 200) {
                 message.success('登录成功');
                 navigate('/dashboard');

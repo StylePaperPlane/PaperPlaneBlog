@@ -1,5 +1,5 @@
 import './index.sass';
-import {useEffect, useMemo, useRef, useState} from "react";
+import {useCallback, useEffect, useMemo, useRef, useState} from "react";
 import {CaretRightOutlined, CustomerServiceOutlined, PauseOutlined, StepBackwardOutlined, StepForwardOutlined, UnorderedListOutlined} from "@ant-design/icons";
 import {getPublicMusicList} from "../../apis/MusicMethods";
 import {MusicTrack} from "../../interface/MusicType";
@@ -16,7 +16,28 @@ const STORAGE_KEYS = {
     currentIndex: 'musicPlayerCurrentIndex'
 };
 
-const FALLBACK_TRACKS: MusicTrack[] = [];
+const FALLBACK_TRACKS: MusicTrack[] = [
+    {
+        musicKey: -1,
+        title: 'Always Online',
+        artist: '',
+        audioUrl: '/music/Always Online/Always Online.mp3',
+        coverUrl: '/music/Always Online/Always Online.jpg',
+        lyricUrl: '/music/Always Online/Always Online.lrc',
+        sortOrder: 1,
+        enabled: true
+    },
+    {
+        musicKey: -2,
+        title: 'Closer',
+        artist: '',
+        audioUrl: '/music/Closer/Closer.mp3',
+        coverUrl: '/music/Closer/Closer.jpg',
+        lyricUrl: '/music/Closer/Closer.lrc',
+        sortOrder: 2,
+        enabled: true
+    }
+];
 
 const parseLyrics = (content: string): LyricLine[] => {
     return content
@@ -45,6 +66,7 @@ const MusicPlayer = () => {
     const lyricsContainerRef = useRef<HTMLDivElement | null>(null);
     const lyricLineRefs = useRef<Array<HTMLParagraphElement | null>>([]);
     const interactionBoundRef = useRef(false);
+    const tryPlayRef = useRef<() => void>(() => undefined);
     const [playlist, setPlaylist] = useState<MusicTrack[]>([]);
     const [currentIndex, setCurrentIndex] = useState(() => Number(localStorage.getItem(STORAGE_KEYS.currentIndex) || 0));
     const [playing, setPlaying] = useState(false);
@@ -64,19 +86,46 @@ const MusicPlayer = () => {
         return lyrics.findIndex((line, index) => currentTime >= line.time && (!lyrics[index + 1] || currentTime < lyrics[index + 1].time));
     }, [currentTime, lyrics]);
 
+    const bindFirstInteraction = useCallback(() => {
+        if (interactionBoundRef.current) return;
+        interactionBoundRef.current = true;
+        const resume = () => {
+            setBlocked(false);
+            tryPlayRef.current();
+            window.removeEventListener('pointerdown', resume);
+            window.removeEventListener('keydown', resume);
+        };
+        window.addEventListener('pointerdown', resume, {once: true});
+        window.addEventListener('keydown', resume, {once: true});
+    }, []);
+
+    const tryPlay = useCallback(() => {
+        const audio = audioRef.current;
+        const track = playlist[currentIndex];
+        if (!audio || !track) return;
+        audio.play().then(() => {
+            setBlocked(false);
+            setPlaying(true);
+        }).catch(() => {
+            setBlocked(true);
+            setPlaying(false);
+            bindFirstInteraction();
+        });
+    }, [bindFirstInteraction, currentIndex, playlist]);
+
+    useEffect(() => {
+        tryPlayRef.current = tryPlay;
+    }, [tryPlay]);
+
     useEffect(() => {
         getPublicMusicList().then(res => {
             const tracks = ((res.data.data || []) as MusicTrack[]).filter(track => track.enabled);
             const nextTracks = tracks.length ? tracks : FALLBACK_TRACKS;
             setPlaylist(nextTracks);
-            if (nextTracks.length && currentIndex >= nextTracks.length) {
-                setCurrentIndex(0);
-            }
+            setCurrentIndex(prev => nextTracks.length && prev >= nextTracks.length ? 0 : prev);
         }).catch(() => {
             setPlaylist(FALLBACK_TRACKS);
-            if (currentIndex >= FALLBACK_TRACKS.length) {
-                setCurrentIndex(0);
-            }
+            setCurrentIndex(prev => prev >= FALLBACK_TRACKS.length ? 0 : prev);
         });
     }, []);
 
@@ -106,7 +155,7 @@ const MusicPlayer = () => {
             audio.removeEventListener('play', handlePlay);
             audio.removeEventListener('pause', handlePause);
         };
-    }, [playlist.length]);
+    }, [playlist.length, volume]);
 
     useEffect(() => {
         if (!currentTrack || !audioRef.current) return;
@@ -120,7 +169,7 @@ const MusicPlayer = () => {
             .then(res => res.ok ? res.text() : '')
             .then(text => setLyrics(parseLyrics(text)))
             .catch(() => setLyrics([]));
-    }, [currentIndex, currentTrack?.audioUrl]);
+    }, [currentIndex, currentTrack, tryPlay]);
 
     useEffect(() => {
         if (audioRef.current) {
@@ -169,32 +218,6 @@ const MusicPlayer = () => {
             behavior: 'smooth'
         });
     }, [activeLyricIndex, showLyrics]);
-
-    const bindFirstInteraction = () => {
-        if (interactionBoundRef.current) return;
-        interactionBoundRef.current = true;
-        const resume = () => {
-            setBlocked(false);
-            tryPlay();
-            window.removeEventListener('pointerdown', resume);
-            window.removeEventListener('keydown', resume);
-        };
-        window.addEventListener('pointerdown', resume, {once: true});
-        window.addEventListener('keydown', resume, {once: true});
-    };
-
-    const tryPlay = () => {
-        const audio = audioRef.current;
-        if (!audio || !currentTrack) return;
-        audio.play().then(() => {
-            setBlocked(false);
-            setPlaying(true);
-        }).catch(() => {
-            setBlocked(true);
-            setPlaying(false);
-            bindFirstInteraction();
-        });
-    };
 
     const togglePlay = () => {
         const audio = audioRef.current;

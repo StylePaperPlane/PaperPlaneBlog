@@ -1,7 +1,17 @@
 import axios from "axios";
 import getToken from "./getToken.tsx"
+import deleteToken from "./deleteToken.tsx";
 
 export const httpBaseURL = import.meta.env.VITE_HTTP_BASEURL || '';
+
+const isProtectedRoute = () => window.location.pathname.startsWith('/dashboard');
+
+const redirectToLogin = () => {
+    deleteToken();
+    if (isProtectedRoute()) {
+        window.location.replace('/login');
+    }
+};
 
 const http = axios.create({
     baseURL: httpBaseURL,
@@ -22,6 +32,16 @@ http.interceptors.request.use(
     }
 );
 
+http.interceptors.response.use(
+    response => response,
+    error => {
+        const status = error.response?.status;
+        if (status === 401 || status === 403) {
+            redirectToLogin();
+        }
+        return Promise.reject(error);
+    }
+);
 
 
 export default http

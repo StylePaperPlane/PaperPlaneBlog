@@ -1,5 +1,7 @@
 import axios from 'axios';
 
+type ChatMetadata = Record<string, unknown>;
+
 interface ChatGPTResponse {
     id: string;
     object: string;
@@ -11,7 +13,7 @@ interface ChatGPTResponse {
         message: {
             role: string;
             content: string;
-            metadata?: any;
+            metadata?: ChatMetadata;
         };
         finish_reason: string;
     }[];

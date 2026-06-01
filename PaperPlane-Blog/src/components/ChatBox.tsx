@@ -1,15 +1,32 @@
-import { useEffect } from 'react';
-import {createBot} from 'botui';
+import {useEffect} from 'react';
+import {Block, BlockData, createBot} from 'botui';
 import {BotUI, BotUIMessageList, BotUIAction, useBotUI, useBotUIAction} from "@botui/react"
 import '../assets/default.theme.scss'
 
 
 const myBot = createBot()
 
+type StarsData = BlockData & {
+    total: number
+}
+
+type StarsResult = BlockData & {
+    starsGiven: number
+}
+
+const getStarsTotal = (action: Block | null) => {
+    const total = action?.data.total
+    return typeof total === 'number' ? total : 0
+}
+
+const isStarsResult = (data: BlockData): data is StarsResult => (
+    typeof data.starsGiven === 'number'
+)
+
 const StarsAction = () => {
     const bot = useBotUI();
     const action = useBotUIAction();
-    const array = new Array(action?.data.total).fill('⭐️');
+    const array = new Array(getStarsTotal(action)).fill('⭐️');
 
     return (
         <div>
@@ -20,7 +37,6 @@ const StarsAction = () => {
                         bot.next({ starsGiven: i + 1 }, { messageType: 'stars' });
                     }}
                 >
-                    {/*@ts-ignore*/}
                     {i + 1} {v}
                 </button>
             ))}
@@ -54,20 +70,19 @@ const messageRenderers = {
 
 function ChatBox() {
     useEffect(() => {
-        // @ts-ignore
         myBot.message.add({
             text: "你好，这里是 PaperPlane の Blog👋",
         }).then(() => {
             return myBot.wait({ waitTime: 1500 });
         }).then(() => {
             return myBot.message.add({
-                text: "我是博客的站点作者，可以在后台修改这段介绍。",
+                text: "我是 林陌青川，你也可以叫我青川😄",
             });
         }).then(() => {
             return myBot.wait({ waitTime: 1500 });
         }).then(() => {
             return myBot.message.add({
-                text: "是 [ PaperPlane ] 的使用者",
+                text: "是 [ PaperPlane ] 的开发者",
             });
         }).then(() => {
             return myBot.wait({ waitTime: 1500 });
@@ -81,11 +96,10 @@ function ChatBox() {
                 },
                 { actionType: 'selectButtons' }
             );
-            //@ts-ignore
-        }).then((res: any) => {
-            console.log(res);
+        }).then((res: BlockData) => {
             if (res.value == "and") {
-                return myBot.next()
+                myBot.next()
+                return
             }
             if (res.value == "gg") {
                 return myBot.message.add({
@@ -148,10 +162,13 @@ function ChatBox() {
                 text: "给 [ PaperPlane ] 评个星吧！"
             }).then(() => {
                 myBot.action.set(
-                    { total: 6 },
+                    { total: 6 } satisfies StarsData,
                     { actionType: 'stars' }
                 )
-                    .then(async (data) => { // data 是从 .next() 返回的数据
+                    .then(async (data: BlockData) => { // data 是从 .next() 返回的数据
+                        if (!isStarsResult(data)) {
+                            return
+                        }
                         await myBot.message.add({text: `你对 [ PaperPlane ] 的评价是 ${data.starsGiven} 星!`});
                         await myBot.wait({waitTime: 1500});
                         return myBot.message.add({
@@ -168,7 +185,7 @@ function ChatBox() {
     },[])
     return (
         <div className='chatbot' id='paperplane'>
-            <div className="logofont" style={{ textAlign: 'center', fontSize: '50px', marginBottom: '20px', marginRight: '-20px' }}>[PaperPlane]</div>
+            <div className="logofont" style={{ textAlign: 'center', fontSize: '50px', marginBottom: '20px', marginRight: '-20px' }}>[PaperPlaneの川]</div>
             <div className="popcontainer" id="fogforest" style={{ minHeight: '500px', padding: '2px 6px 4px 6px', backgroundColor: 'rgba(242, 242, 242,0.5)', borderRadius: '10px',display:'flex',flexDirection:'column'
             ,justifyContent:'center'
             }}>
