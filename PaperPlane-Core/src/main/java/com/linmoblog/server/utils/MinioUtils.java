@@ -15,6 +15,7 @@ import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.stereotype.Component;
 import org.springframework.util.FastByteArrayOutputStream;
 import org.springframework.web.multipart.MultipartFile;
@@ -30,6 +31,7 @@ import java.util.List;
  */
 @Data
 @Component
+@ConditionalOnBean(MinioClient.class)
 public class MinioUtils {
     private static final Logger logger = LoggerFactory.getLogger(MinioUtils.class);
     private static final String OBJECT_NAME_PREFIX = "/blog/";

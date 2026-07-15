@@ -10,7 +10,6 @@ import {
     Row,
     Select,
     Space, Tabs,
-    theme,
     TreeSelect
 } from 'antd';
 import { DatePicker} from 'antd';
@@ -25,9 +24,7 @@ import {fetchNoteList} from "../../../../store/components/note.tsx";
 import { QuestionCircleOutlined } from '@ant-design/icons';
 import dayjs from "dayjs";
 import {Fab} from "@mui/material";
-import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
-import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import EditIcon from "@mui/icons-material/Edit";
 import ChangeCircleIcon from "@mui/icons-material/ChangeCircle";
 import {renderNoteTags} from "../../../../apis/TagMethods.tsx";
@@ -36,6 +33,7 @@ import {resolveImageUrl} from "../../../../utils/imageUrl.ts";
 import type {AppDispatch, RootState} from "../../../../store";
 import type {CategoriesType} from "../../../../interface/CategoriesType";
 import type {TagLevelOne, TagLevelTwo} from "../../../../interface/TagType";
+import {DeleteOutlined, PlusOutlined} from "@ant-design/icons";
 
 type CategoryOption = CategoriesType & {categoryKey: number};
 type TagOption = (TagLevelOne | TagLevelTwo) & {
@@ -56,7 +54,6 @@ interface AdvancedSearchFormProps {
 const AdvancedSearchForm = ({setSearchNotes}: AdvancedSearchFormProps) => {
     //hooks区域
     const { RangePicker } = DatePicker;
-    const { token } = theme.useToken();
     const [form] = Form.useForm();
     const categories = useSelector((state: RootState) => state.categories.categories) as CategoryOption[];
     const tagList = useSelector((state: RootState) => state.tags.tag) as TagOption[];
@@ -83,19 +80,8 @@ const AdvancedSearchForm = ({setSearchNotes}: AdvancedSearchFormProps) => {
         }
     };
 
-    //表单样式
-    const formStyle: React.CSSProperties = {
-        maxWidth: '98%',
-        borderRadius: token.borderRadiusLG,
-        padding: 24,
-        margin: 'auto',
-        background: 'transparent',
-        height: '140px'
-    };
-
-
     return (
-        <Form form={form} name="advanced_search" style={formStyle} onFinish={onFinish}>
+        <Form form={form} name="advanced_search" className="notes-filter-form" onFinish={onFinish}>
             <Row gutter={24}>
                 <Col span={8}>
                     <Form.Item
@@ -466,17 +452,26 @@ const AllNotes = () => {
     return <>
         <div className="AllCard">
             <AdvancedSearchForm setSearchNotes={setStaticDate}/>
-            <Fab color="primary" aria-label="add" size='small' onClick={() => navigate('newnote')} style={{marginLeft:15,marginTop:15}}>
-                <AddIcon />
-            </Fab>
-            {hasSelected&&<Fab variant="extended" color='error' size='medium' style={{marginLeft:15,marginTop:15}} onClick={showdelModal}>
-                <DeleteForeverIcon sx={{ mr: 1 }} className='allin'/>
-                批量删除
-            </Fab>}
 
             <div className="searchRes">
-                <Tabs defaultActiveKey="1" items={items} style={{marginLeft: 10}} onChange={onChange} />
-                <div style={{ overflowX: 'hidden' }}>
+                <Tabs
+                    defaultActiveKey="1"
+                    items={items}
+                    onChange={onChange}
+                    tabBarExtraContent={
+                        <Space>
+                            {hasSelected && (
+                                <Button danger icon={<DeleteOutlined />} onClick={showdelModal}>
+                                    删除选中
+                                </Button>
+                            )}
+                            <Button type="primary" icon={<PlusOutlined />} onClick={() => navigate('newnote')}>
+                                新建文章
+                            </Button>
+                        </Space>
+                    }
+                />
+                <div className="notes-table-wrap">
                     <ConfigProvider
                         theme={{
                             components: {

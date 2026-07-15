@@ -10,7 +10,7 @@ function getTalkList(){
 
 function updateTalkById(data:updateTalk,isEdit: number){
     return http({
-        url: `/api/protect/talk/${isEdit}`,
+        url: `/api/protected/talk/${isEdit}`,
         method: "POST",
         data: data
     })
@@ -18,14 +18,14 @@ function updateTalkById(data:updateTalk,isEdit: number){
 
 function delTalkById(id: number){
     return http({
-        url: `/api/protect/talk/${id}`,
+        url: `/api/protected/talk/${id}`,
         method: "DELETE"
     })
 }
 
 function createTalk(data:Talk){
     return http({
-        url: '/api/protect/talk',
+        url: '/api/protected/talk',
         method: "POST",
         data: data
     })

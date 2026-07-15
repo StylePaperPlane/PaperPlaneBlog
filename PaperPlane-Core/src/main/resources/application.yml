@@ -6,7 +6,7 @@ spring:
     location: banner.text
   servlet:
     multipart:
-      max-file-size: 10MB
+      max-file-size: 100MB
       max-request-size: 100MB
   datasource:
     driver-class-name: ${postgres.driver-class-name:org.postgresql.Driver}
@@ -43,7 +43,22 @@ knife4j:
 
 blog:
   minio:
+    enabled: ${MINIO_ENABLED:false}
     endpoint: http://127.0.0.1:9000 # Minio服务所在地址
     bucketName: paperplane # 存储桶名称
     accessKey: ${MINIO_ACCESS_KEY:} # 访问的key
     secretKey: ${MINIO_SECRET_KEY:} # 访问的秘钥
+
+paperplane:
+  internal:
+    service-token: ${PAPERPLANE_INTERNAL_SERVICE_TOKEN:}
+
+local:
+  uploadDir: ${LOCAL_UPLOAD_DIR:upload-dir}
+
+login:
+  turnstile:
+    verify-url: ${LOGIN_TURNSTILE_VERIFY_URL:https://challenges.cloudflare.com/turnstile/v0/siteverify}
+    secret: ${LOGIN_TURNSTILE_SECRET:}
+    hostname: ${LOGIN_TURNSTILE_HOSTNAME:blog.paperplane.codes}
+    action: admin_login

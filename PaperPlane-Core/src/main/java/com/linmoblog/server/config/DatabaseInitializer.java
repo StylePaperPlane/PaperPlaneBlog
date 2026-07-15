@@ -32,7 +32,6 @@ public class DatabaseInitializer implements CommandLineRunner {
             executeDbSql();
         }
         ensureImageFolderSchema();
-        executeMusicSql();
     }
 
     private boolean checkUserTableExists() {
@@ -43,10 +42,6 @@ public class DatabaseInitializer implements CommandLineRunner {
 
     private void executeDbSql() {
         executeSqlScript("db_init/db.sql", "database initialization");
-    }
-
-    private void executeMusicSql() {
-        executeSqlScript("db_init/music.sql", "music initialization");
     }
 
     private void ensureImageFolderSchema() {

@@ -1,0 +1,90 @@
+networks:
+  paperplane_network:
+
+services:
+  paperplane_db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: memory
+      POSTGRES_USER: memory
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD}
+    networks: [paperplane_network]
+    volumes:
+      - ./pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U memory -d memory"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    restart: always
+
+  paperplane_backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    image: paperplane_core:postgres
+    environment:
+      SPRING_DATASOURCE_DRIVER_CLASS_NAME: org.postgresql.Driver
+      SPRING_DATASOURCE_URL: jdbc:postgresql://paperplane_db:5432/memory
+      SPRING_DATASOURCE_USERNAME: memory
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD}
+      PAPERPLANE_INTERNAL_SERVICE_TOKEN: ${PAPERPLANE_INTERNAL_SERVICE_TOKEN:?Set internal token}
+      LOCAL_UPLOAD_DIR: /paperplane/upload-dir
+      LOGIN_TURNSTILE_SECRET: ${LOGIN_TURNSTILE_SECRET:?Set login Turnstile secret}
+      LOGIN_TURNSTILE_HOSTNAME: blog.paperplane.codes
+    networks:
+      paperplane_network:
+        aliases:
+          - paperplane-core
+    depends_on:
+      paperplane_db:
+        condition: service_healthy
+    volumes:
+      - ./backend/upload-dir:/paperplane/upload-dir
+    restart: always
+
+  paperplane_media:
+    image: paperplane_media:production
+    environment:
+      MEDIA_ENV: production
+      MEDIA_BIND: 0.0.0.0:8090
+      DATABASE_URL: ${MEDIA_DATABASE_URL:?Set runtime database URL}
+      MIGRATION_DATABASE_URL: ${MEDIA_MIGRATION_DATABASE_URL:?Set migration database URL}
+      MEDIA_OBJECT_ROOT: /data/objects
+      MEDIA_UPLOAD_ROOT: /data/tmp
+      MEDIA_PUBLIC_BASE_URL: https://media.paperplane.codes
+      MEDIA_ALLOWED_ORIGINS: https://blog.paperplane.codes
+      MEDIA_MASTER_KEY: ${MEDIA_MASTER_KEY:?Set master key}
+      MEDIA_MASTER_KEY_VERSION: ${MEDIA_MASTER_KEY_VERSION:-1}
+      MEDIA_SESSION_HMAC_KEY: ${MEDIA_SESSION_HMAC_KEY:?Set HMAC key}
+      PAPERPLANE_INTERNAL_SERVICE_TOKEN: ${PAPERPLANE_INTERNAL_SERVICE_TOKEN:?Set internal token}
+      CORE_INTROSPECT_URL: http://paperplane-core:8080/api/internal/auth/introspect
+    ports:
+      - "127.0.0.1:8090:8090"
+    networks: [paperplane_network]
+    depends_on:
+      paperplane_db:
+        condition: service_healthy
+      paperplane_backend:
+        condition: service_started
+    volumes:
+      - ./media/data/objects:/data/objects
+      - ./media/data/tmp:/data/tmp
+    restart: always
+
+  paperplane_frontend:
+    image: nginx:stable-alpine
+    ports:
+      - "80:80"
+      - "443:443"
+    networks: [paperplane_network]
+    depends_on:
+      - paperplane_backend
+      - paperplane_media
+    volumes:
+      - ./frontend/dist:/usr/share/nginx/html:ro
+      - ./frontend/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./media/data/objects:/srv/paperplane-media:ro
+      - /var/www/certbot:/var/www/certbot:ro
+      - /etc/letsencrypt:/etc/letsencrypt:ro
+    restart: always

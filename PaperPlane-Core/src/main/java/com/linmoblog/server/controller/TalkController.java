@@ -24,7 +24,7 @@ public class TalkController {
 
     @ApiOperationLog(description = "添加说说")
     @Operation(summary = "添加说说")
-    @PostMapping("/protect/talk")
+    @PostMapping("/protected/talk")
     public Result<Void> addTalk(@RequestBody Talk talk) {
         logTalkMutation("Adding talk", talk);
         return talkService.addTalk(talk);
@@ -39,14 +39,14 @@ public class TalkController {
 
     @ApiOperationLog(description = "删除说说")
     @Operation(summary = "删除说说")
-    @DeleteMapping("/protect/talk/{id}")
+    @DeleteMapping("/protected/talk/{id}")
     public Result<Void> deleteTalk(@PathVariable Integer id) {
         return talkService.deleteTalk(id);
     }
 
     @ApiOperationLog(description = "修改说说")
     @Operation(summary = "修改说说")
-    @PostMapping("/protect/talk/{id}")
+    @PostMapping("/protected/talk/{id}")
     public Result<Void> updateTalk(@PathVariable Integer id, @RequestBody Talk talk) {
         logTalkMutation("Updating talk id " + id, talk);
         return talkService.updateTalk(id, talk);

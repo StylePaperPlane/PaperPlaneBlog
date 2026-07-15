@@ -1,17 +1,41 @@
 .AllCard
-  margin-top: 10px
-  height: 63%
+  min-height: 0
+  height: 100%
+  display: flex
+  flex-direction: column
+  overflow: hidden
+
+  .notes-filter-form
+    padding: 16px 20px 4px
+    border-bottom: 1px solid #edf1f5
+
+    .ant-form-item
+      margin-bottom: 12px
+
   .searchRes
-    line-height: 200px
+    min-height: 0
+    flex: 1
+    display: flex
+    flex-direction: column
     text-align: center
     background: transparent
-    border-radius: 10px
-    margin-top: 16px
-    max-width: 98%
-    margin-left: 1%
+    border-radius: 0
+    margin-top: 0
+    max-width: 100%
+    margin-left: 0
     overflow-y: hidden
     overflow-x: hidden
-    height: 100%
     @media only screen and (max-width: 1530px)
-      height: 100%
       overflow-x: hidden
+
+    .notes-table-wrap
+      min-height: 0
+      flex: 1
+      overflow: hidden
+
+      .ant-table-wrapper
+        height: 100%
+
+    .ant-tabs-nav
+      margin: 0
+      padding: 0 20px

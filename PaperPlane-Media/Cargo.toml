@@ -1,0 +1,59 @@
+[package]
+name = "paperplane-media"
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.96"
+license = "MIT"
+publish = false
+
+[lib]
+name = "paperplane_media"
+path = "src/lib.rs"
+
+[[bin]]
+name = "paperplane-media"
+path = "src/bin/server.rs"
+
+[[bin]]
+name = "mediactl"
+path = "src/bin/mediactl.rs"
+
+[dependencies]
+aes-gcm = "0.11.0"
+anyhow = "1.0"
+axum = { version = "0.8.9", features = ["macros", "multipart"] }
+base64 = "0.22"
+bytes = "1.10"
+clap = { version = "4.5", features = ["derive", "env"] }
+futures-util = "0.3"
+hmac = "0.12"
+http = "1.3"
+rand = "0.10"
+reqwest = { version = "0.12", default-features = false, features = ["json", "rustls-tls"] }
+rsa = { version = "0.10.0-rc.12", features = ["sha2"] }
+secrecy = { version = "0.10", features = ["serde"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+sha2 = "0.10"
+sqlx = { version = "0.9.0", features = ["runtime-tokio", "tls-rustls-ring-native-roots", "postgres", "uuid", "time", "json", "migrate"] }
+tempfile = "3.20"
+thiserror = "2.0"
+time = { version = "0.3", features = ["serde", "formatting", "parsing"] }
+tokio = { version = "1.46", features = ["full"] }
+tower = "0.5"
+tower-http = { version = "0.6", features = ["cors", "fs", "limit", "request-id", "trace"] }
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter", "json"] }
+utoipa = { version = "5.5", features = ["axum_extras", "time", "uuid"] }
+uuid = { version = "1.17", features = ["serde", "v4"] }
+zip = { version = "5.1", default-features = false, features = ["deflate"] }
+zeroize = { version = "1.8", features = ["derive"] }
+
+[dev-dependencies]
+proptest = "1.7"
+tower = { version = "0.5", features = ["util"] }
+
+[profile.release]
+lto = "thin"
+codegen-units = 1
+strip = true

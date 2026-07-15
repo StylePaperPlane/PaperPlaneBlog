@@ -33,11 +33,50 @@ services:
       SPRING_DATASOURCE_URL: jdbc:postgresql://paperplane_db:5432/paperplane
       SPRING_DATASOURCE_USERNAME: paperplane
       SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in a private .env file}
+      PAPERPLANE_INTERNAL_SERVICE_TOKEN: local-media-internal-token
+      LOCAL_UPLOAD_DIR: /paperplane/upload-dir
+      LOGIN_TURNSTILE_SECRET: ${LOGIN_TURNSTILE_SECRET:-1x0000000000000000000000000000000AA}
+      LOGIN_TURNSTILE_HOSTNAME: ${LOGIN_TURNSTILE_HOSTNAME:-localhost}
     networks:
-      - my_network
+      my_network:
+        aliases:
+          - paperplane-core
     depends_on:
       paperplane_db:
         condition: service_healthy
     volumes:
       - ./upload-dir:/paperplane/upload-dir
+    restart: always
+
+  paperplane_media:
+    build:
+      context: ../PaperPlane-Media
+      dockerfile: Dockerfile
+    image: paperplane_media:local
+    ports:
+      - "8090:8090"
+    environment:
+      MEDIA_ENV: development
+      MEDIA_BIND: 0.0.0.0:8090
+      DATABASE_URL: postgres://paperplane:${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in a private .env file}@paperplane_db:5432/paperplane
+      MIGRATION_DATABASE_URL: postgres://paperplane:${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in a private .env file}@paperplane_db:5432/paperplane
+      MEDIA_OBJECT_ROOT: /data/objects
+      MEDIA_UPLOAD_ROOT: /data/tmp
+      MEDIA_PUBLIC_BASE_URL: http://127.0.0.1:8090
+      MEDIA_ALLOWED_ORIGINS: http://localhost:5173,http://127.0.0.1:5173
+      MEDIA_MASTER_KEY: AQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQE=
+      MEDIA_MASTER_KEY_VERSION: 1
+      MEDIA_SESSION_HMAC_KEY: AgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgI=
+      PAPERPLANE_INTERNAL_SERVICE_TOKEN: local-media-internal-token
+      CORE_INTROSPECT_URL: http://paperplane-core:8080/api/internal/auth/introspect
+    networks:
+      - my_network
+    depends_on:
+      paperplane_db:
+        condition: service_healthy
+      paperplane_backend:
+        condition: service_started
+    volumes:
+      - ../PaperPlane-Media/data/objects:/data/objects
+      - ../PaperPlane-Media/data/tmp:/data/tmp
     restart: always

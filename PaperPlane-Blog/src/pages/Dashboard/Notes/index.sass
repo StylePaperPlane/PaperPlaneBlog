@@ -1,19 +1,72 @@
-.header
+.notes-admin
+  min-height: 0
+  height: 100%
   display: flex
-  flex-direction: row
+  flex-direction: column
+  overflow: hidden
+
+.notes-subnav
+  min-height: 66px
+  padding: 0 24px
+  display: flex
   align-items: center
+  gap: 4px
+  border-bottom: 1px solid var(--admin-border)
+  overflow-x: auto
 
-  &::before
-    content: ''
-    width: 98%
-    background-color: #484f58
-    height: 2px
-    position: absolute
-    margin-top: 40px
-    margin-left: 1%
-  .twoMenu
-    background-color: transparent
-    border-right: none
+  button
+    min-height: 38px
+    padding: 0 13px
+    display: inline-flex
+    align-items: center
+    gap: 8px
+    border: 0
+    border-radius: 9px
+    background: transparent
+    color: #6b7789
+    font: inherit
+    font-size: 13px
+    font-weight: 650
+    white-space: nowrap
+    cursor: pointer
+    transition: color 160ms ease, background 160ms ease, transform 120ms ease
 
-  .ant-menu-light .ant-menu-submenu-selected >.ant-menu-submenu-title
-    //color: #1D1F2C
+    &:hover
+      color: var(--admin-accent)
+      background: #f1f7f8
+
+    &:active
+      transform: translateY(1px)
+
+    &.is-active
+      color: var(--admin-accent)
+      background: var(--admin-accent-soft)
+
+.notes-admin-content
+  min-height: 0
+  flex: 1
+  overflow: hidden
+
+  .AllCard
+    margin-top: 0
+    padding-top: 4px
+
+  .ant-form
+    height: auto !important
+
+  .searchRes
+    max-width: none !important
+    margin-left: 0 !important
+    border-top: 1px solid #edf1f5
+    border-radius: 0 !important
+
+@media (max-width: 760px)
+  .notes-subnav
+    min-height: 58px
+    padding: 0 12px
+
+  .notes-subnav button
+    padding: 0 10px
+
+    span
+      display: none

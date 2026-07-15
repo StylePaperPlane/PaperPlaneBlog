@@ -1,4 +1,4 @@
-import { defineConfig } from 'vite';
+import { defineConfig, loadEnv } from 'vite';
 import react from '@vitejs/plugin-react';
 import { chunkSplitPlugin } from 'vite-plugin-chunk-split';
 import compressionPlugin from 'vite-plugin-compression';
@@ -26,9 +26,13 @@ const manualChunks = {
     'utility-vendor': [/node_modules\/(?:axios|dayjs|lodash|typed\.js)\//],
 };
 
-export default defineConfig({
+export default defineConfig(({command, mode}) => {
+    const loginSiteKey = loadEnv(mode, '.', '').VITE_LOGIN_TURNSTILE_SITE_KEY?.trim();
+    if (command === 'build' && mode === 'production' && !loginSiteKey) {
+        throw new Error('Production build requires VITE_LOGIN_TURNSTILE_SITE_KEY');
+    }
+    return {
     base: '/',
-    mode: 'production',
     plugins: [
         react(),
         chunkSplitPlugin({
@@ -44,6 +48,9 @@ export default defineConfig({
         }),
     ],
     server: {
+        headers: {
+            'Service-Worker-Allowed': '/',
+        },
         proxy: {
             '/uploads': {
                 target: 'http://127.0.0.1:8080',
@@ -80,4 +87,5 @@ export default defineConfig({
             },
         }
     },
+    };
 });

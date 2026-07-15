@@ -16,6 +16,7 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * EnvironmentPostProcessor是Spring Boot提供的一个扩展点，可以在应用上下文环境被创建前，对环境属性进行预处理，包括从数据库中读取配置并注入。
@@ -33,6 +34,8 @@ public class CustomEnvironmentPostProcessor implements EnvironmentPostProcessor 
 
     private static final String SOURCE_SQL = "select config_key, config_value from sys_config";
 
+    private static final Set<String> DEPLOYMENT_OWNED_KEYS = Set.of("local.uploadDir");
+
     @Override
     public void postProcessEnvironment(ConfigurableEnvironment environment, SpringApplication application) {
         try {
@@ -44,10 +47,13 @@ public class CustomEnvironmentPostProcessor implements EnvironmentPostProcessor 
             String driver = environment.getProperty("spring.datasource.driver-class-name");
             Class.forName(driver);
             try (Connection connection = DriverManager.getConnection(url, username, password);
-                 Statement statement = connection.createStatement();
+                Statement statement = connection.createStatement();
                  ResultSet resultSet = statement.executeQuery(SOURCE_SQL)) {
                 while (resultSet.next()) {
-                    map.put(resultSet.getString(CONFIG_KEY_COLUMN), resultSet.getString(CONFIG_VALUE_COLUMN));
+                    String key = resultSet.getString(CONFIG_KEY_COLUMN);
+                    if (!DEPLOYMENT_OWNED_KEYS.contains(key)) {
+                        map.put(key, resultSet.getString(CONFIG_VALUE_COLUMN));
+                    }
                 }
             }
 

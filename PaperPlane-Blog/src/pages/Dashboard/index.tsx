@@ -1,11 +1,8 @@
 import {useEffect, useRef, useState} from 'react';
 import './index.css';
-// import '../../assets/font/iconfont.js';
-// import '../../assets/font/iconfont.css';
-import {Outlet, useNavigate} from "react-router-dom";
+import {Outlet, useLocation, useNavigate} from "react-router-dom";
 import deleteToken from "../../apis/deleteToken.tsx";
-import {Button, Space, notification, message, Card, Spin} from "antd";
-import SettingButton from "../../components/Buttons/SettingButton";
+import {Button, Space, notification, message, Spin, Tooltip} from "antd";
 import {useDispatch, useSelector} from "react-redux";
 import {fetchUserInfo} from "../../store/components/user.tsx";
 import UserState from "../../interface/UserState";
@@ -17,6 +14,20 @@ import '@fontsource/roboto/400.css';
 import '@fontsource/roboto/500.css';
 import '@fontsource/roboto/700.css';
 import {AppDispatch} from "../../store";
+import {
+    CustomerServiceOutlined,
+    ExpandOutlined,
+    FileTextOutlined,
+    HomeOutlined,
+    LinkOutlined,
+    LogoutOutlined,
+    MenuFoldOutlined,
+    MenuUnfoldOutlined,
+    MessageOutlined,
+    PictureOutlined,
+    SettingOutlined
+} from "@ant-design/icons";
+import {resolveImageUrl} from "../../utils/imageUrl.ts";
 
 interface FullscreenElement extends HTMLDivElement {
     mozRequestFullScreen?: () => Promise<void> | void;
@@ -31,16 +42,12 @@ interface FullscreenDocument extends Document {
 }
 
 const requestFullscreen = (element: FullscreenElement | null) => {
-    if (!element) {
-        return;
-    }
-
+    if (!element) return;
     const request =
         element.requestFullscreen ||
         element.mozRequestFullScreen ||
         element.webkitRequestFullscreen ||
         element.msRequestFullscreen;
-
     request?.call(element);
 };
 
@@ -51,132 +58,60 @@ const exitFullscreen = () => {
         fullscreenDocument.mozCancelFullScreen ||
         fullscreenDocument.webkitExitFullscreen ||
         fullscreenDocument.msExitFullscreen;
-
     exit?.call(fullscreenDocument);
 };
 
 const Dashboard = () => {
-    //hooks区域
     const navigate = useNavigate();
-    const [SelectCurrent,setSelectCurrent] = useState(1)
-    const [isShellClosed, setShellClosed] = useState(true);
+    const location = useLocation();
+    const [isShellClosed, setShellClosed] = useState(false);
     const [api, contextHolder] = notification.useNotification();
     const [loading, setLoading] = useState(false);
     const dispatch = useDispatch<AppDispatch>();
     const avatar = useSelector((state: { user: UserState }) => state.user.avatar);
     const name = useSelector((state: { user: UserState }) => state.user.name);
 
-    //初始渲染
     useEffect(() => {
-        dispatch(fetchUserInfo())
-        dispatch(fetchCategories())
-        dispatch(fetchTags())
-        dispatch(fetchNoteList())
-        const currentHashCode =
-            location.hash === '#/dashboard/comments' ? 3 :
-                location.hash === '#/dashboard/albums' ? 4 :
-                    location.hash === '#/dashboard/friends' ? 5 :
-                        location.hash === '#/dashboard/music' ? 6 :
-                            location.hash.startsWith('#/dashboard/notes') || location.hash === '#/dashboard' ? 2 : 2;
-        setSelectCurrent(currentHashCode)
+        dispatch(fetchUserInfo());
+        dispatch(fetchCategories());
+        dispatch(fetchTags());
+        dispatch(fetchNoteList());
         setLoading(true);
-    },[dispatch])
+    }, [dispatch]);
 
-    //回调函数区域
     const openNotification = () => {
-        const key = `open${Date.now()}`
-        const btn = (
-            <Space>
-                <Button type="link" size="small" onClick={() => api.destroy()}>
-                    返回
-                </Button>
-                <Button type="primary" size="small" onClick={() => {
-                    deleteToken()
-                    navigate('/')
-                    message.success('退出成功')
-                }}>
-                    确认
-                </Button>
-            </Space>
-        );
+        const key = `open${Date.now()}`;
         api.open({
-            message: '退出确认',
-            btn,
+            message: '确认退出登录？',
+            description: '退出后需要重新输入管理员账号和密码。',
             key,
+            btn: (
+                <Space>
+                    <Button type="text" size="small" onClick={() => api.destroy()}>
+                        取消
+                    </Button>
+                    <Button type="primary" size="small" onClick={() => {
+                        deleteToken();
+                        navigate('/login');
+                        message.success('已退出登录');
+                    }}>
+                        退出
+                    </Button>
+                </Space>
+            ),
         });
     };
 
-    const handleToggleClick = () => {
-        setShellClosed(!isShellClosed);
-    };
-
-    const handleSearchClick = () => {
-        setShellClosed(false);
-    };
-
-    // 导航栏数据
     const sidebar = [
-        {
-            index: 2,
-            name: '笔记',
-            icon: 'icon-bianji2',
-            to: 'notes',
-            active: false,
-            children: [
-                {
-                    index: 201,
-                    name: '全部文章',
-                    to: 'allnotes',
-                },
-                {
-                    index: 202,
-                    name: '编辑文章',
-                    to: 'newnote',
-                },{
-                    index: 203,
-                    name: '全部分类',
-                    to: 'allcategorize',
-                },{
-                    index: 204,
-                    name: '全部标签',
-                    to: 'alltags',
-                },
-            ]
-        },
-        {
-            index: 3,
-            name: '说说',
-            icon: 'icon-pinglun2',
-            to: 'comments',
-            active: false
-        },
-        {
-            index: 4,
-            name: '图库',
-            icon: 'icon-xiangce',
-            to: 'albums',
-            active: false
-        },
-        {
-            index: 5,
-            name: '友链圈',
-            icon: 'icon-youlianguanli',
-            to: 'friends',
-            active: false
-        },
-        {
-            index: 6,
-            name: '音乐',
-            icon: 'icon-yinle',
-            to: 'music',
-            active: false
-        }
-    ]
+        {name: '笔记', icon: <FileTextOutlined />, to: '/dashboard/notes'},
+        {name: '说说', icon: <MessageOutlined />, to: '/dashboard/comments'},
+        {name: '图库', icon: <PictureOutlined />, to: '/dashboard/albums'},
+        {name: '友链', icon: <LinkOutlined />, to: '/dashboard/friends'},
+        {name: '音乐', icon: <CustomerServiceOutlined />, to: '/dashboard/music'}
+    ];
 
-
-    //全屏
     const fullScreenRef = useRef<FullscreenElement>(null);
-    const [isFullScreen, setIsFullScreen] = useState<boolean>(false);
+    const [isFullScreen, setIsFullScreen] = useState(false);
 
     const toggleFullScreen = () => {
         if (!isFullScreen) {
@@ -188,82 +123,120 @@ const Dashboard = () => {
         }
     };
 
+    const activeNav = sidebar.find(item => location.pathname.startsWith(item.to));
+    const pageTitle = location.pathname.includes('/newnote')
+        ? '编辑文章'
+        : location.pathname.includes('/allcategorize')
+            ? '分类管理'
+            : location.pathname.includes('/alltags')
+                ? '标签管理'
+                : location.pathname.includes('/usercontrol')
+                    ? '站点设置'
+                    : activeNav?.name || '工作台';
+
     return (
-        <div className="contain">
+        <div className={`dashboard-shell ${isShellClosed ? 'is-collapsed' : ''}`}>
             {!loading ? (
                 <div className="loading-overlay">
-                    <Spin tip="Loading..." className="loading">
-                    </Spin>
+                    <Spin tip="正在准备工作台..." />
                 </div>
             ) : (
-                <>
+                <div className="dashboard-frame" ref={fullScreenRef}>
+                    <aside className="dashboard-sidebar">
+                        <div className="dashboard-brand">
+                            <img src="/logo.png" alt="" />
+                            <div className="dashboard-brand-copy">
+                                <strong>PaperPlane</strong>
+                                <span>Content Studio</span>
+                            </div>
+                        </div>
 
-                    <div className="content" ref={fullScreenRef}>
-                        <div className={`shell ${isShellClosed ? 'close' : ''} slider`}>
-                            <nav className={`shell ${isShellClosed ? 'close' : ''}`}>
-                                <header>
-                                    <div className="image-text">
-                        <span className="image">
-                            <img src={avatar} alt="" />
-                        </span>
-                                        <div className="text logo-text">
-                                            <span className="name">
-                                                {name}
-                                            </span>
-                                        </div>
-                                    </div>
-                                    <i className="iconfont icon-iconfonticonfontarrowright toggle" onClick={handleToggleClick} style={{fontSize: 20}}></i>
-                                </header>
+                        <nav className="dashboard-nav" aria-label="后台导航">
+                            <p className="dashboard-nav-label">内容管理</p>
+                            {sidebar.map(item => (
+                                <button
+                                    className={`dashboard-nav-item ${location.pathname.startsWith(item.to) ? 'is-active' : ''}`}
+                                    type="button"
+                                    onClick={() => navigate(item.to)}
+                                    key={item.to}
+                                    title={isShellClosed ? item.name : undefined}
+                                >
+                                    <span className="dashboard-nav-icon">{item.icon}</span>
+                                    <span className="dashboard-nav-text">{item.name}</span>
+                                </button>
+                            ))}
+                        </nav>
 
-                                <div className="menu-bar">
-                                    <div className="menu">
-                                        <li className="search-box" onClick={handleSearchClick}>
-                                            <i className="iconfont icon-sousuo1 icon"></i>
-                                            <input type="text" placeholder="search..." />
-                                        </li>
+                        <div className="dashboard-sidebar-footer">
+                            <button
+                                className={`dashboard-nav-item ${location.pathname.includes('/usercontrol') ? 'is-active' : ''}`}
+                                type="button"
+                                onClick={() => navigate('/dashboard/usercontrol')}
+                                title={isShellClosed ? '站点设置' : undefined}
+                            >
+                                <span className="dashboard-nav-icon"><SettingOutlined /></span>
+                                <span className="dashboard-nav-text">站点设置</span>
+                            </button>
+                            <button className="dashboard-nav-item danger" type="button" onClick={openNotification}>
+                                <span className="dashboard-nav-icon"><LogoutOutlined /></span>
+                                <span className="dashboard-nav-text">退出登录</span>
+                            </button>
+                        </div>
+                    </aside>
 
-                                        <ul className="menu-links">
-                                            {sidebar.map(item => (
-                                                <li className={`nav-links ${SelectCurrent === item.index ? 'nav_select' : ''}`}
-                                                    onClick={() => {
-                                                        navigate(item.to)
-                                                        setSelectCurrent(item.index)
-                                                    }} key={item.index}>
-                                                    <i className={`iconfont ${item.icon} icon`}></i>
-                                                    <span className="text nac-text">{item.name}</span>
-                                                </li>
-                                            ))}
-                                        </ul>
-                                    </div>
+                    <section className="dashboard-main">
+                        <header className="dashboard-topbar">
+                            <div className="dashboard-topbar-start">
+                                <button
+                                    className="dashboard-icon-button"
+                                    type="button"
+                                    onClick={() => setShellClosed(!isShellClosed)}
+                                    aria-label={isShellClosed ? '展开侧栏' : '收起侧栏'}
+                                >
+                                    {isShellClosed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
+                                </button>
+                                <div className="dashboard-page-heading">
+                                    <span>PaperPlane 管理后台</span>
+                                    <h1>{pageTitle}</h1>
+                                </div>
+                            </div>
 
-                                    <div className="bottom-content">
-                                        <li className="nav-links" onClick={() => navigate('usercontrol')}>
-                                            <i className="iconfont icon-iconfontcog icon"></i>
-                                            <span className="text nac-text">用户管理</span>
-                                        </li>
-
-                                        <li className="nav-links" onClick={openNotification}>
-                                            <i className="iconfont icon-tuichu icon"></i>
-                                            <span className="text nac-text">退出登录</span>
-                                        </li>
+                            <div className="dashboard-topbar-actions">
+                                <Tooltip title="查看博客">
+                                    <button className="dashboard-icon-button" type="button" onClick={() => navigate('/')}>
+                                        <HomeOutlined />
+                                    </button>
+                                </Tooltip>
+                                <Tooltip title="全屏">
+                                    <button className="dashboard-icon-button" type="button" onClick={toggleFullScreen}>
+                                        <ExpandOutlined />
+                                    </button>
+                                </Tooltip>
+                                <div className="dashboard-user">
+                                    <img
+                                        src={resolveImageUrl(avatar) || '/logo.png'}
+                                        alt={`${name || 'PaperPlane'} 的头像`}
+                                        onError={event => {
+                                            event.currentTarget.src = '/logo.png';
+                                        }}
+                                    />
+                                    <div>
+                                        <strong>{name || 'PaperPlane'}</strong>
+                                        <span>管理员</span>
                                     </div>
                                 </div>
-                            </nav>
-                        </div>
-                        <Card style={{ width: "90%",height: '95%' ,marginLeft:80}} className="Card">
-                            <Outlet />
-                        </Card>
+                            </div>
+                        </header>
 
-                        {/*  悬浮按钮  */}
-
-                        <div className='setting_btn' onClick={()=>toggleFullScreen()}>
-                            <SettingButton />
-                        </div>
-                    </div>
-
-            {contextHolder}
-                </>
-                )}
+                        <main className="dashboard-content">
+                            <div className="dashboard-surface">
+                                <Outlet />
+                            </div>
+                        </main>
+                    </section>
+                    {contextHolder}
+                </div>
+            )}
         </div>
     );
 };

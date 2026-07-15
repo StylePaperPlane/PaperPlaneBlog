@@ -29,13 +29,52 @@ services:
       SPRING_DATASOURCE_URL: jdbc:postgresql://paperplane_db:5432/paperplane
       SPRING_DATASOURCE_USERNAME: paperplane
       SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in a private .env file}
+      PAPERPLANE_INTERNAL_SERVICE_TOKEN: ${PAPERPLANE_INTERNAL_SERVICE_TOKEN:?Set PAPERPLANE_INTERNAL_SERVICE_TOKEN}
+      LOCAL_UPLOAD_DIR: /paperplane/upload-dir
+      LOGIN_TURNSTILE_SECRET: ${LOGIN_TURNSTILE_SECRET:?Set LOGIN_TURNSTILE_SECRET}
+      LOGIN_TURNSTILE_HOSTNAME: blog.paperplane.codes
     networks:
-      - paperplane_network
+      paperplane_network:
+        aliases:
+          - paperplane-core
     depends_on:
       paperplane_db:
         condition: service_healthy
     volumes:
       - ./PaperPlane-Core/upload-dir:/paperplane/upload-dir
+    restart: always
+
+  paperplane_media:
+    build:
+      context: ./PaperPlane-Media
+      dockerfile: Dockerfile
+    image: paperplane_media:latest
+    environment:
+      MEDIA_ENV: production
+      MEDIA_BIND: 0.0.0.0:8090
+      DATABASE_URL: ${MEDIA_DATABASE_URL:?Set an URL-encoded MEDIA_DATABASE_URL}
+      MIGRATION_DATABASE_URL: ${MEDIA_MIGRATION_DATABASE_URL:?Set an URL-encoded MEDIA_MIGRATION_DATABASE_URL}
+      MEDIA_OBJECT_ROOT: /data/objects
+      MEDIA_UPLOAD_ROOT: /data/tmp
+      MEDIA_PUBLIC_BASE_URL: https://media.paperplane.codes
+      MEDIA_ALLOWED_ORIGINS: https://blog.paperplane.codes
+      MEDIA_MASTER_KEY: ${MEDIA_MASTER_KEY:?Set MEDIA_MASTER_KEY}
+      MEDIA_MASTER_KEY_VERSION: ${MEDIA_MASTER_KEY_VERSION:-1}
+      MEDIA_SESSION_HMAC_KEY: ${MEDIA_SESSION_HMAC_KEY:?Set MEDIA_SESSION_HMAC_KEY}
+      PAPERPLANE_INTERNAL_SERVICE_TOKEN: ${PAPERPLANE_INTERNAL_SERVICE_TOKEN:?Set PAPERPLANE_INTERNAL_SERVICE_TOKEN}
+      CORE_INTROSPECT_URL: http://paperplane-core:8080/api/internal/auth/introspect
+    ports:
+      - "127.0.0.1:8090:8090"
+    networks:
+      - paperplane_network
+    depends_on:
+      paperplane_db:
+        condition: service_healthy
+      paperplane_backend:
+        condition: service_started
+    volumes:
+      - ./PaperPlane-Media/data/objects:/data/objects
+      - ./PaperPlane-Media/data/tmp:/data/tmp
     restart: always
 
   paperplane_frontend:
@@ -44,6 +83,8 @@ services:
       dockerfile: Dockerfile
       args:
         VITE_HTTP_BASEURL: ""
+        VITE_MEDIA_BASE_URL: https://media.paperplane.codes
+        VITE_LOGIN_TURNSTILE_SITE_KEY: ${LOGIN_TURNSTILE_SITE_KEY:?Set LOGIN_TURNSTILE_SITE_KEY}
     image: paperplane_blog:latest
     environment:
       BACK_API: http://paperplane_backend:8080
@@ -53,4 +94,7 @@ services:
       - paperplane_network
     depends_on:
       - paperplane_backend
+      - paperplane_media
+    volumes:
+      - ./PaperPlane-Media/data/objects:/srv/paperplane-media:ro
     restart: always

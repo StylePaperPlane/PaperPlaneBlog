@@ -5,6 +5,7 @@ import { CSSProperties, useEffect, useRef, useState } from "react";
 import './App.sass';
 import BottomMenu from "./components/BottomMenu";
 import ElasticUnderlay from "./components/ElasticUnderlay";
+import MusicPlayer from "./features/music-player";
 
 const MAX_BOTTOM_OVERSCROLL = 96;
 const BOTTOM_RELEASE_MS = 520;
@@ -149,6 +150,7 @@ function App() {
                 <Outlet />
             </div>
             <BottomMenu scrollHeight={scrollHeight} isDark={isDark} setDark={setDark}/>
+            <MusicPlayer />
         </div>
     );
 }

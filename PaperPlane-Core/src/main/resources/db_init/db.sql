@@ -149,7 +149,6 @@ insert into sys_config (id, config_name, config_key, config_value, is_private_fl
     (12, '阿里云-bucket', 'ali.bucket', 'wkq-img', '1'),
     (13, '阿里云-endpoint', 'ali.endpoint', 'oss-cn-chengdu.aliyuncs.com', '0'),
     (16, '阿里云-上传路径', 'ali.uploadPath', 'blog/pic/', '0'),
-    (17, '本地存储-上传路径', 'local.uploadDir', 'upload-dir', '1'),
     (19, 'JWT-key(设置复杂一点，否则会报错)', 'jwt.key', 'sdfasdfasdfq2w2easdfajsiodfhasuidhfasopidfhasiopdfuasidfasdfasdf', '1'),
     (21, 'JWT-过期时间(毫秒)', 'jwt.expire', '86400000', '0');
 
@@ -160,30 +159,6 @@ values ('default', 'This is the introduction for the default category', 'default
 
 insert into tag_level_1 (title)
 values ('default');
-
-insert into music_tracks (title, artist, audio_url, cover_url, lyric_url, sort_order, enabled, create_time, update_time)
-select 'Always Online',
-       '',
-       '/music/Always Online/Always Online.mp3',
-       '/music/Always Online/Always Online.jpg',
-       '/music/Always Online/Always Online.lrc',
-       1,
-       true,
-       now(),
-       now()
-where not exists (select 1 from music_tracks where title = 'Always Online');
-
-insert into music_tracks (title, artist, audio_url, cover_url, lyric_url, sort_order, enabled, create_time, update_time)
-select 'Closer',
-       '',
-       '/music/Closer/Closer.mp3',
-       '/music/Closer/Closer.jpg',
-       '/music/Closer/Closer.lrc',
-       2,
-       true,
-       now(),
-       now()
-where not exists (select 1 from music_tracks where title = 'Closer');
 
 insert into web_info (user_account, user_password, blog_title, blog_author, blog_domain, blog_icp, blog_description, user_avatar)
 values ('admin', null, 'PaperPlane', 'PaperPlane', '127.0.0.1', '粤ICP备XXXXXXXX号-1', '这里是PaperPlane', 'https://img.picgo.net/2024/05/04/avatar144c348b2adf3b5c.jpeg');

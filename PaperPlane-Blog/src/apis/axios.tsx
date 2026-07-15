@@ -2,7 +2,7 @@ import axios from "axios";
 import getToken from "./getToken.tsx"
 import deleteToken from "./deleteToken.tsx";
 
-export const httpBaseURL = import.meta.env.VITE_HTTP_BASEURL || '';
+export const httpBaseURL = import.meta.env.DEV ? (import.meta.env.VITE_HTTP_BASEURL?.trim() || '') : '';
 
 const isProtectedRoute = () => window.location.pathname.startsWith('/dashboard');
 

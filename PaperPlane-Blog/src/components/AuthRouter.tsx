@@ -9,14 +9,14 @@ interface AuthRouterProps {
 
 export function AuthRouter({children}: AuthRouterProps) {
     const navigate = useNavigate();
+    const token = getToken();
 
     useEffect(() => {
-        const token = getToken();
         if (!token) {
             message.error('请先登录！');
-            navigate('/');
+            navigate('/login', {replace: true});
         }
-    }, [navigate]);
+    }, [navigate, token]);
 
-    return <>{children}</>;
+    return token ? <>{children}</> : null;
 }

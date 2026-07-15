@@ -17,7 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 
 @RestController
-@RequestMapping(value = "/api/protect")
+@RequestMapping(value = "/api/protected")
 @Tag(name = "图片接口")
 public class ImageController {
     private final ImageService imageService;

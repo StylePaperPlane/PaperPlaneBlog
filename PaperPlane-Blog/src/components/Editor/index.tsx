@@ -35,7 +35,7 @@ const Editor_ = ({ setNoteContent, noteContent }: Editor_Props) => {
             const formData = new FormData();
             formData.append('file', files[0]);
             const response = await http({
-                url: '/api/protect/upload',
+                url: '/api/protected/upload',
                 method: 'POST',
                 data: formData
             });
