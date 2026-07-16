@@ -77,7 +77,7 @@ const Article:React.FC<ArticleOption> = ({ item, index, Categories, name, tagLis
 
                 <div className="ArticleContent">
                     <div className="ArticleCover">
-                        {isVisible && <LazyImage src={item.cover} />}
+                        <LazyImage src={item.cover} />
                     </div>
                     <div className="ArticleBody">
                         <div className="ArticleCategory" style={{ color: Categories.find(category => category.categoryKey === item.noteCategory)?.color }}>

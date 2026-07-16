@@ -1,10 +1,14 @@
 import type {components} from '../../secure-media/api/schema';
 import type {MusicCatalog, PlayerPlaylist} from '../model/playlist';
 import type {MusicTrack} from '../../../interface/MusicType';
+import {shuffleCopy, type RandomSource} from '../lib/shuffle';
 
 type PublicCatalogDto = components['schemas']['PublicCatalog'];
 
-export const normalizeCatalog = (catalog: PublicCatalogDto): MusicCatalog => {
+export const normalizeCatalog = (
+    catalog: PublicCatalogDto,
+    random: RandomSource = Math.random,
+): MusicCatalog => {
     const tracks: MusicTrack[] = catalog.tracks.map((track, index) => ({
         musicKey: track.musicKey,
         assetId: track.assetId,
@@ -22,7 +26,7 @@ export const normalizeCatalog = (catalog: PublicCatalogDto): MusicCatalog => {
     }));
     const byId = new Map(tracks.map(track => [track.musicKey, track]));
     const playlists: PlayerPlaylist[] = [
-        {id: 'all', name: '全部歌曲', tracks},
+        {id: 'all', name: '全部歌曲', tracks: shuffleCopy(tracks, random)},
         ...catalog.playlists.map(playlist => ({
             id: playlist.playlistId,
             name: playlist.name,
