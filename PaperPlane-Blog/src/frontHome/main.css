@@ -60,6 +60,7 @@
     --music-player-control-hover: rgba(128, 191, 212, 0.34);
     --music-player-accent: #27a6cc;
     --music-player-accent-contrast: #fffafb;
+    --music-player-playlist-name: #303d67;
     --music-player-cover-border: rgba(255, 250, 251, 0.86);
 }
 
@@ -93,6 +94,7 @@
     --music-player-control-hover: rgba(253, 223, 220, 0.2);
     --music-player-accent: #fddfdc;
     --music-player-accent-contrast: #303d67;
+    --music-player-playlist-name: #fddfdc;
     --music-player-cover-border: rgba(253, 223, 220, 0.32);
 }
 

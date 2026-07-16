@@ -1,6 +1,7 @@
 import {DownOutlined, UpOutlined} from '@ant-design/icons';
 import {useState} from 'react';
 import type {MusicTrack} from '../../../interface/MusicType';
+import {useContainedWheel} from '../hooks/useContainedWheel';
 import type {PlayerPlaylist, PlayerPlaylistId} from '../model/playlist';
 
 interface PlaylistBrowserProps {
@@ -21,6 +22,7 @@ const PlaylistBrowser = ({
     onSelectTrack,
 }: PlaylistBrowserProps) => {
     const [choosing, setChoosing] = useState(false);
+    const trackListRef = useContainedWheel<HTMLDivElement>();
     const selectedName = playlists.find(playlist => playlist.id === selectedId)?.name ?? '全部歌曲';
 
     return (
@@ -57,7 +59,12 @@ const PlaylistBrowser = ({
                 </div>
             )}
             {!choosing && (
-                <div className="musicContentScroll musicTrackList" role="list" aria-label={`${selectedName}歌曲列表`}>
+                <div
+                    ref={trackListRef}
+                    className="musicContentScroll musicTrackList"
+                    role="list"
+                    aria-label={`${selectedName}歌曲列表`}
+                >
                     {tracks.map((track, index) => {
                         const current = track.musicKey === currentTrack?.musicKey;
                         return (
