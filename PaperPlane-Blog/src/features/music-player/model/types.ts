@@ -41,5 +41,6 @@ export interface AudioController {
     togglePlay: () => void;
     next: () => void;
     previous: () => void;
+    selectTrack: (musicKey: number) => void;
     seek: (percentage: number) => void;
 }

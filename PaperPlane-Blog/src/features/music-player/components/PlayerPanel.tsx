@@ -1,63 +1,52 @@
-import {useEffect, useMemo, useRef} from "react";
 import {
     CaretRightOutlined,
     CompressOutlined,
+    FileTextOutlined,
     PauseOutlined,
     StepBackwardOutlined,
     StepForwardOutlined,
-    UnorderedListOutlined
-} from "@ant-design/icons";
-import {resolveMusicUrl} from "../../../utils/musicUrl";
-import {findActiveLyricIndex, formatTime} from "../lib/lyricParser";
-import type {AudioController, LyricLine} from "../model/types";
+    UnorderedListOutlined,
+} from '@ant-design/icons';
+import type {MusicTrack} from '../../../interface/MusicType';
+import {resolveMusicUrl} from '../../../utils/musicUrl';
+import {formatTime} from '../lib/lyricParser';
+import type {PlayerContentMode, PlayerPlaylist, PlayerPlaylistId} from '../model/playlist';
+import type {AudioController, LyricLine} from '../model/types';
+import PlayerContent from './PlayerContent';
 
 interface PlayerPanelProps {
     controller: AudioController;
     lyrics: LyricLine[];
-    showLyrics: boolean;
+    contentMode: PlayerContentMode;
+    playlists: PlayerPlaylist[];
+    selectedPlaylistId: PlayerPlaylistId;
+    playlistTracks: MusicTrack[];
     volume: number;
     onCollapse: () => void;
-    onToggleLyrics: () => void;
+    onContentModeChange: (mode: PlayerContentMode) => void;
+    onPlaylistChange: (id: PlayerPlaylistId) => void;
     onVolumeChange: (value: number) => void;
 }
 
 const PlayerPanel = ({
     controller,
     lyrics,
-    showLyrics,
+    contentMode,
+    playlists,
+    selectedPlaylistId,
+    playlistTracks,
     volume,
     onCollapse,
-    onToggleLyrics,
-    onVolumeChange
+    onContentModeChange,
+    onPlaylistChange,
+    onVolumeChange,
 }: PlayerPanelProps) => {
-    const lyricsContainerRef = useRef<HTMLDivElement | null>(null);
-    const lyricLineRefs = useRef<Array<HTMLParagraphElement | null>>([]);
-    const activeLyricIndex = useMemo(
-        () => findActiveLyricIndex(lyrics, controller.currentTime),
-        [controller.currentTime, lyrics]
-    );
-    const progress = controller.duration > 0 ? controller.currentTime / controller.duration * 100 : 0;
-
-    useEffect(() => {
-        lyricLineRefs.current = lyricLineRefs.current.slice(0, lyrics.length);
-    }, [lyrics]);
-
-    useEffect(() => {
-        if (!showLyrics || activeLyricIndex < 0) return;
-        const container = lyricsContainerRef.current;
-        const activeLine = lyricLineRefs.current[activeLyricIndex];
-        if (!container || !activeLine) return;
-
-        const containerRect = container.getBoundingClientRect();
-        const lineRect = activeLine.getBoundingClientRect();
-        const targetTop = container.scrollTop + lineRect.top - containerRect.top
-            - container.clientHeight / 2 + lineRect.height / 2;
-        const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-        container.scrollTo({top: Math.max(0, targetTop), behavior: reducedMotion ? 'auto' : 'smooth'});
-    }, [activeLyricIndex, showLyrics]);
-
     const track = controller.currentTrack;
     if (!track) return null;
+    const progress = controller.duration > 0 ? controller.currentTime / controller.duration * 100 : 0;
+    const toggleMode = (mode: Exclude<PlayerContentMode, null>) => {
+        onContentModeChange(contentMode === mode ? null : mode);
+    };
 
     return (
         <div className="musicPanel">
@@ -107,11 +96,21 @@ const PlayerPanel = ({
                 <button type="button" onClick={controller.next} aria-label="播放下一首" title="下一首"><StepForwardOutlined /></button>
                 <button
                     type="button"
-                    className={showLyrics ? 'active' : ''}
-                    onClick={onToggleLyrics}
-                    aria-label={showLyrics ? '隐藏歌词' : '显示歌词'}
-                    aria-pressed={showLyrics}
-                    title={showLyrics ? '隐藏歌词' : '显示歌词'}
+                    className={contentMode === 'lyrics' ? 'active' : ''}
+                    onClick={() => toggleMode('lyrics')}
+                    aria-label={contentMode === 'lyrics' ? '隐藏歌词' : '显示歌词'}
+                    aria-pressed={contentMode === 'lyrics'}
+                    title="歌词"
+                >
+                    <FileTextOutlined />
+                </button>
+                <button
+                    type="button"
+                    className={contentMode === 'playlist' ? 'active' : ''}
+                    onClick={() => toggleMode('playlist')}
+                    aria-label={contentMode === 'playlist' ? '隐藏当前歌单' : '显示当前歌单'}
+                    aria-pressed={contentMode === 'playlist'}
+                    title="歌单"
                 >
                     <UnorderedListOutlined />
                 </button>
@@ -127,20 +126,17 @@ const PlayerPanel = ({
                     aria-valuetext={`${Math.round(volume * 100)}%`}
                 />
             </div>
-            {showLyrics && (
-                <div className="musicLyrics" ref={lyricsContainerRef} aria-label={`${track.title} 歌词`}>
-                    {lyrics.length ? lyrics.map((line, index) => (
-                        <p
-                            key={`${line.time}-${line.text}-${index}`}
-                            ref={node => { lyricLineRefs.current[index] = node; }}
-                            className={index === activeLyricIndex ? 'active' : ''}
-                            aria-current={index === activeLyricIndex ? 'true' : undefined}
-                        >
-                            {line.text}
-                        </p>
-                    )) : <p className="empty">暂无歌词</p>}
-                </div>
-            )}
+            <PlayerContent
+                mode={contentMode}
+                currentTrack={track}
+                currentTime={controller.currentTime}
+                lyrics={lyrics}
+                playlists={playlists}
+                selectedPlaylistId={selectedPlaylistId}
+                tracks={playlistTracks}
+                onSelectPlaylist={onPlaylistChange}
+                onSelectTrack={controller.selectTrack}
+            />
         </div>
     );
 };

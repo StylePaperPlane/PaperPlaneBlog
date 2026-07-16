@@ -1,0 +1,2 @@
+PaperPlane-Media/migrations/*.sql text eol=lf
+PaperPlane-Media/migrations/0001_media_schema.sql whitespace=-blank-at-eof

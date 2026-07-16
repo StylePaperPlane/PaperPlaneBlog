@@ -291,6 +291,17 @@
     box-shadow: 0 14px 38px rgba(24, 45, 65, 0.055);
 }
 
+.dashboard-surface--flat {
+    border-radius: 0;
+    box-shadow: none;
+}
+
+.loading-overlay-content {
+    display: block;
+    width: 1px;
+    height: 1px;
+}
+
 .dashboard-surface > .allin,
 .dashboard-surface > div {
     box-sizing: border-box;

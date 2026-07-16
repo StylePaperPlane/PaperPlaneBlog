@@ -11,7 +11,7 @@ use uuid::Uuid;
 
 use crate::{
     auth::CoreAdminAuth,
-    catalog::CatalogService,
+    catalog::{CatalogService, PlaylistService},
     ingest::{MusicPublisher, PublishRequest},
     persistence::{MediaRepository, TrackPatch},
     playback::{CreateSession, PlaybackService},
@@ -22,6 +22,7 @@ use super::{ApiError, rate_limit::RequestLimits, response};
 
 pub struct AppState {
     pub catalog: CatalogService,
+    pub playlists: PlaylistService,
     pub playback: PlaybackService,
     pub publisher: MusicPublisher,
     pub repository: MediaRepository,
@@ -45,10 +46,6 @@ pub async fn openapi() -> Response {
         .headers_mut()
         .insert(header::CACHE_CONTROL, HeaderValue::from_static("no-store"));
     response
-}
-
-pub async fn public_tracks(State(state): State<Arc<AppState>>) -> Result<Response, ApiError> {
-    Ok(response::json(state.catalog.public_tracks().await?))
 }
 
 pub async fn create_session(
@@ -367,7 +364,7 @@ fn parse_range(value: &str, total: u64) -> Result<(u64, u64), ApiError> {
     Ok((start, end))
 }
 
-async fn authorize(state: &AppState, headers: &HeaderMap) -> Result<(), ApiError> {
+pub(super) async fn authorize(state: &AppState, headers: &HeaderMap) -> Result<(), ApiError> {
     let token = headers
         .get(header::AUTHORIZATION)
         .and_then(|value| value.to_str().ok())

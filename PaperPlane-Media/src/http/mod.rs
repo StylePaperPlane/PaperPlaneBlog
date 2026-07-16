@@ -1,5 +1,6 @@
 mod error;
 mod handlers;
+mod playlists;
 mod rate_limit;
 mod response;
 
@@ -9,7 +10,7 @@ use axum::{
     Router,
     extract::DefaultBodyLimit,
     http::{HeaderName, HeaderValue, Method, header},
-    routing::{get, patch, post},
+    routing::{get, patch, post, put},
 };
 use sqlx::postgres::PgPoolOptions;
 use tower_http::{
@@ -18,8 +19,13 @@ use tower_http::{
 };
 
 use crate::{
-    Settings, auth::CoreAdminAuth, catalog::CatalogService, crypto::KeyVault,
-    ingest::MusicPublisher, persistence::MediaRepository, playback::PlaybackService,
+    Settings,
+    auth::CoreAdminAuth,
+    catalog::{CatalogService, PlaylistService},
+    crypto::KeyVault,
+    ingest::MusicPublisher,
+    persistence::MediaRepository,
+    playback::PlaybackService,
     storage::LocalObjectStorage,
 };
 
@@ -43,6 +49,7 @@ pub async fn build_app(settings: Settings) -> anyhow::Result<Router> {
     std::fs::create_dir_all(&settings.upload_root)?;
     let key_vault = KeyVault::new(settings.master_key, settings.master_key_version);
     let catalog = CatalogService::new(repository.clone(), settings.public_base_url.clone());
+    let playlists = PlaylistService::new(repository.clone());
     let playback = PlaybackService::new(
         repository.clone(),
         key_vault.clone(),
@@ -51,6 +58,7 @@ pub async fn build_app(settings: Settings) -> anyhow::Result<Router> {
     );
     let state = Arc::new(AppState {
         catalog,
+        playlists,
         playback,
         publisher: MusicPublisher::new(repository.clone(), storage.clone(), key_vault),
         repository,
@@ -76,6 +84,7 @@ pub async fn build_app(settings: Settings) -> anyhow::Result<Router> {
             Method::HEAD,
             Method::POST,
             Method::PATCH,
+            Method::PUT,
             Method::DELETE,
             Method::OPTIONS,
         ])
@@ -95,11 +104,23 @@ pub async fn build_app(settings: Settings) -> anyhow::Result<Router> {
     Ok(Router::new()
         .route("/health", get(handlers::health))
         .route("/openapi.json", get(handlers::openapi))
-        .route("/v1/tracks", get(handlers::public_tracks))
+        .route("/v1/catalog", get(playlists::public_catalog))
         .route("/v1/playback/sessions", post(handlers::create_session))
         .route("/v1/playback/tracks/{asset_id}/key", post(handlers::issue_key))
         .route("/v1/admin/tracks", get(handlers::admin_tracks).post(handlers::upload_track).delete(handlers::delete_tracks))
         .route("/v1/admin/tracks/{id}", patch(handlers::patch_track))
+        .route(
+            "/v1/admin/playlists",
+            get(playlists::admin_playlists).post(playlists::create_playlist),
+        )
+        .route(
+            "/v1/admin/playlists/{id}",
+            patch(playlists::rename_playlist).delete(playlists::delete_playlist),
+        )
+        .route(
+            "/v1/admin/playlists/{id}/tracks",
+            put(playlists::replace_playlist_tracks),
+        )
         .route("/assets/{name}", get(handlers::get_asset).head(handlers::head_asset))
         .route("/covers/{name}", get(handlers::get_cover).head(handlers::head_cover))
         .route("/lyrics/{name}", get(handlers::get_lyric).head(handlers::head_lyric))

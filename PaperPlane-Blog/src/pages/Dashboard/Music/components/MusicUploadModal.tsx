@@ -62,7 +62,7 @@ const MusicUploadModal = ({open, uploading, progress, onClose, onUpload}: MusicU
     };
 
     return (
-        <Modal title="上传音乐 ZIP" open={open} onCancel={close} footer={null} maskClosable={!uploading} closable={!uploading}>
+        <Modal title="上传音乐 ZIP" open={open} onCancel={close} footer={null} maskClosable={!uploading} closable={!uploading} forceRender>
             <Form form={form} layout="vertical">
                 <Form.Item label="标题" name="title">
                     <Input placeholder="不填则使用音频文件名" maxLength={100} />

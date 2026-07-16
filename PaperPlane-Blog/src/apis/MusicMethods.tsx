@@ -5,10 +5,11 @@ import type {components} from "../features/secure-media/api/schema";
 
 const MUSIC_UPLOAD_TIMEOUT_MS = 120_000;
 type AdminTrackDto = components['schemas']['AdminTrack'];
+type AdminPlaylistDto = components['schemas']['AdminPlaylist'];
 
-function getPublicMusicList() {
+function getPublicMusicCatalog() {
     return mediaHttp({
-        url: '/v1/tracks',
+        url: '/v1/catalog',
         method: 'GET'
     });
 }
@@ -46,4 +47,35 @@ function deleteMusic(ids: number[]) {
     });
 }
 
-export {getPublicMusicList, getMusicList, uploadMusic, updateMusic, deleteMusic};
+function getPlaylists() {
+    return mediaHttp<{data: AdminPlaylistDto[]}>({url: '/v1/admin/playlists', method: 'GET'});
+}
+
+function createPlaylist(name: string) {
+    return mediaHttp<{data: AdminPlaylistDto}>({url: '/v1/admin/playlists', method: 'POST', data: {name}});
+}
+
+function renamePlaylist(id: number, name: string) {
+    return mediaHttp<{data: AdminPlaylistDto}>({url: `/v1/admin/playlists/${id}`, method: 'PATCH', data: {name}});
+}
+
+function replacePlaylistTracks(id: number, trackIds: number[]) {
+    return mediaHttp<{data: AdminPlaylistDto}>({url: `/v1/admin/playlists/${id}/tracks`, method: 'PUT', data: {trackIds}});
+}
+
+function deletePlaylist(id: number) {
+    return mediaHttp({url: `/v1/admin/playlists/${id}`, method: 'DELETE'});
+}
+
+export {
+    getPublicMusicCatalog,
+    getMusicList,
+    uploadMusic,
+    updateMusic,
+    deleteMusic,
+    getPlaylists,
+    createPlaylist,
+    renamePlaylist,
+    replacePlaylistTracks,
+    deletePlaylist,
+};

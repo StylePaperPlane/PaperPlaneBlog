@@ -20,14 +20,14 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/v1/tracks": {
+    "/v1/catalog": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        get: operations["listPublicTracks"];
+        get: operations["getPublicCatalog"];
         put?: never;
         post?: never;
         delete?: never;
@@ -100,6 +100,54 @@ export interface paths {
         patch: operations["patchTrack"];
         trace?: never;
     };
+    "/v1/admin/playlists": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["listAdminPlaylists"];
+        put?: never;
+        post: operations["createPlaylist"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin/playlists/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete: operations["deletePlaylist"];
+        options?: never;
+        head?: never;
+        patch: operations["renamePlaylist"];
+        trace?: never;
+    };
+    "/v1/admin/playlists/{id}/tracks": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put: operations["replacePlaylistTracks"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/assets/{sha256}.ppm": {
         parameters: {
             query?: never;
@@ -148,8 +196,18 @@ export interface components {
             chunkCount: number;
             cipherUrl: string;
         };
-        PublicTrackList: {
-            data: components["schemas"]["PublicTrack"][];
+        PublicPlaylist: {
+            /** Format: int64 */
+            playlistId: number;
+            name: string;
+            trackIds: number[];
+        };
+        PublicCatalog: {
+            tracks: components["schemas"]["PublicTrack"][];
+            playlists: components["schemas"]["PublicPlaylist"][];
+        };
+        PublicCatalogResponse: {
+            data: components["schemas"]["PublicCatalog"];
         };
         PlaybackSession: {
             /** Format: date-time */
@@ -202,6 +260,34 @@ export interface components {
         AdminTrackResponse: {
             data: components["schemas"]["AdminTrack"];
         };
+        AdminPlaylist: {
+            /** Format: int64 */
+            playlistId: number;
+            name: string;
+            trackIds: number[];
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: date-time */
+            updatedAt: string;
+        };
+        AdminPlaylistList: {
+            data: components["schemas"]["AdminPlaylist"][];
+        };
+        AdminPlaylistResponse: {
+            data: components["schemas"]["AdminPlaylist"];
+        };
+        PlaylistNameRequest: {
+            name: string;
+        };
+        ReplacePlaylistTracksRequest: {
+            trackIds: number[];
+        };
+        DeletePlaylistResult: {
+            deleted: boolean;
+        };
+        DeletePlaylistResponse: {
+            data: components["schemas"]["DeletePlaylistResult"];
+        };
         TrackPatch: {
             title?: string;
             artist?: string;
@@ -252,7 +338,7 @@ export interface operations {
             };
         };
     };
-    listPublicTracks: {
+    getPublicCatalog: {
         parameters: {
             query?: never;
             header?: never;
@@ -261,13 +347,13 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description Enabled tracks */
+            /** @description Enabled tracks and non-empty playlists */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["PublicTrackList"];
+                    "application/json": components["schemas"]["PublicCatalogResponse"];
                 };
             };
         };
@@ -428,6 +514,159 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["AdminTrackResponse"];
                 };
+            };
+        };
+    };
+    listAdminPlaylists: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description All playlists */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminPlaylistList"];
+                };
+            };
+        };
+    };
+    createPlaylist: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PlaylistNameRequest"];
+            };
+        };
+        responses: {
+            /** @description Playlist created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminPlaylistResponse"];
+                };
+            };
+            /** @description Playlist name already exists */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    deletePlaylist: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Playlist deleted */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DeletePlaylistResponse"];
+                };
+            };
+            /** @description Playlist not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    renamePlaylist: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PlaylistNameRequest"];
+            };
+        };
+        responses: {
+            /** @description Playlist renamed */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminPlaylistResponse"];
+                };
+            };
+            /** @description Playlist not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    replacePlaylistTracks: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ReplacePlaylistTracksRequest"];
+            };
+        };
+        responses: {
+            /** @description Playlist membership replaced */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminPlaylistResponse"];
+                };
+            };
+            /** @description Playlist not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Unknown track id */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };

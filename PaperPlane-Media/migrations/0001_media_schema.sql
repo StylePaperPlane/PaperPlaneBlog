@@ -41,3 +41,4 @@ CREATE TABLE IF NOT EXISTS media.playback_sessions (
 );
 
 CREATE INDEX IF NOT EXISTS playback_sessions_expires_idx ON media.playback_sessions (expires_at);
+

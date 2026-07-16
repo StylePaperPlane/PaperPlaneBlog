@@ -1,6 +1,7 @@
 use serde::Serialize;
 use uuid::Uuid;
 
+use crate::catalog::{PlaylistService, PublicPlaylist};
 use crate::media_format::AudioFormat;
 use crate::persistence::{MediaRepository, Track, TrackPatch};
 
@@ -26,6 +27,13 @@ pub struct PublicTrack {
     pub cipher_url: String,
 }
 
+#[derive(Debug, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct PublicCatalog {
+    pub tracks: Vec<PublicTrack>,
+    pub playlists: Vec<PublicPlaylist>,
+}
+
 impl CatalogService {
     pub fn new(repository: MediaRepository, public_base_url: String) -> Self {
         Self {
@@ -34,7 +42,15 @@ impl CatalogService {
         }
     }
 
-    pub async fn public_tracks(&self) -> Result<Vec<PublicTrack>, sqlx::Error> {
+    pub async fn public_catalog(&self) -> Result<PublicCatalog, sqlx::Error> {
+        let tracks = self.public_tracks().await?;
+        let playlists = PlaylistService::new(self.repository.clone())
+            .public_playlists()
+            .await?;
+        Ok(PublicCatalog { tracks, playlists })
+    }
+
+    async fn public_tracks(&self) -> Result<Vec<PublicTrack>, sqlx::Error> {
         let tracks = self.repository.list_enabled().await?;
         let mut result = Vec::with_capacity(tracks.len());
         for track in tracks {

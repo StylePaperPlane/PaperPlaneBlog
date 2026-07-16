@@ -1,4 +1,104 @@
 .music-admin
+  height: 100%
+  min-height: 0
+  padding: 0
+  overflow: hidden !important
+  box-shadow: none
+  button,
+  input
+    border-radius: 4px
+  .ant-btn
+    box-shadow: none
+
+.music-admin-layout
+  height: 100%
+  min-height: 0
+  display: grid
+  grid-template-columns: 230px minmax(0, 1fr)
+
+.playlist-rail
+  min-height: 0
+  display: flex
+  flex-direction: column
+  border-right: 1px solid var(--admin-border)
+  background: transparent
+
+.playlist-rail-heading
+  min-height: 62px
+  display: flex
+  align-items: center
+  justify-content: space-between
+  padding: 0 16px
+  border-bottom: 1px solid var(--admin-border)
+  strong
+    color: var(--admin-text)
+    font-size: 16px
+  button
+    width: 32px
+    height: 32px
+    border: 0
+    background: transparent
+    color: var(--admin-accent)
+    cursor: pointer
+
+.playlist-create-row
+  display: grid
+  grid-template-columns: 1fr 30px 30px
+  gap: 4px
+  padding: 10px
+  border-bottom: 1px solid var(--admin-border)
+  input
+    min-width: 0
+    height: 34px
+    padding: 0 8px
+    border: 1px solid var(--admin-border-strong, var(--admin-border))
+    background: var(--admin-surface)
+    color: var(--admin-text)
+  button
+    border: 1px solid var(--admin-border)
+    background: transparent
+    color: var(--admin-text)
+    cursor: pointer
+    &:disabled
+      opacity: .45
+
+.playlist-rail-list
+  min-height: 0
+  overflow-y: auto
+  button
+    width: 100%
+    min-height: 44px
+    display: flex
+    align-items: center
+    justify-content: space-between
+    gap: 12px
+    padding: 0 16px
+    border: 0
+    border-bottom: 1px solid var(--admin-border)
+    border-left: 3px solid transparent
+    border-radius: 0
+    background: transparent
+    color: var(--admin-text)
+    cursor: pointer
+    text-align: left
+    &.current
+      border-left-color: var(--admin-accent)
+      color: var(--admin-accent)
+      font-weight: 700
+    span
+      min-width: 0
+      overflow: hidden
+      text-overflow: ellipsis
+      white-space: nowrap
+    small
+      color: var(--admin-muted)
+      font-variant-numeric: tabular-nums
+
+.music-admin-content
+  min-width: 0
+  min-height: 0
+  height: 100%
+  overflow: auto
   padding: 20px
 
 .music-admin-toolbar
@@ -9,28 +109,164 @@
   margin-bottom: 18px
   h2
     margin: 0
-    color: #1f2937
+    color: var(--admin-text)
   p
     margin: 6px 0 0
-    color: #64748b
+    color: var(--admin-muted)
 
 .music-admin-title
   display: flex
   flex-direction: column
   gap: 4px
   strong
-    color: #1f2937
+    color: var(--admin-text)
     font-size: 15px
   span
-    color: #64748b
+    color: var(--admin-muted)
     font-size: 13px
+
+.music-admin-format
+  font-size: 12px
+  font-weight: 700
+  letter-spacing: .04em
+
+.playlist-editor
+  min-height: 100%
+  color: var(--admin-text)
+
+.playlist-editor-heading
+  min-height: 58px
+  display: flex
+  align-items: flex-start
+  justify-content: space-between
+  gap: 18px
+  padding-bottom: 16px
+  border-bottom: 1px solid var(--admin-border)
+  h3
+    margin: 0
+    font-size: 22px
+  p
+    margin: 6px 0 0
+    color: var(--admin-muted)
+
+.playlist-heading-actions,
+.playlist-name-edit,
+.playlist-track-actions
+  display: flex
+  align-items: center
+  gap: 6px
+  button
+    min-height: 34px
+    padding: 0 10px
+    border: 1px solid var(--admin-border-strong, var(--admin-border))
+    background: transparent
+    color: var(--admin-text)
+    cursor: pointer
+    &.danger
+      color: #c53b3b
+    &:disabled
+      opacity: .42
+      cursor: not-allowed
+
+.playlist-name-edit
+  input
+    width: min(320px, 52vw)
+    height: 38px
+    padding: 0 10px
+    border: 1px solid var(--admin-border-strong, var(--admin-border))
+    background: var(--admin-surface)
+    color: var(--admin-text)
+
+.playlist-members-section
+  padding: 18px 0 4px
+  h4
+    margin: 0 0 10px
+    color: var(--admin-text)
+    font-size: 14px
+  &.available
+    margin-top: 12px
+    border-top: 1px solid var(--admin-border)
+
+.playlist-track-rows
+  border-top: 1px solid var(--admin-border)
+
+.playlist-track-row
+  min-height: 62px
+  display: grid
+  grid-template-columns: 34px 44px minmax(120px, 1fr) auto
+  align-items: center
+  gap: 10px
+  border-bottom: 1px solid var(--admin-border)
+  > img
+    width: 40px
+    height: 40px
+    object-fit: cover
+    border-radius: 3px
+
+.playlist-track-index
+  color: var(--admin-muted)
+  font-size: 12px
+  font-variant-numeric: tabular-nums
+
+.playlist-track-name
+  min-width: 0
+  display: flex
+  flex-direction: column
+  gap: 3px
+  strong,
+  small
+    overflow: hidden
+    text-overflow: ellipsis
+    white-space: nowrap
+  small
+    color: var(--admin-muted)
+
+.playlist-empty
+  margin: 0
+  padding: 18px 0
+  border-top: 1px solid var(--admin-border)
+  border-bottom: 1px solid var(--admin-border)
+  color: var(--admin-muted)
 
 .music-upload-progress
   margin-top: 16px
 
-@media only screen and (max-width: 680px)
-  .music-admin
+.music-admin button:focus-visible,
+.music-admin input:focus-visible
+  outline: 3px solid color-mix(in srgb, var(--admin-accent) 50%, transparent)
+  outline-offset: 2px
+
+@media only screen and (max-width: 760px)
+  .music-admin-layout
+    grid-template-columns: 1fr
+    grid-template-rows: auto minmax(0, 1fr)
+  .playlist-rail
+    max-height: 188px
+    border-right: 0
+    border-bottom: 1px solid var(--admin-border)
+  .playlist-rail-heading
+    min-height: 48px
+  .playlist-rail-list
+    max-height: 96px
+  .music-admin-content
     padding: 12px
-  .music-admin-toolbar
+    .ant-table-cell
+      padding-left: 8px !important
+      padding-right: 8px !important
+    .ant-table-selection-column
+      width: 34px !important
+      min-width: 34px !important
+  .music-admin-toolbar,
+  .playlist-editor-heading
     align-items: flex-start
     flex-direction: column
+  .playlist-track-row
+    grid-template-columns: 26px 38px minmax(90px, 1fr)
+    padding: 8px 0
+    > img
+      width: 34px
+      height: 34px
+  .playlist-track-actions
+    grid-column: 2 / -1
+    justify-content: flex-end
+    flex-wrap: wrap

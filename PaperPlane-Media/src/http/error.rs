@@ -6,7 +6,8 @@ use http::{HeaderValue, StatusCode, header};
 use serde::Serialize;
 
 use crate::{
-    auth::AdminAuthError, ingest::IngestError, playback::PlaybackError, storage::StorageError,
+    auth::AdminAuthError, catalog::PlaylistError, ingest::IngestError, playback::PlaybackError,
+    storage::StorageError,
 };
 
 #[derive(Debug)]
@@ -44,6 +45,20 @@ impl ApiError {
         Self {
             status: StatusCode::NOT_FOUND,
             title: "资源不存在",
+            detail: detail.into(),
+        }
+    }
+    pub fn conflict(detail: impl Into<String>) -> Self {
+        Self {
+            status: StatusCode::CONFLICT,
+            title: "资源冲突",
+            detail: detail.into(),
+        }
+    }
+    pub fn unprocessable_entity(detail: impl Into<String>) -> Self {
+        Self {
+            status: StatusCode::UNPROCESSABLE_ENTITY,
+            title: "数据校验失败",
             detail: detail.into(),
         }
     }
@@ -156,6 +171,20 @@ impl From<IngestError> for ApiError {
                 Self::internal(error.to_string())
             }
             _ => Self::bad_request(error.to_string()),
+        }
+    }
+}
+
+impl From<PlaylistError> for ApiError {
+    fn from(error: PlaylistError) -> Self {
+        match error {
+            PlaylistError::InvalidName | PlaylistError::DuplicateTrackIds => {
+                Self::bad_request(error.to_string())
+            }
+            PlaylistError::DuplicateName => Self::conflict(error.to_string()),
+            PlaylistError::NotFound => Self::not_found(error.to_string()),
+            PlaylistError::UnknownTracks(_) => Self::unprocessable_entity(error.to_string()),
+            PlaylistError::Database(_) => Self::internal(error.to_string()),
         }
     }
 }

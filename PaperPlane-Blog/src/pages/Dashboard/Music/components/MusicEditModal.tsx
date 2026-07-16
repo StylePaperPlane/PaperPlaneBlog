@@ -32,6 +32,7 @@ const MusicEditModal = ({track, saving, onClose, onSave}: MusicEditModalProps) =
             cancelText="取消"
             confirmLoading={saving}
             maskClosable={!saving}
+            forceRender
         >
             <Form form={form} layout="vertical">
                 <Form.Item label="标题" name="title" rules={[{required: true, message: '请输入标题'}]}>

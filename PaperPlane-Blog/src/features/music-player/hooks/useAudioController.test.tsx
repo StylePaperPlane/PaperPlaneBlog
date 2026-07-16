@@ -163,4 +163,53 @@ describe('useAudioController', () => {
         const {result} = renderHook(() => useAudioController({playlist: [], volume: 0.72, playerRootRef}));
         expect(result.current.currentTrack).toBeUndefined();
     });
+
+    it('keeps the current encrypted source when the new playlist still contains the track', async () => {
+        const player = document.createElement('section');
+        const article = document.createElement('main');
+        document.body.append(player, article);
+        const prepareSource = vi.fn(async (track: MusicTrack) => ({url: `blob:${track.musicKey}`, release: vi.fn()}));
+        const {result, rerender} = renderHook(
+            ({playlist}) => useAudioController({playlist, volume: 0.72, playerRootRef: {current: player}, prepareSource}),
+            {initialProps: {playlist: tracks}},
+        );
+
+        act(() => article.dispatchEvent(new Event('pointerdown', {bubbles: true})));
+        await waitFor(() => expect(prepareSource).toHaveBeenCalledTimes(1));
+        rerender({playlist: [tracks[1], tracks[0]]});
+
+        expect(result.current.currentTrack?.musicKey).toBe(1);
+        expect(result.current.currentIndex).toBe(1);
+        expect(prepareSource).toHaveBeenCalledTimes(1);
+        expect(MockAudio.instances).toHaveLength(1);
+    });
+
+    it('switches to the first track and keeps play intent when the current track is absent', async () => {
+        const player = document.createElement('section');
+        const article = document.createElement('main');
+        document.body.append(player, article);
+        const prepareSource = vi.fn(async (track: MusicTrack) => ({url: `blob:${track.musicKey}`, release: vi.fn()}));
+        const {result, rerender} = renderHook(
+            ({playlist}) => useAudioController({playlist, volume: 0.72, playerRootRef: {current: player}, prepareSource}),
+            {initialProps: {playlist: tracks}},
+        );
+
+        act(() => article.dispatchEvent(new Event('pointerdown', {bubbles: true})));
+        await waitFor(() => expect(MockAudio.instances[0].play).toHaveBeenCalledTimes(1));
+        rerender({playlist: [tracks[1]]});
+
+        await waitFor(() => expect(result.current.currentTrack?.musicKey).toBe(2));
+        await waitFor(() => expect(prepareSource).toHaveBeenCalledTimes(2));
+        await waitFor(() => expect(MockAudio.instances[0].play).toHaveBeenCalledTimes(2));
+    });
+
+    it('selects a track without starting playback while paused', async () => {
+        const playerRootRef = {current: document.createElement('section')};
+        const {result} = renderHook(() => useAudioController({playlist: tracks, volume: 0.72, playerRootRef}));
+
+        act(() => result.current.selectTrack(2));
+
+        await waitFor(() => expect(result.current.currentTrack?.musicKey).toBe(2));
+        expect(MockAudio.instances[0].play).not.toHaveBeenCalled();
+    });
 });

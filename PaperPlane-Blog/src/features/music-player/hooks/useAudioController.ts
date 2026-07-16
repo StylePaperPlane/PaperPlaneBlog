@@ -14,7 +14,7 @@ interface UseAudioControllerOptions {
 export const useAudioController = ({playlist, volume, playerRootRef, prepareSource}: UseAudioControllerOptions): AudioController => {
     const audioRef = useRef<HTMLAudioElement | null>(null);
     const playlistRef = useRef(playlist);
-    const currentIndexRef = useRef(0);
+    const currentTrackKeyRef = useRef<number | null>(playlist[0]?.musicKey ?? null);
     const playIntentRef = useRef(false);
     const failedTrackKeysRef = useRef<Set<number>>(new Set());
     const nextRef = useRef<() => void>(() => undefined);
@@ -22,29 +22,31 @@ export const useAudioController = ({playlist, volume, playerRootRef, prepareSour
     const sourceReadyRef = useRef(false);
     const activeSourceRef = useRef<PreparedAudioSource | null>(null);
     const startSourceRef = useRef<() => void>(() => undefined);
-    const [currentIndex, setCurrentIndexState] = useState(0);
+    const [currentTrackKey, setCurrentTrackKeyState] = useState<number | null>(playlist[0]?.musicKey ?? null);
     const [playing, setPlaying] = useState(false);
     const [currentTime, setCurrentTime] = useState(0);
     const [duration, setDuration] = useState(0);
     const [notice, setNotice] = useState<PlayerNotice | null>(null);
     const [firstInteractionConsumed, setFirstInteractionConsumed] = useState(false);
 
-    const setCurrentIndex = useCallback((index: number) => {
-        currentIndexRef.current = index;
-        setCurrentIndexState(index);
+    const setCurrentTrackKey = useCallback((musicKey: number | null) => {
+        currentTrackKeyRef.current = musicKey;
+        setCurrentTrackKeyState(musicKey);
     }, []);
 
-    const currentTrack = playlist[currentIndex];
+    const currentIndex = playlist.findIndex(track => track.musicKey === currentTrackKey);
+    const currentTrack = currentIndex >= 0 ? playlist[currentIndex] : undefined;
 
     const moveToNextPlayable = useCallback(() => {
         const tracks = playlistRef.current;
         if (!tracks.length) return;
         const failed = failedTrackKeysRef.current;
+        const currentIndex = Math.max(0, tracks.findIndex(track => track.musicKey === currentTrackKeyRef.current));
 
         for (let offset = 1; offset <= tracks.length; offset += 1) {
-            const candidateIndex = (currentIndexRef.current + offset) % tracks.length;
+            const candidateIndex = (currentIndex + offset) % tracks.length;
             if (!failed.has(tracks[candidateIndex].musicKey)) {
-                setCurrentIndex(candidateIndex);
+                setCurrentTrackKey(tracks[candidateIndex].musicKey);
                 return;
             }
         }
@@ -52,11 +54,11 @@ export const useAudioController = ({playlist, volume, playerRootRef, prepareSour
         playIntentRef.current = false;
         audioRef.current?.pause();
         setNotice({kind: 'error', text: '所有歌曲暂时都无法播放'});
-    }, [setCurrentIndex]);
+    }, [setCurrentTrackKey]);
 
     const handleTrackFailure = useCallback((error: unknown) => {
         const tracks = playlistRef.current;
-        const track = tracks[currentIndexRef.current];
+        const track = tracks.find(item => item.musicKey === currentTrackKeyRef.current);
         if (!track || failedTrackKeysRef.current.has(track.musicKey)) return;
 
         const {message, skippable} = describeSourceError(error);
@@ -87,7 +89,7 @@ export const useAudioController = ({playlist, volume, playerRootRef, prepareSour
 
     const requestPlay = useCallback((resetFailures = false) => {
         const audio = audioRef.current;
-        const track = playlistRef.current[currentIndexRef.current];
+        const track = playlistRef.current.find(item => item.musicKey === currentTrackKeyRef.current);
         if (!audio || !track) return;
 
         if (resetFailures) failedTrackKeysRef.current.clear();
@@ -118,9 +120,10 @@ export const useAudioController = ({playlist, volume, playerRootRef, prepareSour
         if (!tracks.length) return;
         failedTrackKeysRef.current.clear();
         setNotice(null);
-        const nextIndex = (currentIndexRef.current + direction + tracks.length) % tracks.length;
-        setCurrentIndex(nextIndex);
-    }, [setCurrentIndex]);
+        const currentIndex = Math.max(0, tracks.findIndex(track => track.musicKey === currentTrackKeyRef.current));
+        const nextIndex = (currentIndex + direction + tracks.length) % tracks.length;
+        setCurrentTrackKey(tracks[nextIndex].musicKey);
+    }, [setCurrentTrackKey]);
 
     const next = useCallback(() => selectRelativeTrack(1), [selectRelativeTrack]);
     const previous = useCallback(() => selectRelativeTrack(-1), [selectRelativeTrack]);
@@ -172,11 +175,14 @@ export const useAudioController = ({playlist, volume, playerRootRef, prepareSour
         if (!playlist.length) {
             playIntentRef.current = false;
             audioRef.current?.pause();
-            setCurrentIndex(0);
+            setCurrentTrackKey(null);
             return;
         }
-        if (currentIndexRef.current >= playlist.length) setCurrentIndex(0);
-    }, [playlist, setCurrentIndex]);
+        if (!playlist.some(track => track.musicKey === currentTrackKeyRef.current)) {
+            failedTrackKeysRef.current.clear();
+            setCurrentTrackKey(playlist[0].musicKey);
+        }
+    }, [playlist, setCurrentTrackKey]);
 
     useEffect(() => {
         if (audioRef.current) audioRef.current.volume = Math.min(1, Math.max(0, volume));
@@ -265,7 +271,7 @@ export const useAudioController = ({playlist, volume, playerRootRef, prepareSour
 
     const togglePlay = useCallback(() => {
         const audio = audioRef.current;
-        if (!audio || !playlistRef.current[currentIndexRef.current]) return;
+        if (!audio || !playlistRef.current.some(track => track.musicKey === currentTrackKeyRef.current)) return;
         setFirstInteractionConsumed(true);
 
         if (audio.paused) {
@@ -277,11 +283,31 @@ export const useAudioController = ({playlist, volume, playerRootRef, prepareSour
         }
     }, [requestPlay]);
 
+    const selectTrack = useCallback((musicKey: number) => {
+        if (!playlistRef.current.some(track => track.musicKey === musicKey)) return;
+        setFirstInteractionConsumed(true);
+        failedTrackKeysRef.current.clear();
+        setNotice(null);
+        if (musicKey !== currentTrackKeyRef.current) setCurrentTrackKey(musicKey);
+    }, [setCurrentTrackKey]);
+
     const seek = useCallback((percentage: number) => {
         const audio = audioRef.current;
         if (!audio || !Number.isFinite(audio.duration) || audio.duration <= 0) return;
         audio.currentTime = Math.min(audio.duration, Math.max(0, percentage / 100 * audio.duration));
     }, []);
 
-    return {currentTrack, currentIndex, playing, currentTime, duration, notice, togglePlay, next, previous, seek};
+    return {
+        currentTrack,
+        currentIndex: Math.max(0, currentIndex),
+        playing,
+        currentTime,
+        duration,
+        notice,
+        togglePlay,
+        next,
+        previous,
+        selectTrack,
+        seek,
+    };
 };

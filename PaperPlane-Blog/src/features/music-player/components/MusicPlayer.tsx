@@ -1,50 +1,29 @@
-import {useCallback, useEffect, useRef, useState} from "react";
+import {useEffect, useRef, useState} from "react";
 import {CustomerServiceOutlined, ReloadOutlined} from "@ant-design/icons";
-import {getPublicMusicList} from "../../../apis/MusicMethods";
-import type {MusicTrack} from "../../../interface/MusicType";
 import {resolveMusicUrl} from "../../../utils/musicUrl";
 import {useAudioController} from "../hooks/useAudioController";
 import {useLyrics} from "../hooks/useLyrics";
+import {useMusicCatalog} from "../hooks/useMusicCatalog";
+import {usePlaylistSelection} from "../hooks/usePlaylistSelection";
 import {usePlayerPreferences} from "../hooks/usePlayerPreferences";
+import type {PlayerContentMode} from "../model/playlist";
 import PlayerPanel from "./PlayerPanel";
 import {prepareTrackPlayback} from "../../secure-media";
 
 const MusicPlayer = () => {
     const rootRef = useRef<HTMLElement>(null);
-    const [playlist, setPlaylist] = useState<MusicTrack[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [loadFailed, setLoadFailed] = useState(false);
-    const [showLyrics, setShowLyrics] = useState(false);
+    const [contentMode, setContentMode] = useState<PlayerContentMode>(null);
     const [isDarkMode, setIsDarkMode] = useState(() => localStorage.getItem('isDarkMode') === 'true');
     const {collapsed, setCollapsed, volume, setVolume} = usePlayerPreferences();
+    const musicCatalog = useMusicCatalog();
+    const playlistSelection = usePlaylistSelection(musicCatalog.catalog);
     const controller = useAudioController({
-        playlist,
+        playlist: playlistSelection.selected.tracks,
         volume,
         playerRootRef: rootRef,
         prepareSource: prepareTrackPlayback,
     });
     const lyrics = useLyrics(controller.currentTrack);
-
-    const loadPlaylist = useCallback(() => {
-        setLoading(true);
-        setLoadFailed(false);
-        getPublicMusicList()
-            .then(response => {
-                const tracks = ((response.data.data || []) as MusicTrack[]).map(track => ({
-                    ...track,
-                    enabled: true,
-                }));
-                setPlaylist(tracks);
-            })
-            .catch(error => {
-                if (import.meta.env.DEV) console.error('安全音乐初始化失败', error);
-                setPlaylist([]);
-                setLoadFailed(true);
-            })
-            .finally(() => setLoading(false));
-    }, []);
-
-    useEffect(loadPlaylist, [loadPlaylist]);
 
     useEffect(() => {
         const syncTheme = () => setIsDarkMode(localStorage.getItem('isDarkMode') === 'true');
@@ -60,12 +39,12 @@ const MusicPlayer = () => {
         };
     }, []);
 
-    if (loading) return null;
+    if (musicCatalog.loading) return null;
 
-    if (loadFailed) {
+    if (musicCatalog.failed) {
         return (
             <section ref={rootRef} className={`musicPlayer retry ${isDarkMode ? 'frontDark' : ''}`} data-music-player>
-                <button type="button" className="musicRetry" onClick={loadPlaylist} aria-label="音乐列表加载失败，点击重试">
+                <button type="button" className="musicRetry" onClick={musicCatalog.reload} aria-label="音乐列表加载失败，点击重试">
                     <ReloadOutlined />
                     <span>音乐加载失败</span>
                 </button>
@@ -73,7 +52,7 @@ const MusicPlayer = () => {
         );
     }
 
-    if (!playlist.length || !controller.currentTrack) return null;
+    if (!musicCatalog.catalog.tracks.length || !controller.currentTrack) return null;
 
     return (
         <section
@@ -95,10 +74,14 @@ const MusicPlayer = () => {
                 <PlayerPanel
                     controller={controller}
                     lyrics={lyrics}
-                    showLyrics={showLyrics}
+                    contentMode={contentMode}
+                    playlists={musicCatalog.catalog.playlists}
+                    selectedPlaylistId={playlistSelection.selectedId}
+                    playlistTracks={playlistSelection.selected.tracks}
                     volume={volume}
                     onCollapse={() => setCollapsed(true)}
-                    onToggleLyrics={() => setShowLyrics(value => !value)}
+                    onContentModeChange={setContentMode}
+                    onPlaylistChange={playlistSelection.selectPlaylist}
                     onVolumeChange={setVolume}
                 />
             )}

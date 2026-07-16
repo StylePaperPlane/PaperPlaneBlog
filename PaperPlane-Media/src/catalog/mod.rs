@@ -1,3 +1,5 @@
+mod playlists;
 mod service;
 
-pub use service::{CatalogService, PublicTrack};
+pub use playlists::{PlaylistError, PlaylistService, PublicPlaylist};
+pub use service::{CatalogService, PublicCatalog, PublicTrack};

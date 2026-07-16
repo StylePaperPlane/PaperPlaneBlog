@@ -4,7 +4,7 @@
   "servers": [{"url": "https://media.paperplane.codes"}],
   "paths": {
     "/health": {"get": {"operationId": "health", "responses": {"200": {"description": "Healthy"}}}},
-    "/v1/tracks": {"get": {"operationId": "listPublicTracks", "responses": {"200": {"description": "Enabled tracks", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/PublicTrackList"}}}}}}},
+    "/v1/catalog": {"get": {"operationId": "getPublicCatalog", "responses": {"200": {"description": "Enabled tracks and non-empty playlists", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/PublicCatalogResponse"}}}}}}},
     "/v1/playback/sessions": {"post": {"operationId": "createPlaybackSession", "requestBody": {"required": true, "content": {"application/json": {"schema": {"$ref": "#/components/schemas/CreatePlaybackSession"}}}}, "responses": {"200": {"description": "Session created", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/PlaybackSessionResponse"}}}}, "429": {"$ref": "#/components/responses/TooManyRequests"}}}},
     "/v1/playback/tracks/{assetId}/key": {"post": {"operationId": "issueTrackKey", "parameters": [{"name": "assetId", "in": "path", "required": true, "schema": {"type": "string", "format": "uuid"}}, {"name": "X-Media-Fingerprint", "in": "header", "required": true, "schema": {"type": "string"}}], "responses": {"200": {"description": "Wrapped content key", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/IssuedKeyResponse"}}}}, "429": {"$ref": "#/components/responses/TooManyRequests"}}}},
     "/v1/admin/tracks": {
@@ -13,6 +13,17 @@
       "delete": {"operationId": "deleteTracks", "requestBody": {"required": true, "content": {"application/json": {"schema": {"type": "object", "required": ["ids"], "properties": {"ids": {"type": "array", "items": {"type": "integer", "format": "int64"}}}}}}}, "responses": {"200": {"description": "Tracks deleted"}}}
     },
     "/v1/admin/tracks/{id}": {"patch": {"operationId": "patchTrack", "parameters": [{"name": "id", "in": "path", "required": true, "schema": {"type": "integer", "format": "int64"}}], "requestBody": {"required": true, "content": {"application/json": {"schema": {"$ref": "#/components/schemas/TrackPatch"}}}}, "responses": {"200": {"description": "Track updated", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/AdminTrackResponse"}}}}}}},
+    "/v1/admin/playlists": {
+      "get": {"operationId": "listAdminPlaylists", "responses": {"200": {"description": "All playlists", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/AdminPlaylistList"}}}}}},
+      "post": {"operationId": "createPlaylist", "requestBody": {"required": true, "content": {"application/json": {"schema": {"$ref": "#/components/schemas/PlaylistNameRequest"}}}}, "responses": {"201": {"description": "Playlist created", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/AdminPlaylistResponse"}}}}, "409": {"description": "Playlist name already exists"}}}
+    },
+    "/v1/admin/playlists/{id}": {
+      "patch": {"operationId": "renamePlaylist", "parameters": [{"name": "id", "in": "path", "required": true, "schema": {"type": "integer", "format": "int64"}}], "requestBody": {"required": true, "content": {"application/json": {"schema": {"$ref": "#/components/schemas/PlaylistNameRequest"}}}}, "responses": {"200": {"description": "Playlist renamed", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/AdminPlaylistResponse"}}}}, "404": {"description": "Playlist not found"}}},
+      "delete": {"operationId": "deletePlaylist", "parameters": [{"name": "id", "in": "path", "required": true, "schema": {"type": "integer", "format": "int64"}}], "responses": {"200": {"description": "Playlist deleted", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/DeletePlaylistResponse"}}}}, "404": {"description": "Playlist not found"}}}
+    },
+    "/v1/admin/playlists/{id}/tracks": {
+      "put": {"operationId": "replacePlaylistTracks", "parameters": [{"name": "id", "in": "path", "required": true, "schema": {"type": "integer", "format": "int64"}}], "requestBody": {"required": true, "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ReplacePlaylistTracksRequest"}}}}, "responses": {"200": {"description": "Playlist membership replaced", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/AdminPlaylistResponse"}}}}, "404": {"description": "Playlist not found"}, "422": {"description": "Unknown track id"}}}
+    },
     "/assets/{sha256}.ppm": {"get": {"operationId": "getEncryptedAsset", "parameters": [{"name": "sha256", "in": "path", "required": true, "schema": {"type": "string"}}, {"name": "Range", "in": "header", "schema": {"type": "string"}}], "responses": {"200": {"description": "Full PPM1 object"}, "206": {"description": "PPM1 byte range"}}}}
   },
   "components": {"responses": {
@@ -20,7 +31,9 @@
   }, "schemas": {
     "CreatePlaybackSession": {"type": "object", "required": ["fingerprintSha256", "fingerprintVersion", "devicePublicKey"], "properties": {"fingerprintSha256": {"type": "string"}, "fingerprintVersion": {"type": "integer"}, "devicePublicKey": {"type": "object", "required": ["kty", "alg", "n", "e"], "properties": {"kty": {"const": "RSA"}, "alg": {"const": "RSA-OAEP-256"}, "n": {"type": "string"}, "e": {"type": "string"}}}}},
     "PublicTrack": {"type": "object", "required": ["musicKey", "assetId", "title", "artist", "audioFormat", "plaintextSize", "chunkSize", "chunkCount", "cipherUrl"], "properties": {"musicKey": {"type": "integer", "format": "int64"}, "assetId": {"type": "string", "format": "uuid"}, "title": {"type": "string"}, "artist": {"type": "string"}, "audioFormat": {"$ref": "#/components/schemas/AudioFormat"}, "coverUrl": {"type": ["string", "null"]}, "lyricUrl": {"type": ["string", "null"]}, "plaintextSize": {"type": "integer", "format": "int64"}, "chunkSize": {"type": "integer"}, "chunkCount": {"type": "integer"}, "cipherUrl": {"type": "string"}}},
-    "PublicTrackList": {"type": "object", "required": ["data"], "properties": {"data": {"type": "array", "items": {"$ref": "#/components/schemas/PublicTrack"}}}},
+    "PublicPlaylist": {"type": "object", "required": ["playlistId", "name", "trackIds"], "properties": {"playlistId": {"type": "integer", "format": "int64"}, "name": {"type": "string"}, "trackIds": {"type": "array", "items": {"type": "integer", "format": "int64"}}}},
+    "PublicCatalog": {"type": "object", "required": ["tracks", "playlists"], "properties": {"tracks": {"type": "array", "items": {"$ref": "#/components/schemas/PublicTrack"}}, "playlists": {"type": "array", "items": {"$ref": "#/components/schemas/PublicPlaylist"}}}},
+    "PublicCatalogResponse": {"type": "object", "required": ["data"], "properties": {"data": {"$ref": "#/components/schemas/PublicCatalog"}}},
     "PlaybackSession": {"type": "object", "required": ["expiresAt"], "properties": {"expiresAt": {"type": "string", "format": "date-time"}}},
     "PlaybackSessionResponse": {"type": "object", "required": ["data"], "properties": {"data": {"$ref": "#/components/schemas/PlaybackSession"}}},
     "IssuedKey": {"type": "object", "required": ["assetId", "wrappedKey", "algorithm", "expiresAt", "plaintextSize", "chunkSize", "chunkCount", "noncePrefix", "cipherSha256", "audioFormat"], "properties": {"assetId": {"type": "string", "format": "uuid"}, "wrappedKey": {"type": "string"}, "algorithm": {"const": "RSA-OAEP-256"}, "expiresAt": {"type": "string", "format": "date-time"}, "plaintextSize": {"type": "integer", "format": "int64"}, "chunkSize": {"type": "integer"}, "chunkCount": {"type": "integer"}, "noncePrefix": {"type": "string"}, "cipherSha256": {"type": "string"}, "audioFormat": {"$ref": "#/components/schemas/AudioFormat"}}},
@@ -29,6 +42,13 @@
     "AudioFormat": {"type": "string", "enum": ["mp3", "flac"]},
     "AdminTrackList": {"type": "object", "required": ["data"], "properties": {"data": {"type": "array", "items": {"$ref": "#/components/schemas/AdminTrack"}}}},
     "AdminTrackResponse": {"type": "object", "required": ["data"], "properties": {"data": {"$ref": "#/components/schemas/AdminTrack"}}},
+    "AdminPlaylist": {"type": "object", "required": ["playlistId", "name", "trackIds", "createdAt", "updatedAt"], "properties": {"playlistId": {"type": "integer", "format": "int64"}, "name": {"type": "string"}, "trackIds": {"type": "array", "items": {"type": "integer", "format": "int64"}}, "createdAt": {"type": "string", "format": "date-time"}, "updatedAt": {"type": "string", "format": "date-time"}}},
+    "AdminPlaylistList": {"type": "object", "required": ["data"], "properties": {"data": {"type": "array", "items": {"$ref": "#/components/schemas/AdminPlaylist"}}}},
+    "AdminPlaylistResponse": {"type": "object", "required": ["data"], "properties": {"data": {"$ref": "#/components/schemas/AdminPlaylist"}}},
+    "PlaylistNameRequest": {"type": "object", "required": ["name"], "properties": {"name": {"type": "string", "minLength": 1, "maxLength": 60}}},
+    "ReplacePlaylistTracksRequest": {"type": "object", "required": ["trackIds"], "properties": {"trackIds": {"type": "array", "uniqueItems": true, "items": {"type": "integer", "format": "int64"}}}},
+    "DeletePlaylistResult": {"type": "object", "required": ["deleted"], "properties": {"deleted": {"type": "boolean"}}},
+    "DeletePlaylistResponse": {"type": "object", "required": ["data"], "properties": {"data": {"$ref": "#/components/schemas/DeletePlaylistResult"}}},
     "TrackPatch": {"type": "object", "properties": {"title": {"type": "string"}, "artist": {"type": "string"}, "sortOrder": {"type": "integer"}, "enabled": {"type": "boolean"}}},
     "Problem": {"type": "object", "required": ["type", "title", "status", "detail"], "properties": {"type": {"type": "string", "format": "uri"}, "title": {"type": "string"}, "status": {"type": "integer"}, "detail": {"type": "string"}}}
   }}

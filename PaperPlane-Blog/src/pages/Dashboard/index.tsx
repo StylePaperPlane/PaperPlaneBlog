@@ -133,12 +133,15 @@ const Dashboard = () => {
                 : location.pathname.includes('/usercontrol')
                     ? '站点设置'
                     : activeNav?.name || '工作台';
+    const usesFlatSurface = location.pathname.startsWith('/dashboard/music');
 
     return (
         <div className={`dashboard-shell ${isShellClosed ? 'is-collapsed' : ''}`}>
             {!loading ? (
                 <div className="loading-overlay">
-                    <Spin tip="正在准备工作台..." />
+                    <Spin tip="正在准备工作台...">
+                        <span className="loading-overlay-content" />
+                    </Spin>
                 </div>
             ) : (
                 <div className="dashboard-frame" ref={fullScreenRef}>
@@ -229,7 +232,7 @@ const Dashboard = () => {
                         </header>
 
                         <main className="dashboard-content">
-                            <div className="dashboard-surface">
+                            <div className={`dashboard-surface ${usesFlatSurface ? 'dashboard-surface--flat' : ''}`}>
                                 <Outlet />
                             </div>
                         </main>

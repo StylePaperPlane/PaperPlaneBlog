@@ -82,6 +82,16 @@ pub struct NewAsset {
     pub master_key_version: i32,
 }
 
+#[derive(Debug, Clone, FromRow, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct PlaylistRecord {
+    pub playlist_id: i64,
+    pub name: String,
+    pub track_ids: Vec<i64>,
+    pub created_at: OffsetDateTime,
+    pub updated_at: OffsetDateTime,
+}
+
 #[derive(Debug, Clone, FromRow)]
 pub struct PlaybackSession {
     pub session_hash: Vec<u8>,

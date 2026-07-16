@@ -95,6 +95,7 @@ export const useMusicAdmin = () => {
     return {
         tracks,
         loading,
+        refresh,
         uploading,
         uploadProgress,
         uploadTrack,
