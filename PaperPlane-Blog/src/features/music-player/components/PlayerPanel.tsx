@@ -12,6 +12,7 @@ import {resolveMusicUrl} from '../../../utils/musicUrl';
 import {formatTime} from '../lib/lyricParser';
 import type {PlayerContentMode, PlayerPlaylist, PlayerPlaylistId} from '../model/playlist';
 import type {AudioController, LyricLine} from '../model/types';
+import ModeToggleButton from './ModeToggleButton';
 import PlayerContent from './PlayerContent';
 
 interface PlayerPanelProps {
@@ -49,7 +50,7 @@ const PlayerPanel = ({
     };
 
     return (
-        <div className="musicPanel">
+        <div className={`musicPanel ${contentMode ? 'contentExpanded' : ''}`}>
             <div className="musicHeader">
                 <img
                     className={`musicCover ${controller.playing ? 'spinning' : ''}`}
@@ -94,26 +95,24 @@ const PlayerPanel = ({
                     {controller.playing ? <PauseOutlined /> : <CaretRightOutlined />}
                 </button>
                 <button type="button" onClick={controller.next} aria-label="播放下一首" title="下一首"><StepForwardOutlined /></button>
-                <button
-                    type="button"
-                    className={contentMode === 'lyrics' ? 'active' : ''}
+                <ModeToggleButton
+                    active={contentMode === 'lyrics'}
                     onClick={() => toggleMode('lyrics')}
-                    aria-label={contentMode === 'lyrics' ? '隐藏歌词' : '显示歌词'}
-                    aria-pressed={contentMode === 'lyrics'}
+                    label={contentMode === 'lyrics' ? '隐藏歌词' : '显示歌词'}
                     title="歌词"
+                    rotation={-3}
                 >
                     <FileTextOutlined />
-                </button>
-                <button
-                    type="button"
-                    className={contentMode === 'playlist' ? 'active' : ''}
+                </ModeToggleButton>
+                <ModeToggleButton
+                    active={contentMode === 'playlist'}
                     onClick={() => toggleMode('playlist')}
-                    aria-label={contentMode === 'playlist' ? '隐藏当前歌单' : '显示当前歌单'}
-                    aria-pressed={contentMode === 'playlist'}
+                    label={contentMode === 'playlist' ? '隐藏当前歌单' : '显示当前歌单'}
                     title="歌单"
+                    rotation={3}
                 >
                     <UnorderedListOutlined />
-                </button>
+                </ModeToggleButton>
                 <input
                     className="volume"
                     type="range"

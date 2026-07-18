@@ -1,7 +1,7 @@
 export interface SocialType{
-    socialGithub: string;
-    socialEmail: string;
-    socialBilibili: string;
-    socialQQ: string;
-    socialNeteaseCloud: string;
+    socialGithub: string | null;
+    socialEmail: string | null;
+    socialBilibili: string | null;
+    socialQQ: string | null;
+    socialNeteaseCloud: string | null;
 }

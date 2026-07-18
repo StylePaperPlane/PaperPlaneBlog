@@ -2,6 +2,7 @@ import workerUrl from './secureMediaWorker.ts?worker&url';
 import type {IssuedTrackKey, SecureTrackDescriptor} from '../model/types';
 import type {RegisterMediaAssetMessage, WorkerAcknowledgement} from './protocol';
 import {SecureMediaSessionError} from '../model/errors';
+import {waitForServiceWorkerController} from './waitForController';
 
 let controllerPromise: Promise<ServiceWorker> | null = null;
 
@@ -32,23 +33,22 @@ async function getController(signal: AbortSignal): Promise<ServiceWorker> {
 }
 
 async function installAndClaimWorker(): Promise<ServiceWorker> {
-    await navigator.serviceWorker.register(workerUrl, {scope: '/', type: 'module'});
-    await navigator.serviceWorker.ready;
-    if (navigator.serviceWorker.controller) return navigator.serviceWorker.controller;
+    try {
+        const registration = await navigator.serviceWorker.register(workerUrl, {scope: '/', type: 'module'});
+        await navigator.serviceWorker.ready;
+        if (navigator.serviceWorker.controller) return navigator.serviceWorker.controller;
 
-    return new Promise((resolve, reject) => {
-        const timeout = window.setTimeout(() => finish(() => reject(new Error('安全媒体组件启动超时'))), 10_000);
-        const onControllerChange = () => {
-            const controller = navigator.serviceWorker.controller;
-            if (controller) finish(() => resolve(controller));
-        };
-        const finish = (settle: () => void) => {
-            window.clearTimeout(timeout);
-            navigator.serviceWorker.removeEventListener('controllerchange', onControllerChange);
-            settle();
-        };
-        navigator.serviceWorker.addEventListener('controllerchange', onControllerChange);
-    });
+        const controllerPromise = waitForServiceWorkerController(navigator.serviceWorker);
+        registration.active?.postMessage({type: 'claim-media-clients'});
+        return await controllerPromise;
+    } catch (error) {
+        if (error instanceof SecureMediaSessionError) throw error;
+        throw new SecureMediaSessionError(
+            error instanceof Error && error.message
+                ? error.message
+                : '安全媒体组件启动失败，请重试',
+        );
+    }
 }
 
 function sendWithAcknowledgement(

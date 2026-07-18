@@ -9,6 +9,7 @@ import com.linmoblog.server.enums.ResultCode;
 import com.linmoblog.server.utils.EncryptUtil;
 import com.linmoblog.server.utils.JWTTokenUtil;
 import com.linmoblog.server.security.login.TurnstileVerifier;
+import com.linmoblog.server.utils.PublicResourceUrl;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -39,6 +40,10 @@ public class LoginService {
     }
 
     public Result<UserInfo> userinfo() {
-        return Result.success(loginDao.userinfo());
+        UserInfo userInfo = loginDao.userinfo();
+        if (userInfo != null) {
+            userInfo.setUserAvatar(PublicResourceUrl.normalize(userInfo.getUserAvatar()));
+        }
+        return Result.success(userInfo);
     }
 }

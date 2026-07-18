@@ -5,6 +5,7 @@ import UserState from "../../interface/UserState";
 import UserData from "../../interface/UserData";
 import deleteToken from "../../apis/deleteToken.tsx";
 import {SocialType} from "../../interface/SocialType";
+import {resolveImageUrl} from "../../utils/imageUrl.ts";
 
 const normalizeBrandName = (value?: string) => {
     if (!value) return '';
@@ -15,11 +16,9 @@ const normalizeBrandName = (value?: string) => {
 const initialState: UserState = {
     token: localStorage.getItem('tokenKey') || null,
     avatar: '',
-    talk: '',
     name: 'PaperPlane',
     social: null,
-    blogTitle: 'PaperPlane',
-    blogIcp: ''
+    blogTitle: 'PaperPlane'
 };
 
 const userSlice = createSlice({
@@ -30,11 +29,9 @@ const userSlice = createSlice({
             state.token = action.payload.token;
             localStorage.setItem('tokenKey', action.payload.token);
         },
-        setUserInfo: (state: UserState,action: PayloadAction<{avatar:string,talk:string,name:string,blogTitle: string,blogIcp: string}>) => {
+        setUserInfo: (state: UserState,action: PayloadAction<{avatar:string,name:string,blogTitle: string}>) => {
             state.avatar = action.payload.avatar;
-            state.talk = action.payload.talk;
             state.name = normalizeBrandName(action.payload.name) || 'PaperPlane';
-            state.blogIcp = action.payload.blogIcp;
             state.blogTitle = normalizeBrandName(action.payload.blogTitle) || 'PaperPlane'
         },
         setSocial: (state: UserState,action: PayloadAction<SocialType>) => {
@@ -60,18 +57,16 @@ const fetchToken = (data: UserData) => {
 };
 
 const fetchUserInfo = () => {
-    return async (dispatch: Dispatch<PayloadAction<{avatar:string,talk:string}>>) => {
+    return async (dispatch: Dispatch<PayloadAction<{avatar:string,name:string,blogTitle:string}>>) => {
         try{
             const userinfo = await http({
                 url: '/api/public/user',
                 method: "GET"
             })
             const res = {
-                avatar: userinfo.data.data.userAvatar,
-                talk: userinfo.data.data.userTalk,
+                avatar: resolveImageUrl(userinfo.data.data.userAvatar),
                 name: userinfo.data.data.blogAuthor,
-                blogTitle: userinfo.data.data.blogTitle,
-                blogIcp: userinfo.data.data.blogIcp
+                blogTitle: userinfo.data.data.blogTitle
             }
             dispatch(setUserInfo(res))
         }catch (error){

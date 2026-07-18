@@ -11,12 +11,9 @@ public class WebInfo {
     private String blogTitle;
     private String blogAuthor;
     private String blogDomain;
-    private String blogDescription;
-    private String blogIcp;
     private String userAccount;
     private String userPassword;
     private String userAvatar;
-    private String userTalk;
     private String socialGithub;
     private String socialEmail;
     private String socialBilibili;

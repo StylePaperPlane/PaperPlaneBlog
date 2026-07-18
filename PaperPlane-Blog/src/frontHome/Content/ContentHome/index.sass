@@ -62,54 +62,185 @@ $container-background-color-dark: linear-gradient(to left, rgba(48, 61, 103,0.96
   min-height: 100svh
   overflow: hidden
   display: flex
-  justify-content: space-evenly
-  align-items: center
-  gap: clamp(32px, 7vw, 120px)
-  padding: clamp(32px, 6vw, 84px)
-  background-color: var(--front-body-color)
-  background-image: var(--self-description-image)
-  background-position: center
-  background-size: cover
-  background-repeat: no-repeat
-  box-shadow: 0 24px 70px rgba(39, 166, 204, 0.16)
+  justify-content: flex-start
+  align-items: flex-end
+  padding: clamp(84px, 9vh, 118px) clamp(28px, 5vw, 82px)
+  -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 var(--hero-opaque-stop, 100%), rgba(0, 0, 0, 0.96) var(--hero-feather-near-stop, 100%), rgba(0, 0, 0, 0.78) var(--hero-feather-mid-stop, 100%), rgba(0, 0, 0, 0.48) var(--hero-feather-far-stop, 100%), rgba(0, 0, 0, 0.18) var(--hero-feather-edge-stop, 100%), rgba(0, 0, 0, var(--hero-bottom-visibility, 1)) 100%)
+  mask-image: linear-gradient(to bottom, #000 0%, #000 var(--hero-opaque-stop, 100%), rgba(0, 0, 0, 0.96) var(--hero-feather-near-stop, 100%), rgba(0, 0, 0, 0.78) var(--hero-feather-mid-stop, 100%), rgba(0, 0, 0, 0.48) var(--hero-feather-far-stop, 100%), rgba(0, 0, 0, 0.18) var(--hero-feather-edge-stop, 100%), rgba(0, 0, 0, var(--hero-bottom-visibility, 1)) 100%)
   transform-origin: top center
   will-change: transform, opacity
-  @media only screen and (max-width: 1200px)
-    justify-content: center
-    text-align: center
   @media only screen and (max-width: 700px)
-    padding: 28px 22px
+    padding: 76px 22px 104px
   .homeTyped
     position: absolute
     bottom: 100px
     font-weight: 700
 
-  .SayWords
-    animation: left-in 1s forwards
+  .HeroBackdrop
+    position: absolute
+    z-index: 0
+    inset: -1%
+    background-color: var(--front-body-color)
+    background-image: var(--self-description-image)
+    background-position: center
+    background-size: cover
+    background-repeat: no-repeat
+    transform-origin: center
+    will-change: transform
+
     @media only screen and (max-width: 1200px)
-      display: flex
-      flex-direction: column
-      align-items: center
-    h2
-      font-size: clamp(2.7rem, 6vw, 4.8rem)
-      font-weight: 900
-      line-height: 1.08
-    h3
-      font-size: clamp(1.5rem, 3vw, 2.6rem)
-      margin-top: 12px
-    .Social
-      width: min(300px, 100%)
-      display: flex
-      flex-direction: row
-      justify-content: space-between
-      margin-top: 20px
+      background-position: 75% center
+
+  .HeroIdentity
+    width: min(600px, 42vw)
+    z-index: 2
+    margin: 0 0 clamp(150px, 19vh, 190px) clamp(16px, 2vw, 28px)
+    display: flex
+    flex-direction: column
+    align-items: flex-start
+    gap: 10px
+    animation: left-in 1s forwards
+
+    @media only screen and (max-width: 1200px)
+      width: min(500px, 46vw)
+
+    @media only screen and (max-width: 760px)
+      position: absolute
+      left: 22px
+      top: 50%
+      bottom: auto
+      width: calc(100% - 44px)
+      margin: 0
+      gap: 7px
+      translate: 0 -50%
+
+  .HeroGreetingRow
+    min-height: 236px
+    width: 100%
+    display: flex
+    align-items: flex-end
+    gap: clamp(18px, 2.2vw, 32px)
+
+    @media only screen and (max-width: 760px)
+      min-height: auto
+
+  .HeroGreeting
+    margin: 0 0 6px
+    color: var(--font-title-color)
+    font-size: clamp(1.55rem, 2.1vw, 2rem)
+    font-weight: 520
+    line-height: 1.1
+
+  .HeroNameRow
+    width: 100%
+    display: flex
+    align-items: center
+    gap: clamp(8px, 1.2vw, 16px)
+
+    h1
+      margin: 0
+      color: var(--hero-title-blue)
+      background: linear-gradient(96deg, var(--hero-blue-deep) 0%, var(--hero-blue-mid) 34%, var(--hero-blue-bright) 70%, var(--hero-blue-sky) 100%)
+      background-clip: text
+      -webkit-background-clip: text
+      -webkit-text-fill-color: transparent
+      font-size: clamp(3.1rem, 6.2vw, 5.4rem)
+      font-weight: 950
+      line-height: 0.94
+      letter-spacing: -0.035em
+      text-wrap: nowrap
+
+    .HeroPlaneWord
+      position: relative
+      display: inline-block
+
+    @media only screen and (max-width: 760px)
+      gap: 5px
+
+      h1
+        font-size: clamp(2.55rem, 12.1vw, 3rem)
+        letter-spacing: -0.045em
+
+  .HeroPaperPlane
+    position: absolute
+    z-index: 1
+    left: 0
+    bottom: -20px
+    width: calc(100% + 72px)
+    height: auto
+    max-width: none
+    overflow: visible
+    pointer-events: none
+    stroke-width: 2.25
+    stroke-linecap: round
+    stroke-linejoin: round
+
+    @media only screen and (max-width: 760px)
+      bottom: -14px
+      width: calc(100% + 58px)
+
+  .HeroPlaneTrail
+    stroke-width: 1.7
+
+  .HeroPlaneStopDeep
+    stop-color: var(--hero-blue-deep)
+
+  .HeroPlaneStopBright
+    stop-color: var(--hero-blue-bright)
+
+  .HeroPlaneStopSky
+    stop-color: var(--hero-blue-sky)
+
+  .HeroRole
+    margin: 4px 0 0
+    color: var(--font-title-color)
+    font-size: clamp(1.45rem, 2.8vw, 2.35rem)
+    font-weight: 800
+    line-height: 1.12
+    text-wrap: balance
+
+  .Social
+    margin-top: 12px
+
+    @media only screen and (max-width: 760px)
+      position: absolute
+      top: calc(100% + 12px)
+      left: 0
+      margin-top: 0
+
   .frontAvatar
+    flex: 0 0 auto
     border: 5px solid var(--pic-background-cover)
     transition: transform 0.3s ease
     &:hover
       transform: rotate(45deg)
-    @media only screen and (max-width: 1200px)
+    @media only screen and (max-width: 760px)
       display: none
+
+    pointer-events: none
+
+  .HeroScrollCue
+    position: absolute
+    z-index: 3
+    left: calc(50% - 28px)
+    bottom: 22px
+    width: 56px
+    height: 56px
+    display: flex
+    align-items: center
+    justify-content: center
+    padding: 0
+    border: 0
+    background: transparent
+    color: var(--hero-title-blue)
+    cursor: pointer
+
+    &:focus-visible
+      outline: 3px solid color-mix(in srgb, var(--hero-title-blue) 38%, transparent)
+      outline-offset: 3px
+
+    .iconfont
+      font-size: 50px
 
 .HomeContentLayer
   position: sticky

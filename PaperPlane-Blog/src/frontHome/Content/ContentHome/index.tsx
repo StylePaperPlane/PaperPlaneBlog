@@ -1,20 +1,20 @@
 import './index.sass'
 import {Avatar} from "antd";
-import SocialButton from "../../../components/Buttons/SocialButton";
 import {useEffect, useState} from "react";
 import {useSelector} from "react-redux";
 import UserState from "../../../interface/UserState";
-import {motion, useScroll, useTransform} from 'framer-motion';
+import {motion} from 'framer-motion';
 import {formatNote, NoteType} from "../../../interface/NoteType";
 import {categoryList} from "../../../store/components/categories.tsx";
 import type {RootState} from "../../../store";
 import Article from "./Article.tsx";
 import {useNavigate} from "react-router-dom";
-import {SocialType} from "../../../interface/SocialType";
 import {getNotePage, getTopNotes} from "../../../apis/NoteMethods.tsx";
 import {resolveImageUrl} from "../../../utils/imageUrl.ts";
 import dayjs from "dayjs";
 import {renderNoteTags} from "../../../apis/TagMethods.tsx";
+import HeroIdentity from './HeroIdentity';
+import {useHeroRevealMotion} from './useHeroRevealMotion';
 
 const parseNoteTags = (noteTags?: string) => (
     noteTags
@@ -31,19 +31,18 @@ const ContentHome = () => {
     const [viewportWidth, setViewportWidth] = useState(() => window.innerWidth);
     const avatar = useSelector((state:{user:UserState}) => state.user.avatar)
     const name = useSelector((state:{user:UserState}) => state.user.name)
-    const oneSay = useSelector((state:{user:UserState}) => state.user.talk)
     const navigate = useNavigate()
     const [otherArticles,setOtherArticles] = useState<NoteType[]>([])
     const [topArticles,setTopArticles] = useState<NoteType[]>([])
     const Categories = useSelector((state: { categories: categoryList }) => state.categories.categories);
     const tagList = useSelector((state: RootState) => state.tags.tag)
-    const social = useSelector((state:{user:{social: SocialType}}) => state.user.social)
+    const social = useSelector((state:{user:UserState}) => state.user.social)
     const author =  useSelector((state: { user: UserState }) => state.user.name);
-    const {scrollY} = useScroll();
-    const revealDistance = viewportHeight;
-    const coverScale = useTransform(scrollY, [0, revealDistance], [1, 0.985]);
-    const largeScreenContentScale = useTransform(scrollY, [0, revealDistance * 0.72, revealDistance], [0.94, 0.985, 1]);
-    const contentScale = viewportWidth >= 1200 ? largeScreenContentScale : 1;
+    const {
+        contentScale,
+        coverScale,
+        heroMaskStyle,
+    } = useHeroRevealMotion({viewportHeight, viewportWidth});
 
     useEffect(() => {
         const handleResize = () => {
@@ -133,27 +132,25 @@ const ContentHome = () => {
     return <div className="HomeRevealShell">
         <motion.div
             className="SelfDescription"
-            style={{scale: coverScale}}
+            style={heroMaskStyle}
         >
-            <div className="SayWords">
-               <div>
-                   <h2>Hi!</h2>
-                   <h2>I'm <span style={{color: '#27a6cc'}}>{author}</span></h2>
-               </div>
-                <h3>A Reverse CTFer.</h3>
-                <div className="Social">
-                    <SocialButton SocialName='Github' url={social?.socialGithub}/>
-                </div>
-            </div>
-            <Avatar src={avatar} size={320} className='frontAvatar'/>
             <motion.div
+                className="HeroBackdrop"
+                style={{scale: coverScale}}
+                aria-hidden="true"
+            />
+            <HeroIdentity author={author} avatar={avatar} social={social}/>
+            <motion.button
+                type="button"
+                className="HeroScrollCue"
+                aria-label="向下浏览文章"
+                onClick={handleScrollDown}
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 1 }}
-                style={{display:'flex',width:'200px',justifyContent:'center',bottom:'0',position:"absolute"}}
             >
-            <p style={{position:'absolute',bottom:"100px", font: '600 12px ""'}}>{oneSay}</p>
-                <i className="iconfont icon-rcd-angle-double-down upAndDown" style={{fontSize: 50,position:"absolute",bottom: 20,color:'#27a6cc'}} onClick={handleScrollDown}/></motion.div>
+                <i className="iconfont icon-rcd-angle-double-down upAndDown" aria-hidden="true"/>
+            </motion.button>
         </motion.div>
         <motion.div className="HomeContentLayer" style={{scale: contentScale}}>
             <div className="ContentContainer">

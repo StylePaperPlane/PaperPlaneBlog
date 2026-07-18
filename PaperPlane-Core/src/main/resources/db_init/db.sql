@@ -113,12 +113,9 @@ create table if not exists web_info
     blog_title           varchar(255),
     blog_author          varchar(255),
     blog_domain          varchar(255),
-    blog_description     text,
-    blog_icp             varchar(255),
     user_account         varchar(255),
     user_password        varchar(255),
     user_avatar          varchar(255),
-    user_talk            text,
     social_github        varchar(255),
     social_email         varchar(255),
     social_bilibili      varchar(255),
@@ -160,8 +157,8 @@ values ('default', 'This is the introduction for the default category', 'default
 insert into tag_level_1 (title)
 values ('default');
 
-insert into web_info (user_account, user_password, blog_title, blog_author, blog_domain, blog_icp, blog_description, user_avatar)
-values ('admin', null, 'PaperPlane', 'PaperPlane', '127.0.0.1', '粤ICP备XXXXXXXX号-1', '这里是PaperPlane', 'https://img.picgo.net/2024/05/04/avatar144c348b2adf3b5c.jpeg');
+insert into web_info (user_account, user_password, blog_title, blog_author, blog_domain, user_avatar)
+values ('admin', null, 'PaperPlane', 'PaperPlane', '127.0.0.1', 'https://img.picgo.net/2024/05/04/avatar144c348b2adf3b5c.jpeg');
 
 insert into app_user (username, password)
 values ('8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918',

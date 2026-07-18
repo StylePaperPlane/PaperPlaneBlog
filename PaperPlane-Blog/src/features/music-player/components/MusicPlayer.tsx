@@ -9,6 +9,8 @@ import {usePlayerPreferences} from "../hooks/usePlayerPreferences";
 import type {PlayerContentMode} from "../model/playlist";
 import PlayerPanel from "./PlayerPanel";
 import {prepareTrackPlayback} from "../../secure-media";
+import {useAudioAnalyser} from '../hooks/useAudioAnalyser';
+import AudioRhythmGlow from './AudioRhythmGlow';
 
 const MusicPlayer = () => {
     const rootRef = useRef<HTMLElement>(null);
@@ -23,6 +25,7 @@ const MusicPlayer = () => {
         playerRootRef: rootRef,
         prepareSource: prepareTrackPlayback,
     });
+    const analyser = useAudioAnalyser(controller.audio);
     const lyrics = useLyrics(controller.currentTrack);
 
     useEffect(() => {
@@ -71,19 +74,27 @@ const MusicPlayer = () => {
                 <span className="musicCollapseIcon" aria-hidden="true"><CustomerServiceOutlined /></span>
             </button>
             {!collapsed && (
-                <PlayerPanel
-                    controller={controller}
-                    lyrics={lyrics}
-                    contentMode={contentMode}
-                    playlists={musicCatalog.catalog.playlists}
-                    selectedPlaylistId={playlistSelection.selectedId}
-                    playlistTracks={playlistSelection.selected.tracks}
-                    volume={volume}
-                    onCollapse={() => setCollapsed(true)}
-                    onContentModeChange={setContentMode}
-                    onPlaylistChange={playlistSelection.selectPlaylist}
-                    onVolumeChange={setVolume}
-                />
+                <div className={`musicPanelFrame ${contentMode ? 'contentExpanded' : ''}`}>
+                    <AudioRhythmGlow
+                        analyser={analyser}
+                        playing={controller.playing}
+                        theme={isDarkMode ? 'dark' : 'light'}
+                        expanded={Boolean(contentMode)}
+                    />
+                    <PlayerPanel
+                        controller={controller}
+                        lyrics={lyrics}
+                        contentMode={contentMode}
+                        playlists={musicCatalog.catalog.playlists}
+                        selectedPlaylistId={playlistSelection.selectedId}
+                        playlistTracks={playlistSelection.selected.tracks}
+                        volume={volume}
+                        onCollapse={() => setCollapsed(true)}
+                        onContentModeChange={setContentMode}
+                        onPlaylistChange={playlistSelection.selectPlaylist}
+                        onVolumeChange={setVolume}
+                    />
+                </div>
             )}
         </section>
     );

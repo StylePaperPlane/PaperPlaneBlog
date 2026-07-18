@@ -31,7 +31,12 @@ export class AudioSourceError extends Error {
 
 export type AudioSourceResolver = (track: MusicTrack, signal: AbortSignal) => Promise<PreparedAudioSource>;
 
+export interface AudioElementHandle {
+    getElement: () => HTMLAudioElement | null;
+}
+
 export interface AudioController {
+    audio: AudioElementHandle;
     currentTrack?: MusicTrack;
     currentIndex: number;
     playing: boolean;

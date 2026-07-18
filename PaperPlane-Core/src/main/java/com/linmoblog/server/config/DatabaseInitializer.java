@@ -31,6 +31,7 @@ public class DatabaseInitializer implements CommandLineRunner {
         if (!userTableExists) {
             executeDbSql();
         }
+        removeDeprecatedSiteFields();
         ensureImageFolderSchema();
     }
 
@@ -42,6 +43,12 @@ public class DatabaseInitializer implements CommandLineRunner {
 
     private void executeDbSql() {
         executeSqlScript("db_init/db.sql", "database initialization");
+    }
+
+    private void removeDeprecatedSiteFields() {
+        jdbcTemplate.execute("alter table web_info drop column if exists blog_description");
+        jdbcTemplate.execute("alter table web_info drop column if exists blog_icp");
+        jdbcTemplate.execute("alter table web_info drop column if exists user_talk");
     }
 
     private void ensureImageFolderSchema() {

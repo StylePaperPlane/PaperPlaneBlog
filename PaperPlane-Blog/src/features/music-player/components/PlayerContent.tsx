@@ -3,6 +3,7 @@ import type {PlayerContentMode, PlayerPlaylist, PlayerPlaylistId} from '../model
 import type {LyricLine} from '../model/types';
 import LyricsView from './LyricsView';
 import PlaylistBrowser from './PlaylistBrowser';
+import AnimatedPlayerContent from './AnimatedPlayerContent';
 
 interface PlayerContentProps {
     mode: PlayerContentMode;
@@ -17,11 +18,12 @@ interface PlayerContentProps {
 }
 
 const PlayerContent = (props: PlayerContentProps) => {
+    let content = null;
     if (props.mode === 'lyrics') {
-        return <LyricsView title={props.currentTrack.title} lyrics={props.lyrics} currentTime={props.currentTime} />;
+        content = <LyricsView title={props.currentTrack.title} lyrics={props.lyrics} currentTime={props.currentTime} />;
     }
     if (props.mode === 'playlist') {
-        return (
+        content = (
             <PlaylistBrowser
                 playlists={props.playlists}
                 selectedId={props.selectedPlaylistId}
@@ -32,7 +34,7 @@ const PlayerContent = (props: PlayerContentProps) => {
             />
         );
     }
-    return null;
+    return <AnimatedPlayerContent mode={props.mode}>{content}</AnimatedPlayerContent>;
 };
 
 export default PlayerContent;

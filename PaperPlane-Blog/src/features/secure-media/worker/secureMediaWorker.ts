@@ -21,6 +21,10 @@ self.addEventListener('activate', event => event.waitUntil(self.clients.claim())
 
 self.addEventListener('message', event => {
     const message = event.data as SecureMediaWorkerMessage;
+    if (message.type === 'claim-media-clients') {
+        event.waitUntil(self.clients.claim());
+        return;
+    }
     if (message.type === 'release-media-asset') {
         assets.delete(message.assetId);
         return;

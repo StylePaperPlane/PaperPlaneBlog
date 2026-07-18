@@ -1,6 +1,6 @@
 import {httpBaseURL} from "../apis/axios.tsx";
 
-export const resolveImageUrl = (url?: string | null) => {
+export const resolveImageUrl = (url?: string | null, baseURL = httpBaseURL) => {
     if (!url) {
         return '';
     }
@@ -10,7 +10,7 @@ export const resolveImageUrl = (url?: string | null) => {
     }
 
     const normalizedUrl = url.startsWith('/') ? url : `/${url}`;
-    const normalizedBaseURL = httpBaseURL.replace(/\/$/, '');
+    const normalizedBaseURL = baseURL.replace(/\/$/, '');
 
     return `${normalizedBaseURL}${normalizedUrl}`;
 };

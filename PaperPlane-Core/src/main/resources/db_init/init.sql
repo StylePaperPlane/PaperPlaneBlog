@@ -132,12 +132,9 @@ create table if not exists web_info
     blog_title           varchar(255) null,
     blog_author          varchar(255) null,
     blog_domain          varchar(255) null,
-    blog_description     text         null,
-    blog_icp             varchar(255) null,
     user_account         varchar(255) null,
     user_password        varchar(255) null,
     user_avatar          varchar(255) null,
-    user_talk            text         null,
     social_github        varchar(255) null,
     social_email         varchar(255) null,
     social_bilibili      varchar(255) null,
@@ -160,4 +157,4 @@ VALUES ('default');
 insert into user (username, password) values ('8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918',
                                               '$2a$12$yDsd3FUbvR82Kkej6E9YVO16Nb6VwOtnhguLV4d5NhUalMM2CZwhi');
 
-insert into web_info (user_account,user_password,blog_title,blog_icp,blog_author,blog_description,blog_domain) values ('admin',null,'PaperPlane','粤ICP备XXXXXXXX号-1','PaperPlane','这里是PaperPlane','127.0.0.1');
+insert into web_info (user_account,user_password,blog_title,blog_author,blog_domain) values ('admin',null,'PaperPlane','PaperPlane','127.0.0.1');

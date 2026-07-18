@@ -51,14 +51,16 @@ describe('useAudioController', () => {
     it('keeps one Audio instance when volume changes', () => {
         const player = document.createElement('section');
         const playerRootRef = {current: player};
-        const {rerender} = renderHook(
+        const {result, rerender} = renderHook(
             ({volume}) => useAudioController({playlist: tracks, volume, playerRootRef}),
             {initialProps: {volume: 0.72}}
         );
 
         expect(MockAudio.instances).toHaveLength(1);
+        expect(result.current.audio.getElement()).toBe(MockAudio.instances[0]);
         rerender({volume: 0.35});
         expect(MockAudio.instances).toHaveLength(1);
+        expect(result.current.audio.getElement()).toBe(MockAudio.instances[0]);
         expect(MockAudio.instances[0].volume).toBe(0.35);
     });
 

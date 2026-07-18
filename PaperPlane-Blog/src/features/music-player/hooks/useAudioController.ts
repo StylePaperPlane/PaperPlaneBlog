@@ -1,4 +1,4 @@
-import {RefObject, useCallback, useEffect, useRef, useState} from "react";
+import {RefObject, useCallback, useEffect, useMemo, useRef, useState} from "react";
 import type {MusicTrack} from "../../../interface/MusicType";
 import {resolveMusicUrl} from "../../../utils/musicUrl";
 import {describeMediaError, describePlayError, describeSourceError} from "../lib/mediaError";
@@ -28,6 +28,9 @@ export const useAudioController = ({playlist, volume, playerRootRef, prepareSour
     const [duration, setDuration] = useState(0);
     const [notice, setNotice] = useState<PlayerNotice | null>(null);
     const [firstInteractionConsumed, setFirstInteractionConsumed] = useState(false);
+    const audioHandle = useMemo(() => ({
+        getElement: () => audioRef.current,
+    }), []);
 
     const setCurrentTrackKey = useCallback((musicKey: number | null) => {
         currentTrackKeyRef.current = musicKey;
@@ -298,6 +301,7 @@ export const useAudioController = ({playlist, volume, playerRootRef, prepareSour
     }, []);
 
     return {
+        audio: audioHandle,
         currentTrack,
         currentIndex: Math.max(0, currentIndex),
         playing,

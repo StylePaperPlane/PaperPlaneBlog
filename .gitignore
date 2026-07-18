@@ -48,3 +48,7 @@ blog-backups/
 deploy-runtime/
 deploy-update-latest/
 merge-work/
+
+# Local browser-test artifacts
+.playwright-mcp/
+**/.playwright-cli/

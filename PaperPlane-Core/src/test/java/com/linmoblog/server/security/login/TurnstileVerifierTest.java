@@ -18,7 +18,7 @@ class TurnstileVerifierTest {
         RestClient.Builder builder = RestClient.builder().baseUrl("https://turnstile.test/siteverify");
         MockRestServiceServer server = MockRestServiceServer.bindTo(builder).build();
         TurnstileVerifier verifier = new TurnstileVerifier(
-                builder.build(), "secret", "blog.paperplane.codes", "admin_login"
+                builder.build(), "secret", "blog.paperplane.codes", "admin_login", false
         );
         server.expect(requestTo("https://turnstile.test/siteverify"))
                 .andExpect(method(HttpMethod.POST))
@@ -38,7 +38,7 @@ class TurnstileVerifierTest {
         RestClient.Builder builder = RestClient.builder().baseUrl("https://turnstile.test/siteverify");
         MockRestServiceServer server = MockRestServiceServer.bindTo(builder).build();
         TurnstileVerifier verifier = new TurnstileVerifier(
-                builder.build(), "secret", "blog.paperplane.codes", "admin_login"
+                builder.build(), "secret", "blog.paperplane.codes", "admin_login", false
         );
         server.expect(requestTo("https://turnstile.test/siteverify"))
                 .andRespond(withSuccess(
@@ -49,5 +49,42 @@ class TurnstileVerifierTest {
         assertThatThrownBy(() -> verifier.verify("token", "203.0.113.8"))
                 .isInstanceOf(LoginChallengeException.class)
                 .hasMessageContaining("验证失败");
+    }
+
+    @Test
+    void acceptsTheOfficialTestingTokenWithoutCallingSiteverify() {
+        RestClient.Builder builder = RestClient.builder().baseUrl("https://turnstile.test/siteverify");
+        MockRestServiceServer server = MockRestServiceServer.bindTo(builder).build();
+        TurnstileVerifier verifier = new TurnstileVerifier(
+                builder.build(), "1x0000000000000000000000000000000AA", "localhost", "admin_login", true
+        );
+
+        verifier.verify("XXXX.DUMMY.TOKEN.XXXX", "127.0.0.1");
+        server.verify();
+    }
+
+    @Test
+    void testingModeRejectsResponsesWithoutTheTestingKeyMarker() {
+        RestClient.Builder builder = RestClient.builder().baseUrl("https://turnstile.test/siteverify");
+        MockRestServiceServer server = MockRestServiceServer.bindTo(builder).build();
+        TurnstileVerifier verifier = new TurnstileVerifier(
+                builder.build(), "1x0000000000000000000000000000000AA", "localhost", "admin_login", true
+        );
+
+        assertThatThrownBy(() -> verifier.verify("token", "127.0.0.1"))
+                .isInstanceOf(LoginChallengeException.class)
+                .hasMessageContaining("验证失败");
+        server.verify();
+    }
+
+    @Test
+    void testingModeCannotBeEnabledWithAProductionSecret() {
+        RestClient.Builder builder = RestClient.builder().baseUrl("https://turnstile.test/siteverify");
+
+        assertThatThrownBy(() -> new TurnstileVerifier(
+                builder.build(), "production-secret", "localhost", "admin_login", true
+        ))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("official Cloudflare test secret");
     }
 }

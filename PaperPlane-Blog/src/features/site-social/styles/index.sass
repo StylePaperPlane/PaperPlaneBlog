@@ -1,0 +1,109 @@
+.siteSocialLinks
+  display: flex
+  align-items: center
+  flex-wrap: wrap
+  gap: 10px
+
+.siteSocialLink
+  height: 42px
+  width: 42px
+  display: inline-flex
+  align-items: center
+  justify-content: center
+  border: 1px solid color-mix(in srgb, var(--font-title-color) 18%, transparent)
+  border-radius: 6px
+  background: color-mix(in srgb, var(--pic-background-cover) 76%, transparent)
+  color: var(--font-title-color)
+  font-size: 1.28rem
+  text-decoration: none
+  transition: border-color 0.18s ease, color 0.18s ease, background-color 0.18s ease
+
+  &:hover
+    border-color: color-mix(in srgb, #27a6cc 54%, transparent)
+    background: color-mix(in srgb, var(--pic-background-cover) 90%, transparent)
+    color: #27a6cc
+
+  &:focus-visible
+    outline: 3px solid color-mix(in srgb, #27a6cc 35%, transparent)
+    outline-offset: 3px
+
+.siteSocialLinkIcon
+  display: inline-flex
+  align-items: center
+  justify-content: center
+
+.siteSocialLinks--icons
+  .siteSocialLink
+    --social-link-background: #303d67
+    width: 45px
+    height: 45px
+    position: relative
+    border: 0
+    border-radius: 7px
+    background: transparent
+    color: #fddfdc
+    transition: none
+
+    &:hover
+      border-color: transparent
+      background: transparent
+      color: #fddfdc
+
+      .siteSocialLinkBackground
+        transform: rotate(35deg)
+        transform-origin: bottom
+
+      .siteSocialLinkIcon
+        border-color: rgba(253, 223, 220, 0.466)
+        background-color: rgba(128, 191, 212, 0.466)
+        backdrop-filter: blur(4px)
+
+  .siteSocialLinkIcon
+    width: 100%
+    height: 100%
+    position: relative
+    z-index: 1
+    border: 1px solid rgba(128, 191, 212, 0.466)
+    border-radius: 10px
+    background-color: transparent
+    backdrop-filter: blur(0)
+    transition: border-color 0.3s, background-color 0.3s, backdrop-filter 0.3s
+
+    > svg
+      width: 22px
+      height: 22px
+
+  .siteSocialPlatformIcon
+    fill: none
+    stroke: currentColor
+    stroke-width: 1.8
+    stroke-linecap: round
+    stroke-linejoin: round
+
+  .siteSocialLinkBackground
+    position: absolute
+    inset: 0
+    z-index: 0
+    border-radius: 10px
+    background: var(--social-link-background)
+    pointer-events: none
+    transition: transform 0.3s
+
+.siteSocialLinks--labeled
+  .siteSocialLink
+    width: auto
+    height: 34px
+    gap: 7px
+    padding: 0 11px
+    font-size: 0.9rem
+    font-weight: 700
+
+  .siteSocialLinkIcon
+    font-size: 1rem
+
+@media (prefers-reduced-motion: reduce)
+  .siteSocialLink
+    transition: none
+
+  .siteSocialLinks--icons .siteSocialLink:hover .siteSocialLinkBackground
+    transform: none

@@ -9,8 +9,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class UserInfo {
     private String userAvatar;
-    private String userTalk;
     private String blogAuthor;
     private String blogTitle;
-    private String blogIcp;
 }

@@ -13,12 +13,9 @@ const defaultWebInfo: webInfo = {
     blogTitle: '',
     blogAuthor: '',
     blogDomain: '',
-    blogDescription: '',
-    blogIcp: '',
     userAccount: '',
     userPassword: '',
     userAvatar: '',
-    userTalk: '',
     socialGithub: '',
     socialEmail: '',
     socialBilibili: '',
@@ -126,29 +123,6 @@ const UserControl = () => {
                         onChange={handleChange}
                         value={webInfo.blogDomain}
                     />
-                    <TextField
-                        id="blogDescription"
-                        label="博客描述"
-                        multiline
-                        rows={4}
-                        defaultValue="介绍一下你的博客吧..."
-                        style={{ width: '70%', marginBottom: 20 }}
-                        color='primary'
-                        focused
-                        onChange={handleChange}
-                        value={webInfo.blogDescription}
-                    />
-                    <TextField
-                        id="blogIcp"
-                        label="ICP信息"
-                        variant="outlined"
-                        color='primary'
-                        focused
-                        size='medium'
-                        style={{ width: '70%', marginBottom: 20 }}
-                        onChange={handleChange}
-                        value={webInfo.blogIcp}
-                    />
                     <div style={{ justifyContent: 'flex-end', display: 'flex', width: '70%' }}>
                         <Button variant="contained" style={{ width: 100 }} type='submit'>保存</Button>
                     </div>
@@ -196,17 +170,6 @@ const UserControl = () => {
                         onChange={handleChange}
                         value={webInfo.userAvatar}
                     />
-                    <TextField
-                        id="userTalk"
-                        label="个性签名"
-                        variant="outlined"
-                        color='primary'
-                        focused
-                        size='medium'
-                        style={{ width: '70%', marginBottom: 20 }}
-                        onChange={handleChange}
-                        value={webInfo.userTalk}
-                    />
                     <div style={{ justifyContent: 'flex-end', display: 'flex', width: '70%' }}>
                         <Button variant="contained" style={{ width: 100 }} type='submit'>保存</Button>
                     </div>
@@ -220,7 +183,7 @@ const UserControl = () => {
                 <form className='web_setting' onSubmit={handleSubmit}>
                     <TextField
                         id="socialGithub"
-                        label="Github"
+                        label="GitHub 链接"
                         variant="outlined"
                         size='medium'
                         color='primary'
@@ -231,7 +194,7 @@ const UserControl = () => {
                     />
                     <TextField
                         id="socialBilibili"
-                        label="Bilibili"
+                        label="Bilibili 链接"
                         variant="outlined"
                         size='medium'
                         color='primary'
@@ -242,7 +205,7 @@ const UserControl = () => {
                     />
                     <TextField
                         id="socialEmail"
-                        label="Email"
+                        label="Email 或邮箱地址"
                         variant="outlined"
                         size='medium'
                         color='primary'
@@ -253,7 +216,7 @@ const UserControl = () => {
                     />
                     <TextField
                         id="socialQQ"
-                        label="QQ"
+                        label="QQ 链接"
                         variant="outlined"
                         color='primary'
                         focused
@@ -264,7 +227,7 @@ const UserControl = () => {
                     />
                     <TextField
                         id="socialNeteaseCloud"
-                        label="Netease Cloud"
+                        label="网易云音乐链接"
                         variant="outlined"
                         color='primary'
                         focused

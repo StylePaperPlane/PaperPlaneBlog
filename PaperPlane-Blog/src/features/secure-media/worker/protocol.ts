@@ -12,7 +12,11 @@ export interface ReleaseMediaAssetMessage {
     assetId: string;
 }
 
-export type SecureMediaWorkerMessage = RegisterMediaAssetMessage | ReleaseMediaAssetMessage;
+export interface ClaimMediaClientsMessage {
+    type: 'claim-media-clients';
+}
+
+export type SecureMediaWorkerMessage = RegisterMediaAssetMessage | ReleaseMediaAssetMessage | ClaimMediaClientsMessage;
 
 export interface WorkerAcknowledgement {
     ok: boolean;

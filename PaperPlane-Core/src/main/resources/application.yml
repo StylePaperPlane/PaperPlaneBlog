@@ -62,3 +62,4 @@ login:
     secret: ${LOGIN_TURNSTILE_SECRET:}
     hostname: ${LOGIN_TURNSTILE_HOSTNAME:blog.paperplane.codes}
     action: admin_login
+    testing: ${LOGIN_TURNSTILE_TESTING:false}

@@ -3,6 +3,7 @@ package com.linmoblog.server.service.impl;
 import com.linmoblog.server.enums.ResultCode;
 import com.linmoblog.server.exception.CommonException;
 import com.linmoblog.server.service.FileResourceService;
+import com.linmoblog.server.utils.PublicResourceUrl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -74,7 +75,7 @@ public class LocalFileResourceService implements FileResourceService {
             throw new CommonException(ResultCode.ERROR_UPLOAD);
         }
 
-        return PUBLIC_UPLOAD_PREFIX + path.getFileName();
+        return PublicResourceUrl.normalize(PUBLIC_UPLOAD_PREFIX + path.getFileName());
     }
 
     private void deleteLocalFile(Path file, String fileUrl) {

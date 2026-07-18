@@ -27,6 +27,12 @@
     --front-body-color: #fff7f8;
     --front-surface-color: rgba(252, 197, 197, 0.2);
     --self-description-image: url('/day-mirror.png');
+    --hero-title-blue: #1268c4;
+    --hero-blue-deep: #084aa8;
+    --hero-blue-mid: #1268c4;
+    --hero-blue-bright: #168eea;
+    --hero-blue-sky: #2bb7f3;
+    --hero-fade-rgb: 252, 197, 197;
     --pic-background-cover: rgba(252, 197, 197, 0.3);
     --pic-cover-color: linear-gradient(90deg, rgba(252, 197, 197, 0) 0, rgba(252, 197, 197, .004) 8.1%, rgba(252, 197, 197, .015) 15.5%, rgba(252, 197, 197, .031) 22.5%, rgba(252, 197, 197, .053) 29%, rgba(252, 197, 197, .078) 35.3%, rgba(252, 197, 197, .106) 41.2%, rgba(252, 197, 197, .135) 47.1%, rgba(252, 197, 197, .165) 52.9%, rgba(252, 197, 197, .194) 58.8%, rgba(252, 197, 197, .222) 64.7%, rgba(252, 197, 197, .248) 71%, rgba(252, 197, 197, .269) 77.5%, rgba(252, 197, 197, .285) 84.5%, rgba(252, 197, 197, .296) 91.9%, rgba(252, 197, 197, .3));
     --pic-image-mask: linear-gradient(90deg, #000 0, #000 62%, rgba(0, 0, 0, .92) 70%, rgba(0, 0, 0, .62) 80%, rgba(0, 0, 0, .24) 91%, transparent 100%);
@@ -62,12 +68,19 @@
     --music-player-accent-contrast: #fffafb;
     --music-player-playlist-name: #303d67;
     --music-player-cover-border: rgba(255, 250, 251, 0.86);
+    --music-glow-rgb: 28, 139, 180;
 }
 
 .frontDark{
     --front-body-color: #303d67;
     --front-surface-color: linear-gradient(135deg, rgba(48, 61, 103, 0.96) 0%, rgba(121, 121, 154, 0.72) 58%, rgba(253, 223, 220, 0.2) 100%);
     --self-description-image: url('/night-mirror.png');
+    --hero-title-blue: #80bfd4;
+    --hero-blue-deep: #6baedc;
+    --hero-blue-mid: #80bfd4;
+    --hero-blue-bright: #8fd3eb;
+    --hero-blue-sky: #b6e7f3;
+    --hero-fade-rgb: 244, 178, 189;
     --pic-cover-color: linear-gradient(90deg,rgba(48,61,103,0) 0,rgba(48,61,103,.013) 8.1%,rgba(48,61,103,.049) 15.5%,rgba(48,61,103,.104) 22.5%,rgba(48,61,103,.175) 29%,rgba(48,61,103,.259) 35.3%,rgba(48,61,103,.352) 41.2%,rgba(48,61,103,.45) 47.1%,rgba(48,61,103,.55) 52.9%,rgba(48,61,103,.648) 58.8%,rgba(48,61,103,.741) 64.7%,rgba(48,61,103,.825) 71%,rgba(48,61,103,.896) 77.5%,rgba(48,61,103,.951) 84.5%,rgba(48,61,103,.987) 91.9%,#303d67);
     --pic-image-mask: linear-gradient(90deg, #000 0, #000 62%, rgba(0, 0, 0, .92) 70%, rgba(0, 0, 0, .62) 80%, rgba(0, 0, 0, .24) 91%, transparent 100%);
     --pic-background-cover: #3b4770;
@@ -96,6 +109,7 @@
     --music-player-accent-contrast: #303d67;
     --music-player-playlist-name: #fddfdc;
     --music-player-cover-border: rgba(253, 223, 220, 0.32);
+    --music-glow-rgb: 244, 178, 189;
 }
 
 .lightBody{

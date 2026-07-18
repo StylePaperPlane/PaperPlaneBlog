@@ -11,6 +11,8 @@ import {fetchSocial, fetchUserInfo} from "../../store/components/user.tsx";
 import {fetchNoteList} from "../../store/components/note.tsx";
 import UserState from "../../interface/UserState";
 import '../main.css'
+import NavigationItemContent from './NavigationItemContent';
+import {navigationItems} from './navigationItems';
 import {AppDispatch} from "../../store";
 interface HeadProps {
     setDark: (value: (((prevState: boolean) => boolean) | boolean)) => void,
@@ -96,14 +98,6 @@ const Head = ({ setDark, isDark, scrollHeight }: HeadProps) => {
         localStorage.setItem("isDarkMode", JSON.stringify(!isDark));
     };
 
-    const navItems = [
-        { label: '首页', path: '/' },
-        { label: '归档', path: '/times' },
-        { label: '说说', path: '/talk' },
-        { label: '友人链', path: '/friends' },
-        { label: '关于我', path: '/about' },
-    ];
-
     const goPath = (path: string) => {
         setPhoneBarShow(false);
         navigate(path);
@@ -128,13 +122,13 @@ const Head = ({ setDark, isDark, scrollHeight }: HeadProps) => {
                     </div>
                     <div className="barContent">
                         <ul className='oneBar'>
-                            {navItems.map(item => (
+                            {navigationItems.map(item => (
                                 <li
                                     key={item.path}
                                     className={isActive(item.path) ? 'active' : ''}
                                     onClick={() => goPath(item.path)}
                                 >
-                                    {item.label}
+                                    <NavigationItemContent iconPath={item.iconPath} label={item.label}/>
                                 </li>
                             ))}
                         </ul>
@@ -158,13 +152,13 @@ const Head = ({ setDark, isDark, scrollHeight }: HeadProps) => {
                 </div>
                 <div className="headBar">
                     <ul>
-                        {navItems.map(item => (
+                        {navigationItems.map(item => (
                             <li
                                 key={item.path}
                                 className={isActive(item.path) ? 'active' : ''}
                                 onClick={() => goPath(item.path)}
                             >
-                                {item.label}
+                                <NavigationItemContent iconPath={item.iconPath} label={item.label}/>
                             </li>
                         ))}
                     </ul>

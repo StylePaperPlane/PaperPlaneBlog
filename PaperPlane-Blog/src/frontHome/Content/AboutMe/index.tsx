@@ -1,14 +1,14 @@
 import './index.sass'
-import {GithubOutlined, GlobalOutlined} from "@ant-design/icons";
+import {GlobalOutlined} from "@ant-design/icons";
 import {useSelector} from "react-redux";
 import UserState from "../../../interface/UserState";
 import {resolveImageUrl} from "../../../utils/imageUrl.ts";
+import SiteSocialLinks from "../../../features/site-social";
 
 const AboutMe = () => {
     const avatar = useSelector((state: { user: UserState }) => state.user.avatar);
     const name = useSelector((state: { user: UserState }) => state.user.name);
-    const talk = useSelector((state: { user: UserState }) => state.user.talk);
-    const github = useSelector((state: { user: UserState }) => state.user.social?.socialGithub);
+    const social = useSelector((state: { user: UserState }) => state.user.social);
 
     return (
         <section className="AboutContainer">
@@ -22,25 +22,9 @@ const AboutMe = () => {
                 </aside>
 
                 <main className="aboutMain">
-                    <h1>PaperPlane</h1>
+                    <h1>{name}</h1>
                     <h2>One Ctfer of CDUT.</h2>
-
-                    <div className="aboutLinks">
-                        <a
-                            href={github || undefined}
-                            target={github ? '_blank' : undefined}
-                            rel="noreferrer"
-                            aria-disabled={!github}
-                            className={!github ? 'isDisabled' : ''}
-                        >
-                            <GithubOutlined />
-                            <span>GitHub</span>
-                        </a>
-                    </div>
-
-                    <p className="aboutIntro">
-                        {talk || '一个热爱软件逆向和Windows安全研究的本科生。'}
-                    </p>
+                    <SiteSocialLinks social={social} variant="labeled" className="aboutSocialLinks"/>
                 </main>
             </div>
         </section>

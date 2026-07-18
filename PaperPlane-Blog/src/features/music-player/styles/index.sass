@@ -42,15 +42,37 @@
   font-size: 12px
   pointer-events: none
 
+.musicPanelFrame
+  position: relative
+  isolation: isolate
+  width: 348px
+  border-radius: 12px
+  background: var(--music-player-bg)
+  backdrop-filter: blur(18px) saturate(142%)
+  overflow: hidden
+
+.musicRhythmGlow
+  position: absolute
+  z-index: 1
+  inset: 0
+  width: 100%
+  height: 100%
+  opacity: 0.75
+  pointer-events: none
+  filter: blur(10px) saturate(104%)
+  -webkit-mask-image: linear-gradient(to top, #000 0%, rgba(0, 0, 0, 0.9) 64%, transparent 100%)
+  mask-image: linear-gradient(to top, #000 0%, rgba(0, 0, 0, 0.9) 64%, transparent 100%)
+
 .musicPanel
+  position: relative
+  z-index: 2
   width: 348px
   max-height: calc(100dvh - 64px)
   padding: 14px
   border: 1px solid var(--nav-glass-border)
   border-radius: 12px
-  background: var(--music-player-bg)
+  background: transparent
   box-shadow: none
-  backdrop-filter: blur(18px) saturate(142%)
   overflow: hidden
 
 .musicHeader
@@ -132,6 +154,21 @@
   .volume
     flex: 1
     min-width: 44px
+
+.modeToggleIcon
+  display: inline-flex
+  align-items: center
+  justify-content: center
+
+.musicContentTransition
+  overflow: hidden
+  will-change: height
+
+.musicContentMotion
+  min-height: 0
+
+.musicPanel.contentExpanded .musicContentMotion
+  min-height: min(150px, 28dvh)
 
 .musicContentScroll
   max-height: min(138px, 28dvh)
@@ -286,8 +323,12 @@
   .musicPanel
     width: 100%
     max-height: calc(100dvh - 168px)
+  .musicPanelFrame
+    width: 100%
   .musicContentScroll
     max-height: min(172px, 24dvh)
+  .musicPanel.contentExpanded .musicContentMotion
+    min-height: min(172px, 24dvh)
   .panelCollapse
     width: 34px
     height: 34px
@@ -305,7 +346,8 @@
   .musicCover.spinning
     animation: none
   .musicPlayer button,
-  .musicLyrics p
+  .musicLyrics p,
+  .musicContentTransition
     transition-duration: 0.01ms
 
 @keyframes musicSpin
