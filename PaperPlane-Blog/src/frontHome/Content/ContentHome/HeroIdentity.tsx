@@ -1,6 +1,6 @@
-import {Avatar} from 'antd';
 import {SocialType} from '../../../interface/SocialType';
 import SiteSocialLinks from '../../../features/site-social';
+import DirectionalHeroAvatar from './DirectionalHeroAvatar';
 import PaperPlaneMark from './PaperPlaneMark';
 
 interface HeroIdentityProps {
@@ -28,7 +28,7 @@ const HeroIdentity = ({author, avatar, social}: HeroIdentityProps) => (
     <div className="HeroIdentity">
         <div className="HeroGreetingRow">
             <p className="HeroGreeting">Hi, I’m</p>
-            <Avatar src={avatar} size={236} className="frontAvatar"/>
+            <DirectionalHeroAvatar src={avatar}/>
         </div>
 
         <div className="HeroNameRow">

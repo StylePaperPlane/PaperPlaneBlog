@@ -208,16 +208,26 @@ $container-background-color-dark: linear-gradient(to left, rgba(48, 61, 103,0.96
       left: 0
       margin-top: 0
 
-  .frontAvatar
+  .frontAvatarInteraction
     flex: 0 0 auto
-    border: 5px solid var(--pic-background-cover)
-    transition: transform 0.3s ease
-    &:hover
-      transform: rotate(45deg)
+    display: inline-flex
+    pointer-events: auto
     @media only screen and (max-width: 760px)
       display: none
 
-    pointer-events: none
+    .frontAvatar
+      border: 5px solid var(--pic-background-cover)
+      transition: transform 0.42s cubic-bezier(0.22, 1, 0.36, 1)
+
+    &[data-spin-direction='clockwise']:hover .frontAvatar
+      transform: rotate(45deg)
+
+    &[data-spin-direction='counterclockwise']:hover .frontAvatar
+      transform: rotate(-45deg)
+
+    @media (prefers-reduced-motion: reduce)
+      .frontAvatar
+        transition-duration: 0.01ms
 
   .HeroScrollCue
     position: absolute

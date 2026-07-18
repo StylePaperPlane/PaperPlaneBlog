@@ -28,11 +28,12 @@ public class DatabaseInitializer implements CommandLineRunner {
     public void run(String... args) {
         boolean userTableExists = checkUserTableExists();
         logger.info("Database app_user table exists: {}", userTableExists);
-        if (!userTableExists) {
-            executeDbSql();
+        if (userTableExists) {
+            logger.info("Existing database detected; runtime schema initialization is skipped");
+            return;
         }
-        removeDeprecatedSiteFields();
-        ensureImageFolderSchema();
+
+        executeDbSql();
     }
 
     private boolean checkUserTableExists() {
@@ -43,34 +44,6 @@ public class DatabaseInitializer implements CommandLineRunner {
 
     private void executeDbSql() {
         executeSqlScript("db_init/db.sql", "database initialization");
-    }
-
-    private void removeDeprecatedSiteFields() {
-        jdbcTemplate.execute("alter table web_info drop column if exists blog_description");
-        jdbcTemplate.execute("alter table web_info drop column if exists blog_icp");
-        jdbcTemplate.execute("alter table web_info drop column if exists user_talk");
-    }
-
-    private void ensureImageFolderSchema() {
-        jdbcTemplate.execute("""
-                create table if not exists image_folders
-                (
-                    folder_key serial primary key,
-                    folder_name varchar(50) not null unique
-                )
-                """);
-        jdbcTemplate.execute("alter table images add column if not exists folder_name varchar(50)");
-        jdbcTemplate.update("update images set folder_name = '默认文件夹' where folder_name is null or trim(folder_name) = ''");
-        jdbcTemplate.execute("alter table images alter column folder_name set default '默认文件夹'");
-        jdbcTemplate.execute("alter table images alter column folder_name set not null");
-        jdbcTemplate.update("insert into image_folders (folder_name) values ('默认文件夹') on conflict (folder_name) do nothing");
-        jdbcTemplate.update("""
-                insert into image_folders (folder_name)
-                select distinct folder_name
-                from images
-                where folder_name is not null and trim(folder_name) <> ''
-                on conflict (folder_name) do nothing
-                """);
     }
 
     private void executeSqlScript(String location, String description) {
