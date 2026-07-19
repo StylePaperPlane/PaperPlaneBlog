@@ -1,18 +1,24 @@
 .notes-container
   width: 100%
+  height: 100%
+  min-height: 0
   display: flex
-  justify-content: center
-  align-items: center
+  justify-content: flex-start
+  align-items: stretch
   flex-direction: column
-  margin-top: 28px
+  margin: 0
+  padding: 14px 20px 0
+  overflow: hidden
   box-sizing: border-box
 
   .article_title
-    width: calc(100% - 40px)
+    width: 100%
+    flex: 0 0 auto
     display: grid
     grid-template-columns: max-content minmax(0, 1fr) max-content
     align-items: center
     gap: 12px
+    margin-bottom: 12px
 
   .article-title-label
     color: var(--font-title-color)
@@ -31,10 +37,15 @@
 
   .new_article
     width: 100%
-    padding: 20px
+    flex: 1 1 auto
+    min-height: 0
+    padding: 0
+    overflow: hidden
     box-sizing: border-box
 
   @media only screen and (max-width: 640px)
+    padding: 12px 12px 0
+
     .article_title
       grid-template-columns: minmax(0, 1fr) max-content
 

@@ -63,7 +63,7 @@ const Editor_ = ({ setNoteContent, noteContent }: Editor_Props) => {
 
 
     return (
-        <div className='markdown-body"'>
+        <div className="editor-shell">
             <Editor
                 value={noteContent}
                 plugins={plugins}

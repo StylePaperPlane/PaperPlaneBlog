@@ -261,8 +261,13 @@ const NewNotes = () => {
                     onChange={handleInputChange}
                     value={noteTitle}
                 />
-                <Button className="article-submit-button" type="primary" onClick={showModal}>
-                    提交
+                <Button
+                    aria-label={id ? '保存文章修改' : '保存新文章'}
+                    className="article-submit-button"
+                    type="primary"
+                    onClick={showModal}
+                >
+                    {id ? '保存修改' : '保存'}
                 </Button>
             </div>
             <div className="new_article">

@@ -12,6 +12,12 @@
     }
 }
 
-.bytemd {
-    height: calc(100vh - 200px);
+.editor-shell {
+    height: 100%;
+    min-height: 0;
+}
+
+.editor-shell > .bytemd {
+    height: 100%;
+    min-height: 0;
 }
