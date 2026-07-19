@@ -254,10 +254,14 @@ const NewNotes = () => {
     return <>
         <div className="notes-container">
             <div className="article_title">
-                <label style={{width:115,fontSize:18,fontWeight:600}}>文章标题</label>
-                <Input style={{background: 'transparent',border: '1px solid #4096ff',width: '95%',marginRight: 10}} onChange={handleInputChange} value={noteTitle}/>
-
-                <Button type="primary" onClick={showModal} style={{float: "right"}}>
+                <label className="article-title-label" htmlFor="article-title-input">文章标题</label>
+                <Input
+                    id="article-title-input"
+                    className="article-title-input"
+                    onChange={handleInputChange}
+                    value={noteTitle}
+                />
+                <Button className="article-submit-button" type="primary" onClick={showModal}>
                     提交
                 </Button>
             </div>
