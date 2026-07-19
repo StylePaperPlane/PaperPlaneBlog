@@ -17,7 +17,8 @@
     min-height: 0;
 }
 
-.editor-shell > .bytemd {
+.editor-shell > div,
+.editor-shell .bytemd {
     height: 100%;
     min-height: 0;
 }
